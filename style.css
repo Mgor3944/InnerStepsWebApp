@@ -1,0 +1,261 @@
+body {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background-color: #f5f7fa;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 500px;
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+h1 {
+    text-align: center;
+    color: #4a6bdf;
+    margin-bottom: 20px;
+    }
+
+h2 {
+    text-align: center;
+    color: #4a6bdf;
+    margin-bottom: 15px;
+}
+
+p {
+    line-height: 1.6;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.step {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+
+.step.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus {
+    border-color: #4a6bdf;
+    outline: none;
+}
+
+.interest-item {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.interest-item input {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+button {
+    background-color: #4a6bdf;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #3a59c7;
+}
+
+.add-interest {
+    background-color: #4ac86b;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    padding: 0;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-interest:hover {
+    background-color: #3aa559;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.back {
+    background-color: #ddd;
+    color: #555;
+}
+
+.back:hover {
+    background-color: #ccc;
+}
+
+.progress {
+    height: 8px;
+    background-color: #eee;
+    border-radius: 4px;
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #4a6bdf;
+    width: 20%;
+    transition: width 0.3s;
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.step-dot {
+    width: 12px;
+    height: 12px;
+    background-color: #ddd;
+    border-radius: 50%;
+    margin: 0 5px;
+    transition: background-color 0.3s;
+}
+
+.step-dot.active {
+    background-color: #4a6bdf;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.submit-btn {
+    background-color: #ff9f43;
+    font-size: 18px;
+    padding: 15px 30px;
+    width: 80%;
+    margin: 30px auto;
+    display: block;
+    border-radius: 10px;
+}
+
+.submit-btn:hover {
+    background-color: #f39031;
+}
+
+.age-options {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.age-option {
+    display: none;
+}
+
+.age-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 30%;
+    height: 100px;
+    background-color: #eef2ff;
+    border: 3px solid #d1deff;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 24px;
+    font-weight: bold;
+    color: #4a6bdf;
+}
+
+.age-option:checked + .age-label {
+    background-color: #4a6bdf;
+    border-color: #3a59c7;
+    color: white;
+    transform: scale(1.05);
+}
+
+.color-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.color-option {
+    display: none;
+}
+
+.color-label {
+    display: block;
+    width: 70px;
+    height: 70px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 3px solid transparent;
+}
+
+.color-option:checked + .color-label {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 3px white, 0 0 0 6px #4a6bdf;
+}
+
+.centered-content {
+    text-align: center;
+}
+
+.intro-text {
+    margin: 20px 0 30px;
+}
+
+.description {
+    color: #666;
+    font-size: 15px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}

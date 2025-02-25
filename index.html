@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adventure with Blu</title>
+    
+    <!-- Link to an external CSS file -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <form id="onboardingForm" action="https://formspree.io/f/your-unique-id" method="POST">
+            <!-- Step 1: Introduction -->
+            <div class="step active" id="step1">
+                <div class="centered-content">
+                    <h1>Hi there, I'm Blu!</h1>
+                    <h2>Your adventure Buddy.</h2>
+                    
+                    <p class="intro-text">
+                        Have you ever read a story wanted to be the hero? Well in our world of stories YOU can become the hero of every adventure and we even teach you how to learn special tools to help you feel better during those tricky moments when you have to say a quick goodbye to mum, dad a friend or even a pet.
+                    </p>
+                    
+                    <button type="button" onclick="nextStep(1, 2)" class="submit-btn">Let's begin!</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Name -->
+            <div class="step" id="step2">
+                <h1>Your Adventure Profile</h1>
+                <div class="progress">
+                    <div class="progress-bar" id="progressBar" style="width: 20%"></div>
+                </div>
+                <div class="step-indicator">
+                    <div class="step-dot active"></div>
+                    <div class="step-dot"></div>
+                    <div class="step-dot"></div>
+                    <div class="step-dot"></div>
+                    <div class="step-dot"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="name">What's your name?</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="buttons">
+                    <button type="button" class="back" onclick="nextStep(2, 1)">Back</button>
+                    <button type="button" onclick="nextStep(2, 3)">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Age Selection -->
+            <div class="step" id="step3">
+                <h1>Your Adventure Profile</h1>
+                <div class="progress">
+                    <div class="progress-bar" style="width: 40%"></div>
+                </div>
+                <div class="step-indicator">
+                    <div class="step-dot active"></div>
+                    <div class="step-dot active"></div>
+                    <div class="step-dot"></div>
+                    <div class="step-dot"></div>
+                    <div class="step-dot"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>How old are you?</label>
+                    
+                    <div class="age-options">
+                        <input type="radio" id="age8" name="age" value="8" class="age-option" required>
+                        <label for="age8" class="age-label">8</label>
+                        
+                        <input type="radio" id="age9" name="age" value="9" class="age-option">
+                        <label for="age9" class="age-label">9</label>
+                        
+                        <input type="radio" id="age10" name="age" value="10" class="age-option">
+                        <label for="age10" class="age-label">10</label>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button type="button" class="back" onclick="nextStep(3, 2)">Back</button>
+                    <button type="button" onclick="nextStep(3, 4)">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Interests -->
+            <div class="step" id="step4">
+                <h1>Your Adventure Profile</h1>
+                <div class="progress">
+                    <div class="progress-bar" style="width: 60%"></div>
+                </div>
+                <div class="step-indicator">
+                    <div class="step-dot active"></div>
+                    <div class="step-dot active"></div>
+                    <div class="step-dot active"></div>
+                    <div class="step-dot"></div>
+                    <div class="step-dot"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>What are your favourite things to do?</label>
+                    <p class="description">Each time you add something new, remember to click the green plus button!</p>
+                    
+                    <div id="interestsContainer">
+                        <div class="interest-item">
+                            <input type="text" name="interests[]" placeholder="I love..." required>
+                            <button type="button" class="add-interest" onclick="addInterestField()">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button type="button" class="back" onclick="nextStep(4, 3)">Back</button>
+                    <button type="button" onclick="validateInterests()">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Favorites -->
+            <div class="step" id="step5">
+                <h1>Your Adventure Profile</h1>
+                <div class="progress">
+                    <div class="progress-bar" style="width: 80%"></div>
+                </div>
+                <div class="step-indicator">
+                    <div class="step-dot active"></div>
+                    <div class="step-dot active"></div>
+                    <div class="step-dot active"></div>
+                    <div class="step-dot active"></div>
+                    <div class="step-dot"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>What's your favorite color?</label>
+                    
+                    <div class="color-options">
+                        <input type="radio" id="colorRed" name="color" value="Red (#FF0000)" class="color-option" required>
+                        <label for="colorRed" class="color-label" style="background-color: #FF0000;"></label>
+                        
+                        <input type="radio" id="colorBlue" name="color" value="Blue (#0000FF)" class="color-option">
+                        <label for="colorBlue" class="color-label" style="background-color: #0000FF;"></label>
+                        
+                        <input type="radio" id="colorGreen" name="color" value="Green (#00FF00)" class="color-option">
+                        <label for="colorGreen" class="color-label" style="background-color: #00FF00;"></label>
+                        
+                        <input type="radio" id="colorYellow" name="color" value="Yellow (#FFFF00)" class="color-option">
+                        <label for="colorYellow" class="color-label" style="background-color: #FFFF00;"></label>
+                        
+                        <input type="radio" id="colorPurple" name="color" value="Purple (#800080)" class="color-option">
+                        <label for="colorPurple" class="color-label" style="background-color: #800080;"></label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="animal">What's your favorite animal?</label>
+                    <input type="text" id="animal" name="animal" required>
+                </div>
+
+                <div class="buttons">
+                    <button type="button" class="back" onclick="nextStep(5, 4)">Back</button>
+                    <button type="button" onclick="nextStep(5, 6)">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 6: Final Submit -->
+            <div class="step" id="step6">
+                <h1>Hooray! You're all set!</h1>
+                <div class="progress">
+                    <div class="progress-bar" style="width: 100%"></div>
+                </div>
+                <div class="step-indicator">
+                    <div class="step-dot active"></div>
+                    <div class="step-dot active"></div>
+                    <div class="step-dot active"></div>
+                    <div class="step-dot active"></div>
+                    <div class="step-dot active"></div>
+                </div>
+                
+                <div class="centered-content">
+                    <p>Are you ready to begin your first quick adventure?</p>
+                    <button type="submit" class="submit-btn">Start Your First Adventure!</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Link to an external JavaScript file  -->
+    <script src="script.js"></script>
+</body>
+</html>
