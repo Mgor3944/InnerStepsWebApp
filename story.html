@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Adventure with Blu</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .story-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 900px;
+            height: 80vh;
+            max-height: 600px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .story-text {
+            width: 30%;
+            padding: 30px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .story-image {
+            width: 70%;
+            background-color: #f0f5ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .story-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        h1 {
+            color: #4a6bdf;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        p {
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .next-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ff9f43;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 10;
+            transition: transform 0.3s ease, background-color 0.3s;
+        }
+
+        .next-btn:hover {
+            background-color: #f39031;
+            transform: scale(1.1);
+        }
+
+        .arrow {
+            width: 20px;
+            height: 20px;
+            border-right: 4px solid white;
+            border-top: 4px solid white;
+            transform: rotate(45deg);
+            display: inline-block;
+            margin-left: -5px;
+        }
+
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.5s ease;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        .page.hidden {
+            transform: translateX(100%);
+        }
+
+        .page-turn {
+            animation: pageTurn 0.5s ease-in-out;
+        }
+
+        @keyframes pageTurn {
+            0% {
+                transform: translateX(0) rotateY(0deg);
+            }
+            50% {
+                transform: translateX(50%) rotateY(20deg);
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateX(100%) rotateY(0deg);
+                opacity: 0;
+            }
+        }
+
+        .new-page {
+            animation: newPage 0.5s ease-in-out;
+        }
+
+        @keyframes newPage {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .story-container {
+                flex-direction: column;
+                height: auto;
+                max-height: none;
+            }
+
+            .story-text, .story-image {
+                width: 100%;
+            }
+
+            .story-image {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="story-container">
+        <div class="story-text">
+            <div id="page1" class="page">
+                <h1>The Magic Forest</h1>
+                <p>Once upon a time, in a land not so far away, there was a magical forest. This forest was full of talking animals, sparkling streams, and trees that whispered secrets to those who listened carefully.</p>
+                <p>You have just arrived at the edge of this forest. The path ahead splits into two directions - one leads deeper into the woods, and the other follows a bubbling stream.</p>
+            </div>
+            <div id="page2" class="page hidden">
+                <h1>The Talking Owl</h1>
+                <p>As you walk along the path, you notice a wise old owl sitting on a branch above you. To your surprise, the owl turns its head and speaks!</p>
+                <p>"Hello there, young adventurer," hoots the owl. "I've been expecting you. The forest has many wonders to show those who are brave and kind."</p>
+            </div>
+            <div id="page3" class="page hidden">
+                <h1>The Magic Stone</h1>
+                <p>The owl tells you about a special magic stone hidden somewhere in the forest. This stone has the power to grant one wish to whoever finds it.</p>
+                <p>"But remember," warns the owl, "the forest will test your courage and kindness before revealing its treasures."</p>
+            </div>
+        </div>
+        
+        <div class="story-image">
+            <img id="storyImage" src="images/forest-path.jpg" alt="Forest scene">
+        </div>
+        
+        <button class="next-btn" onclick="nextPage()">
+            <span class="arrow"></span>
+        </button>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 3;
+        const images = [
+            "images/forest-path.jpg", // Replace with actual image paths
+            "images/talking-owl.jpg",
+            "images/magic-stone.jpg"
+        ];
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                // Add page turn animation to current page
+                document.getElementById(`page${currentPage}`).classList.add('page-turn');
+                
+                setTimeout(() => {
+                    // Hide current page
+                    document.getElementById(`page${currentPage}`).classList.add('hidden');
+                    document.getElementById(`page${currentPage}`).classList.remove('page-turn');
+                    
+                    // Show next page
+                    currentPage++;
+                    document.getElementById(`page${currentPage}`).classList.remove('hidden');
+                    document.getElementById(`page${currentPage}`).classList.add('new-page');
+                    
+                    // Update image
+                    document.getElementById('storyImage').src = images[currentPage - 1];
+                    
+                    setTimeout(() => {
+                        document.getElementById(`page${currentPage}`).classList.remove('new-page');
+                    }, 500);
+                }, 250);
+            }
+        }
+    </script>
+</body>
+</html>
