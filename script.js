@@ -60,8 +60,8 @@ function validateInterests() {
     let interestInputs = document.querySelectorAll('input[name="interests[]"]');
     let filledInputs = Array.from(interestInputs).filter(input => input.value.trim() !== '');
     
-    if (filledInputs.length < 3) {
-        alert("Please add at least 3 interests before continuing.");
+    if (filledInputs.length < 2) {
+        alert("Please add at least 2 interests before continuing.");
         return;
     }
     
@@ -176,118 +176,110 @@ function initStoryPage() {
     window.currentPage = 1;
     window.totalPages = document.querySelectorAll('.page').length;
     
-    // Story images - update these with your actual image paths
+    // Set up story images array
     window.storyImages = [
-        "assets/story_images/Alex/image_1.png",
-        "assets/story_images/Alex/image_2.png",
-        "assets/story_images/Alex/image_3.png"
+        'assets/story_images/Alex/image_1.png',
+        'assets/story_images/Alex/image_2.png',
+        'assets/story_images/Alex/image_3.png'
     ];
     
-    console.log("Story page initialized");
+    console.log("=== Story Page Initialization ===");
     console.log("Total pages found:", window.totalPages);
     console.log("Current page:", window.currentPage);
+    console.log("Images array:", window.storyImages);
     
-    // Add click handler to next button if it exists
+    // List all pages for debugging
+    document.querySelectorAll('.page').forEach((page, index) => {
+        console.log(`Page ${index + 1} ID:`, page.id);
+    });
+    
+    // Hide all pages except the first one
+    document.querySelectorAll('.page').forEach((page, index) => {
+        if (index === 0) {
+            page.classList.remove('hidden');
+        } else {
+            page.classList.add('hidden');
+        }
+    });
+    
+    // Add event listeners for navigation buttons
     const nextButton = document.querySelector('.next-btn');
     if (nextButton) {
+        nextButton.removeEventListener('click', nextPage);
         nextButton.addEventListener('click', nextPage);
-        console.log("Next button click handler added");
     }
     
-    // Add click handler to back button if it exists
     const backButton = document.querySelector('.back-btn');
     if (backButton) {
+        backButton.removeEventListener('click', previousPage);
         backButton.addEventListener('click', previousPage);
-        console.log("Back button click handler added");
     }
     
-    // Check if back button should be hidden (first page)
+    // Initialize navigation buttons
     updateNavigationButtons();
 }
 
 function nextPage() {
-    console.log("nextPage() called");
     if (window.currentPage < window.totalPages) {
-        console.log(`Moving from page ${window.currentPage} to page ${window.currentPage + 1}`);
-        
-        // Add page turn animation to current page
-        document.getElementById(`page${window.currentPage}`).classList.add('page-turn');
+        const currentPageElement = document.getElementById(`page${window.currentPage}`);
+        currentPageElement.classList.add('turning-forward');
         
         setTimeout(() => {
             // Hide current page
-            document.getElementById(`page${window.currentPage}`).classList.add('hidden');
-            document.getElementById(`page${window.currentPage}`).classList.remove('page-turn');
+            currentPageElement.classList.add('hidden');
+            currentPageElement.classList.remove('turning-forward');
+            
+            // Move to next page
+            window.currentPage++;
             
             // Show next page
-            window.currentPage++;
-            document.getElementById(`page${window.currentPage}`).classList.remove('hidden');
-            document.getElementById(`page${window.currentPage}`).classList.add('new-page');
+            const nextPageElement = document.getElementById(`page${window.currentPage}`);
+            nextPageElement.classList.remove('hidden');
             
-            // Update image if it exists
+            // Update image with transition
             const storyImage = document.getElementById('storyImage');
             if (storyImage && window.storyImages && window.storyImages[window.currentPage - 1]) {
-                console.log(`Updating image to: ${window.storyImages[window.currentPage - 1]}`);
-                storyImage.src = window.storyImages[window.currentPage - 1];
-            } else {
-                console.log("Image update failed:", {
-                    storyImage: !!storyImage,
-                    storyImages: !!window.storyImages,
-                    currentImagePath: window.storyImages ? window.storyImages[window.currentPage - 1] : null
-                });
+                storyImage.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    storyImage.src = window.storyImages[window.currentPage - 1];
+                    storyImage.style.transform = 'scale(1)';
+                }, 300);
             }
             
-            setTimeout(() => {
-                document.getElementById(`page${window.currentPage}`).classList.remove('new-page');
-                
-                // Update navigation buttons
-                updateNavigationButtons();
-            }, 500);
-        }, 250);
-    } else {
-        console.log("Already at the last page");
+            updateNavigationButtons();
+        }, 300);
     }
 }
 
 function previousPage() {
-    console.log("previousPage() called");
     if (window.currentPage > 1) {
-        console.log(`Moving from page ${window.currentPage} to page ${window.currentPage - 1}`);
-        
-        // Add reverse page turn animation to current page
-        document.getElementById(`page${window.currentPage}`).classList.add('page-turn-reverse');
+        const currentPageElement = document.getElementById(`page${window.currentPage}`);
+        currentPageElement.classList.add('turning-backward');
         
         setTimeout(() => {
             // Hide current page
-            document.getElementById(`page${window.currentPage}`).classList.add('hidden');
-            document.getElementById(`page${window.currentPage}`).classList.remove('page-turn-reverse');
+            currentPageElement.classList.add('hidden');
+            currentPageElement.classList.remove('turning-backward');
+            
+            // Move to previous page
+            window.currentPage--;
             
             // Show previous page
-            window.currentPage--;
-            document.getElementById(`page${window.currentPage}`).classList.remove('hidden');
-            document.getElementById(`page${window.currentPage}`).classList.add('new-page-reverse');
+            const prevPageElement = document.getElementById(`page${window.currentPage}`);
+            prevPageElement.classList.remove('hidden');
             
-            // Update image if it exists
+            // Update image with transition
             const storyImage = document.getElementById('storyImage');
             if (storyImage && window.storyImages && window.storyImages[window.currentPage - 1]) {
-                console.log(`Updating image to: ${window.storyImages[window.currentPage - 1]}`);
-                storyImage.src = window.storyImages[window.currentPage - 1];
-            } else {
-                console.log("Image update failed:", {
-                    storyImage: !!storyImage,
-                    storyImages: !!window.storyImages,
-                    currentImagePath: window.storyImages ? window.storyImages[window.currentPage - 1] : null
-                });
+                storyImage.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    storyImage.src = window.storyImages[window.currentPage - 1];
+                    storyImage.style.transform = 'scale(1)';
+                }, 300);
             }
             
-            setTimeout(() => {
-                document.getElementById(`page${window.currentPage}`).classList.remove('new-page-reverse');
-                
-                // Update navigation buttons
-                updateNavigationButtons();
-            }, 500);
-        }, 250);
-    } else {
-        console.log("Already at the first page");
+            updateNavigationButtons();
+        }, 300);
     }
 }
 
