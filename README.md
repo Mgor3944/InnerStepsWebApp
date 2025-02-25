@@ -1,5 +1,5 @@
 # InnerStepsWebApp
-Our AI-powered, anxiety management app helps... come back to this
+Our AI-powered, anxiety support program provides families with a series of interactive picture/audio story adventures breaking down therapy into bite-sized lessons that help children build practical coping strategies, and confidence that suit their unique needs and reading level
 
 Notes:
 1. Once user has completed the onboarding form, they should not be able to reaccess or submit it from that window again.
