@@ -178,9 +178,9 @@ function initStoryPage() {
     
     // Story images - update these with your actual image paths
     window.storyImages = [
-        "images/forest-path.jpg",
-        "images/talking-owl.jpg",
-        "images/magic-stone.jpg"
+        "assets/images/Alex/image_1.png",
+        "assets/images/Alex/image_2.png",
+        "assets/images/Alex/image_3.png"
     ];
     
     // Add click handler to next button if it exists
