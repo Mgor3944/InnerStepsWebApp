@@ -343,16 +343,6 @@ function updateNavigationButtons() {
     }
 }
 
-// Add new function for story completion
-function completeStory() {
-    // Save story completion status
-    localStorage.setItem('currentStory', 'alex_giant');
-    localStorage.setItem('alex_giant_completed', 'true');
-    
-    // Redirect to practice page
-    window.location.href = 'practice.html';
-}
-
 // === PRACTICE PAGE HANDLING ===
 function initPracticePage() {
     console.log('Initializing practice page...'); // Debug log
@@ -521,17 +511,105 @@ function goToJourneyMap() {
 // === JOURNEY MAP HANDLING ===
 function initJourneyMap() {
     if (document.querySelector('.journey-page')) {
-        // Update completed session status
-        const isSession1Complete = localStorage.getItem('session1_complete') === 'true';
-        if (isSession1Complete) {
-            const firstNode = document.querySelector('.story-node');
-            firstNode.classList.add('completed');
-            
-            // Trigger unlock animation for next session after delay
-            setTimeout(() => {
-                const nextNode = document.querySelectorAll('.story-node')[1];
-                nextNode.classList.add('unlocking');
-            }, 2000);
+        // Get completion status of all stories
+        const story1Complete = localStorage.getItem('alex_giant_completed') === 'true';
+        const story2Complete = localStorage.getItem('story2_completed') === 'true';
+        const story3Complete = localStorage.getItem('story3_completed') === 'true';
+        
+        // Get all story nodes
+        const storyNodes = document.querySelectorAll('.story-node');
+        
+        // Update story states based on completion
+        if (story1Complete) {
+            updateStoryNodeStatus(storyNodes[0], 'completed', false); // No animation for first story
+            updateStoryNodeStatus(storyNodes[1], 'next-to-complete', true); // Show animation if newly unlocked
+            unlockStoryNode(storyNodes[1]);
+        } else {
+            lockStoryNode(storyNodes[1]);
+        }
+        
+        if (story2Complete && story1Complete) {
+            updateStoryNodeStatus(storyNodes[1], 'completed', false);
+            updateStoryNodeStatus(storyNodes[2], 'next-to-complete', true);
+            unlockStoryNode(storyNodes[2]);
+        } else {
+            lockStoryNode(storyNodes[2]);
+        }
+        
+        if (story3Complete && story2Complete && story1Complete) {
+            updateStoryNodeStatus(storyNodes[2], 'completed', false);
+            updateStoryNodeStatus(storyNodes[3], 'next-to-complete', true);
+            unlockStoryNode(storyNodes[3]);
+        } else {
+            lockStoryNode(storyNodes[3]);
         }
     }
+}
+
+function lockStoryNode(node) {
+    updateStoryNodeStatus(node, 'locked');
+    const title = node.querySelector('h3');
+    const button = node.querySelector('button');
+    
+    // Store original content as data attributes
+    if (!title.hasAttribute('data-original-text')) {
+        title.dataset.originalText = title.textContent;
+        button.dataset.originalText = button.textContent;
+    }
+    
+    // Update to locked content
+    title.textContent = '????';
+    button.textContent = 'Haven\'t Unlocked Yet';
+    button.disabled = true;
+}
+
+function unlockStoryNode(node) {
+    const title = node.querySelector('h3');
+    const button = node.querySelector('button');
+    
+    // Restore original content if it exists
+    if (title.hasAttribute('data-original-text')) {
+        title.textContent = title.dataset.originalText;
+        button.textContent = 'Begin Adventure';
+        button.disabled = false;
+    }
+}
+
+function updateStoryNodeStatus(node, status, checkAnimation = true) {
+    node.setAttribute('data-status', status);
+    
+    if (status === 'completed') {
+        const button = node.querySelector('button');
+        button.textContent = 'Read Again';
+    } else if (status === 'next-to-complete' && checkAnimation) {
+        // Only show animation if this story hasn't been unlocked before
+        const storyId = node.id;
+        const hasBeenUnlocked = localStorage.getItem(`${storyId}_unlocked`) === 'true';
+        
+        if (!hasBeenUnlocked) {
+            node.setAttribute('data-animation', 'unlocking');
+            
+            // Remove animation attributes after animation completes
+            node.addEventListener('animationend', () => {
+                node.removeAttribute('data-animation');
+                // Mark this story as having shown its unlock animation
+                localStorage.setItem(`${storyId}_unlocked`, 'true');
+            }, { once: true });
+        }
+    }
+}
+
+// Update the completeStory function to handle story progression
+function completeStory() {
+    const currentStory = localStorage.getItem('currentStory') || 'alex_giant';
+    
+    // Mark current story as completed
+    localStorage.setItem(`${currentStory}_completed`, 'true');
+    
+    // Add coins for completion
+    window.userCoins = (parseInt(localStorage.getItem('userCoins')) || 0) + 15;
+    localStorage.setItem('userCoins', window.userCoins);
+    
+    // Redirect to practice page
+    window.location.href = 'practice.html';
 }
