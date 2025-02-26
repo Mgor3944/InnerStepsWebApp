@@ -9,6 +9,9 @@ body {
     align-items: center;
     min-height: 100vh;
     color: #333;
+    background: var(--primary-bg-color); /* Your background color/image */
+    background-attachment: fixed;
+    overflow-x: hidden;
 }
 
 h1 {
@@ -49,7 +52,7 @@ button {
 }
 
 button:hover {
-    background-color: #3a59c7;
+    background-color: #719922;
 }
 
 .centered-content {
@@ -60,6 +63,12 @@ button:hover {
 body.onboarding-page,
 body.practice-page {
     background: url('assets/images/background_1.png') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+}
+
+body.journey-page {
+    background: url('assets/images/background_2.png') no-repeat center center fixed;
     background-size: cover;
     min-height: 100vh;
 }
@@ -598,21 +607,37 @@ body.story-page {
 
 /* Journey Map Styles */
 .journey-page {
-    background-color: #EEFCED;
+    width: 100%;
+    background: url('assets/images/background_2.png') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
 }
 
 .journey-container {
     width: 90%;
     max-width: 1500px;
-    margin: 40px auto;
-    padding: 20px;
+    padding: 30px;
+    position: relative;
+    overflow-x: auto;
+    z-index: 1;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.journey-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
 }
 
 .journey-map {
     display: flex;
     flex-direction: row;
     gap: 40px;
-    margin-top: 40px;
+    padding: 20px 0;
+    align-items: center;
+    min-height: 400px;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    min-width: min-content;
 }
 
 /* Story Node Base Styles */
@@ -621,7 +646,7 @@ body.story-page {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 400px;
+    width: 300px;
     background: rgb(255, 255, 255, 0.7);
     border: 6px solid #fff;
     border-radius: 15px;
@@ -634,6 +659,8 @@ body.story-page {
 .story-node .story-cover {
     width: 100%;
     height: 300px;
+    background-color: rgb(0, 0, 0, 0.1);
+    border-radius: 10px;
 }
 
 .story-node .story-cover img {
@@ -664,6 +691,10 @@ body.story-page {
 }
 
 .story-node[data-status="completed"] button {
+    background-color: #3a59c7; 
+}
+
+.story-node[data-status="completed"] button:hover {
     background-color: #164E75;
 }
 
@@ -676,17 +707,67 @@ body.story-page {
 
 @keyframes pulseBorder {
     0% {
-        border-color: rgba(141, 186, 54, 0.4);  /* Green with low opacity */
+        border-color: rgba(141, 186, 54, 0.4);
         box-shadow: 0 0 0 0 rgba(141, 186, 54, 0.4);
     }
     50% {
-        border-color: rgba(141, 186, 54, 0.8);  /* Green with higher opacity */
+        border-color: rgba(141, 186, 54, 0.8);
         box-shadow: 0 0 0 15px rgba(141, 186, 54, 0);
     }
     100% {
-        border-color: rgba(141, 186, 54, 0.4);  /* Back to green with low opacity */
+        border-color: rgba(141, 186, 54, 0.4);
         box-shadow: 0 0 0 0 rgba(141, 186, 54, 0);
     }
+}
+
+/* Chapter indicator styling */
+.chapter-indicator {
+    min-width: 200px;
+    background: rgb(255, 255, 255, 0.7);
+    border: 6px solid #fff;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.chapter-progress {
+    width: 100%;
+    height: 12px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #3a59c7;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+/* Chapter complete trophy */
+.chapter-complete {
+    min-width: 200px;
+    background: rgb(255, 255, 255, 0.7);
+    border: 6px solid #f3cf2f;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.chapter-complete svg {
+    width: 60px;
+    height: 60px;
+    fill: #8DBA36;
+    margin-bottom: 10px;
+}
+
+.chapter-complete h3 {
+    color: #164E75;
+    margin: 10px 0;
 }
 
 /* Locked Story Styling */
@@ -995,4 +1076,22 @@ body.story-page {
 
 .hidden {
     display: none;
+}
+
+/* Fixed header container */
+.header-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    padding: 20px;
+    background: linear-gradient(to bottom, #EEFCED 60%, transparent);
+}
+
+.header-container h1 {
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+    color: #164E75;
 }

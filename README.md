@@ -1,6 +1,10 @@
 # InnerStepsWebApp
 Our AI-powered, anxiety support program provides families with a series of interactive picture/audio story adventures breaking down therapy into bite-sized lessons that help children build practical coping strategies, and confidence that suit their unique needs and reading level
 
+MVP Build:
+
+This MVP is designed to test how much personalisation is required to make the child feel like the story is for them. The most simplist way to test this is to procedurally generate the text of the story and then manually customise the images to match the child's profile description.
+
 To Do:
 
 1. Potentially update story design so that the img is full capacity and the text is overlayed in a box in 1 corner of the screen.

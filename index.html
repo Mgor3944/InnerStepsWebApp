@@ -3,14 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InnerSteps - Home</title>
+    <title>Your Adventures</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="journey-page">
+    <!-- Fixed header -->
+    <div class="header-container">
+        <h1>Your Adventures</h1>
+    </div>
+
     <div class="journey-container">
-        <h1>Adventure Map</h1>
-        
         <div class="journey-map">
+            <!-- Chapter 1 Indicator -->
+            <div class="chapter-indicator">
+                <h2>Chapter 1</h2>
+                <div class="chapter-progress">
+                    <div class="progress-bar"></div>
+                </div>
+            </div>  
+
             <!-- First Story -->
             <div class="story-node" data-status="next-to-complete" id="story1">
                 <div class="story-cover">
@@ -23,15 +34,15 @@
             <!-- Other Stories -->
             <div class="story-node" data-status="locked" id="story2">
                 <div class="story-cover">
-                    <img src="assets/story_images/Luna/image_cover.jpeg" alt="Luna's Adventure">
+                    <!-- <img src="assets/story_images/Luna/image_cover.jpeg" alt="Luna's Adventure"> -->
                 </div>
-                <h3>Luna's Midnight Adventure</h3>
+                <h3>Alex's Midnight Adventure</h3>
                 <button disabled>Begin Adventure</button>
             </div>
 
             <div class="story-node" data-status="locked" id="story3">
                 <div class="story-cover">
-                    <img src="assets/story_images/Rainbow/image_cover.jpeg" alt="Rainbow Bridge">
+                    <!-- <img src="assets/story_images/Rainbow/image_cover.jpeg" alt="Rainbow Bridge"> -->
                 </div>
                 <h3>The Rainbow Bridge</h3>
                 <button disabled>Begin Adventure</button>
@@ -39,15 +50,25 @@
 
             <div class="story-node" data-status="locked" id="story4">
                 <div class="story-cover">
-                    <img src="assets/story_images/Forest/image_cover.jpeg" alt="Whispering Forest">
+                    <!-- <img src="assets/story_images/Forest/image_cover.jpeg" alt="Whispering Forest"> -->
                 </div>
                 <h3>The Whispering Forest</h3>
                 <button disabled>Begin Adventure</button>
             </div>
 
-            <!-- Add more story nodes as needed -->
+            <!-- Chapter Complete Trophy -->
+            <div class="chapter-complete">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M20.2,4H17.6V2.8c0-0.4-0.3-0.8-0.8-0.8H7.2C6.8,2,6.4,2.3,6.4,2.8V4H3.8C3.4,4,3,4.3,3,4.8V8c0,2.4,1.7,4.4,4,4.9v2.9c0,0.4,0.3,0.8,0.8,0.8h8.4c0.4,0,0.8-0.3,0.8-0.8v-2.9c2.3-0.4,4-2.4,4-4.9V4.8C21,4.3,20.7,4,20.2,4z"/>
+                    <path d="M12,19.2c-0.4,0-0.8,0.3-0.8,0.8v1.2c0,0.4,0.3,0.8,0.8,0.8s0.8-0.3,0.8-0.8V20C12.8,19.6,12.4,19.2,12,19.2z"/>
+                    <path d="M15.6,20c-0.4,0-0.8,0.3-0.8,0.8v0.4c0,0.4,0.3,0.8,0.8,0.8s0.8-0.3,0.8-0.8v-0.4C16.4,20.3,16,20,15.6,20z"/>
+                    <path d="M8.4,20c-0.4,0-0.8,0.3-0.8,0.8v0.4c0,0.4,0.3,0.8,0.8,0.8s0.8-0.3,0.8-0.8v-0.4C9.2,20.3,8.8,20,8.4,20z"/>
+                </svg>
+                <h3>Chapter Complete!</h3>
+            </div>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>

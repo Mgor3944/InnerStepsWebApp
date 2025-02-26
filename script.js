@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         initPracticePage();
     } else if (document.querySelector('.journey-page')) {
         initJourneyMap();
+        loadUserProgress();
     }
 
     // Add coins display to relevant pages
@@ -515,8 +516,23 @@ function initJourneyMap() {
         const story1Complete = localStorage.getItem('alex_giant_completed') === 'true';
         const story2Complete = localStorage.getItem('story2_completed') === 'true';
         const story3Complete = localStorage.getItem('story3_completed') === 'true';
+        const story4Complete = localStorage.getItem('story4_completed') === 'true';
         
-        // Get all story nodes
+        // Calculate chapter progress
+        const completedStories = [story1Complete, story2Complete, story3Complete, story4Complete]
+            .filter(Boolean).length;
+        const progressPercentage = (completedStories / 4) * 100;
+        
+        // Update progress bar
+        const progressBar = document.querySelector('.progress-bar');
+        if (progressBar) {
+            progressBar.style.width = `${progressPercentage}%`;
+        }
+        
+        // Store progress in localStorage
+        localStorage.setItem('chapter1_progress', progressPercentage);
+        
+        // Update story nodes status
         const storyNodes = document.querySelectorAll('.story-node');
         
         // Update story states based on completion
@@ -542,6 +558,11 @@ function initJourneyMap() {
             unlockStoryNode(storyNodes[3]);
         } else {
             lockStoryNode(storyNodes[3]);
+        }
+        
+        if (story4Complete && story3Complete && story2Complete && story1Complete) {
+            updateStoryNodeStatus(storyNodes[3], 'completed', false);
+            // Chapter complete - no need to unlock a next node
         }
     }
 }
@@ -605,6 +626,18 @@ function completeStory() {
     
     // Mark current story as completed
     localStorage.setItem(`${currentStory}_completed`, 'true');
+    
+    // Update chapter progress
+    const story1Complete = localStorage.getItem('alex_giant_completed') === 'true';
+    const story2Complete = localStorage.getItem('story2_completed') === 'true';
+    const story3Complete = localStorage.getItem('story3_completed') === 'true';
+    const story4Complete = localStorage.getItem('story4_completed') === 'true';
+    
+    const completedStories = [story1Complete, story2Complete, story3Complete, story4Complete]
+        .filter(Boolean).length;
+    const progressPercentage = (completedStories / 4) * 100;
+    
+    localStorage.setItem('chapter1_progress', progressPercentage);
     
     // Add coins for completion
     window.userCoins = (parseInt(localStorage.getItem('userCoins')) || 0) + 15;
