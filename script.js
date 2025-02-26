@@ -1,13 +1,32 @@
 // === PAGE DETECTION AND INITIALIZATION ===
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if we're on the onboarding form page
+    // Comment out the onboarding check temporarily for testing
+    // Check if user has completed onboarding
+    
+    // const hasCompletedOnboarding = localStorage.getItem('onboarding_completed');
+    
+    // // If on index.html and hasn't completed onboarding, redirect to onboarding
+    // if (window.location.pathname.endsWith('index.html') && !hasCompletedOnboarding) {
+    //     window.location.href = 'onboarding.html';
+    //     return;
+    // }
+    
+    // Initialize appropriate page
     if (document.getElementById('onboardingForm')) {
         initOnboardingForm();
-    }
-    
-    // Check if we're on the story page
-    if (document.querySelector('.story-container')) {
+    } else if (document.querySelector('.story-container')) {
         initStoryPage();
+    } else if (document.querySelector('.practice-page')) {
+        initPracticePage();
+    } else if (document.querySelector('.journey-page')) {
+        initJourneyMap();
+    }
+
+    // Add coins display to relevant pages
+    if (document.querySelector('.story-page') || 
+        document.querySelector('.practice-page') || 
+        document.querySelector('.journey-page')) {
+        loadUserProgress();
     }
 });
 
@@ -146,7 +165,7 @@ function handleFormSubmit(e) {
         })
         .then(response => {
             if (response.ok) {
-                // Redirect to story page after successful submission
+                // Redirect to story page
                 window.location.href = 'story.html';
             } else {
                 throw new Error('Form submission failed');
@@ -286,35 +305,233 @@ function previousPage() {
 function updateNavigationButtons() {
     const backButton = document.querySelector('.back-btn');
     const nextButton = document.querySelector('.next-btn');
-    
-    console.log("Updating navigation buttons", {
-        currentPage: window.currentPage,
-        totalPages: window.totalPages
-    });
+    const practiceButton = document.querySelector('.practice-btn');
     
     if (backButton) {
         // Hide back button on first page
         if (window.currentPage === 1) {
             backButton.style.opacity = '0';
             backButton.style.pointerEvents = 'none';
-            console.log("Hiding back button");
         } else {
             backButton.style.opacity = '1';
             backButton.style.pointerEvents = 'auto';
-            console.log("Showing back button");
         }
     }
     
-    if (nextButton) {
-        // Hide next button on last page
+    if (nextButton && practiceButton) {
+        // On last page
         if (window.currentPage === window.totalPages) {
+            // Hide next button
             nextButton.style.opacity = '0';
             nextButton.style.pointerEvents = 'none';
-            console.log("Hiding next button");
+            
+            // Show practice button
+            practiceButton.classList.remove('hidden');
+            setTimeout(() => {
+                practiceButton.classList.add('show');
+            }, 300);
         } else {
+            // Show next button and hide practice button
             nextButton.style.opacity = '1';
             nextButton.style.pointerEvents = 'auto';
-            console.log("Showing next button");
+            
+            practiceButton.classList.remove('show');
+            setTimeout(() => {
+                practiceButton.classList.add('hidden');
+            }, 300);
+        }
+    }
+}
+
+// Add new function for story completion
+function completeStory() {
+    // Save story completion status
+    localStorage.setItem('currentStory', 'alex_giant');
+    localStorage.setItem('alex_giant_completed', 'true');
+    
+    // Redirect to practice page
+    window.location.href = 'practice.html';
+}
+
+// === PRACTICE PAGE HANDLING ===
+function initPracticePage() {
+    console.log('Initializing practice page...'); // Debug log
+    const practiceContainer = document.querySelector('.practice-container');
+    if (practiceContainer) {
+        // Initialize question tracking
+        window.currentQuestion = 1;
+        window.totalQuestions = document.querySelectorAll('.question').length;
+        
+        console.log('Total questions:', window.totalQuestions); // Debug log
+        
+        // Initialize navigation with IDs
+        const practiceBackBtn = document.getElementById('practiceBackBtn');
+        const practiceNextBtn = document.getElementById('practiceNextBtn');
+        
+        console.log('Back button:', practiceBackBtn); // Debug log
+        console.log('Next button:', practiceNextBtn); // Debug log
+        
+        // Update next button text based on question number
+        updateNextButtonText();
+        
+        if (practiceBackBtn) {
+            practiceBackBtn.addEventListener('click', handlePracticePrevious);
+        }
+        
+        if (practiceNextBtn) {
+            practiceNextBtn.addEventListener('click', handlePracticeNext);
+        }
+        
+        // Show first question and hide others
+        document.querySelectorAll('.question').forEach((question, index) => {
+            if (index === 0) {
+                question.classList.add('active');
+                question.classList.remove('hidden');
+            } else {
+                question.classList.remove('active');
+                question.classList.add('hidden');
+            }
+        });
+        
+        loadUserProgress();
+    }
+}
+
+function updateNextButtonText() {
+    const nextButton = document.querySelector('.next-btn-practice');
+    if (nextButton) {
+        nextButton.textContent = window.currentQuestion === window.totalQuestions ? 'Complete' : 'Next';
+    }
+}
+
+function handlePracticePrevious() {
+    if (window.currentQuestion === 1) {
+        // If on first question, redirect to story page
+        window.location.href = 'story.html';
+    } else {
+        // Move to previous question
+        const currentQuestionElement = document.getElementById(`question${window.currentQuestion}`);
+        const prevQuestionElement = document.getElementById(`question${window.currentQuestion - 1}`);
+        
+        if (currentQuestionElement && prevQuestionElement) {
+            currentQuestionElement.classList.remove('active');
+            currentQuestionElement.classList.add('hidden');
+            
+            window.currentQuestion--;
+            
+            prevQuestionElement.classList.remove('hidden');
+            prevQuestionElement.classList.add('active');
+            
+            // Update next button text
+            updateNextButtonText();
+        }
+    }
+}
+
+function handlePracticeNext() {
+    if (window.currentQuestion === window.totalQuestions) {
+        // If on last question, show completion page
+        const practiceContainer = document.querySelector('.practice-container');
+        const completionContainer = document.querySelector('.completion-container');
+        
+        if (practiceContainer && completionContainer) {
+            practiceContainer.classList.add('hidden');
+            completionContainer.classList.remove('hidden');
+            
+            // Update user progress
+            updateUserProgress();
+        }
+    } else {
+        // Move to next question
+        const currentQuestionElement = document.getElementById(`question${window.currentQuestion}`);
+        const nextQuestionElement = document.getElementById(`question${window.currentQuestion + 1}`);
+        
+        if (currentQuestionElement && nextQuestionElement) {
+            currentQuestionElement.classList.remove('active');
+            currentQuestionElement.classList.add('hidden');
+            
+            window.currentQuestion++;
+            
+            nextQuestionElement.classList.remove('hidden');
+            nextQuestionElement.classList.add('active');
+            
+            // Update next button text
+            updateNextButtonText();
+        }
+    }
+}
+
+function showCompletionPage() {
+    const practiceContainer = document.querySelector('.practice-container');
+    const completionContainer = document.querySelector('.completion-container');
+    const questionsCompleted = document.querySelector('.questions-completed');
+    
+    // Update questions completed
+    if (questionsCompleted) {
+        questionsCompleted.textContent = window.totalQuestions;
+    }
+    
+    // Hide practice container
+    practiceContainer.classList.add('hidden');
+    
+    // Show completion container
+    completionContainer.classList.remove('hidden');
+    
+    // Update user progress
+    updateUserProgress();
+}
+
+// === USER PROGRESS HANDLING ===
+function loadUserProgress() {
+    // Load coins from localStorage or initialize if not exists
+    window.userCoins = parseInt(localStorage.getItem('userCoins')) || 0;
+    updateCoinsDisplay();
+}
+
+function updateUserProgress() {
+    // Add coins
+    window.userCoins += 25;
+    localStorage.setItem('userCoins', window.userCoins);
+    updateCoinsDisplay();
+    
+    // Mark session as complete
+    localStorage.setItem('session1_complete', 'true');
+}
+
+function updateCoinsDisplay() {
+    if (!document.querySelector('.coins-display')) {
+        const coinsDisplay = document.createElement('div');
+        coinsDisplay.className = 'coins-display';
+        coinsDisplay.innerHTML = `
+            <svg class="gem-icon" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M21.0725 8.81987L18.1305 4.50188C17.6735 3.82488 16.9125 3.42188 16.0955 3.42188H7.90951C7.09351 3.42188 6.33351 3.82487 5.87751 4.49987L2.92651 8.81987C2.28551 9.75987 2.37251 11.0119 3.13951 11.8689L10.4455 19.8869C10.8425 20.3249 11.4085 20.5759 11.9985 20.5759C12.5895 20.5759 13.1545 20.3249 13.5515 19.8879L20.8575 11.8589C21.6275 11.0149 21.7155 9.76487 21.0725 8.81987Z"/>
+            </svg>
+            <span>${window.userCoins}/100</span>
+        `;
+        document.body.appendChild(coinsDisplay);
+    } else {
+        document.querySelector('.coins-display span').textContent = `${window.userCoins}/100`;
+    }
+}
+
+function goToJourneyMap() {
+    window.location.href = 'index.html';
+}
+
+// === JOURNEY MAP HANDLING ===
+function initJourneyMap() {
+    if (document.querySelector('.journey-page')) {
+        // Update completed session status
+        const isSession1Complete = localStorage.getItem('session1_complete') === 'true';
+        if (isSession1Complete) {
+            const firstNode = document.querySelector('.story-node');
+            firstNode.classList.add('completed');
+            
+            // Trigger unlock animation for next session after delay
+            setTimeout(() => {
+                const nextNode = document.querySelectorAll('.story-node')[1];
+                nextNode.classList.add('unlocking');
+            }, 2000);
         }
     }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InnerSteps Web App</title>
+    <title>InnerSteps - Story</title>
 
     <!-- Link to an external CSS file -->
     <link rel="stylesheet" href="style.css">
@@ -32,12 +32,16 @@
             <img id="storyImage" src="assets/story_images/Alex/image_1.png" alt="First Scene">
         </div>
         
-        <button class="back-btn">
+        <button id="storyBackBtn" class="back-btn">
             <span class="arrow back-arrow"></span>
         </button>
 
-        <button class="next-btn">
+        <button id="storyNextBtn" class="next-btn">
             <span class="arrow"></span>
+        </button>
+
+        <button id="storyPracticeBtn" class="practice-btn hidden" onclick="completeStory()">
+            Start Practice Questions
         </button>
     </div>
 

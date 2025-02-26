@@ -24,13 +24,9 @@ h2 {
 }
 
 h4 {
-    text-align: left;
+    text-align: center;
     color: #4a4a4a;
-    font-size: 15px;
-    font-weight: 500;
     margin-bottom: 25px;
-    border-bottom: 1px solid rgba(74, 74, 74, 0.2);
-    padding-bottom: 8px;
 }
 
 p {
@@ -40,6 +36,7 @@ p {
 }
 
 button {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
     background-color: #4a6bdf;
     color: white;
     border: none;
@@ -57,6 +54,14 @@ button:hover {
 
 .centered-content {
     text-align: center;
+}
+
+/* === PAGE BACKGROUND STYLES === */
+body.onboarding-page,
+body.practice-page {
+    background: url('assets/images/background_1.png') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
 }
 
 /* === ONBOARDING FORM STYLES === */
@@ -274,11 +279,11 @@ input[type="text"]:focus {
 
 /* === STORY PAGE STYLES === */
 body.story-page {
-    background-color: #354a37;
+    background: #332416;
 }
 
 .story-container {
-    background-color: #f8f5e9; /* Paper-like color */
+    background-color: #69533f; /* Paper-like color */
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     width: 90%;
@@ -288,7 +293,7 @@ body.story-page {
     position: relative;
     overflow: hidden;
     display: flex;
-    border: 1px solid #d3d3d3;
+    border: 5px solid #453423;
     /* Book spine effect */
     background-image: linear-gradient(to right, 
         rgba(0,0,0,0.1) 0px, 
@@ -312,7 +317,7 @@ body.story-page {
 
 .story-image {
     width: 68%;
-    background-color: #f8f5e9;
+    background-color: #69533f;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -332,24 +337,34 @@ body.story-page {
 .story-text h1 {
     font-family: 'Comic Sans MS', cursive, sans-serif;
     text-align: left;
-    color: #4a4a4a;
+    color: #ffefe1;
     font-size: 28px;
     margin-bottom: 30px;
     text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+}
+
+.story-text h4 {
+    color: #ffefe1;
+    text-align: left;;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 25px;
+    border-bottom: 1px solid rgb(255, 239, 22, 0.2);
+    padding-bottom: 8px;
 }
 
 .story-text p {
     font-size: 18px;
     line-height: 2.2;
     margin-bottom: 25px;
-    color: #333;
+    color: #ffefe1;
 }
 
 /* Navigation buttons styling */
 .next-btn, .back-btn {
     position: absolute;
     bottom: 20px;
-    background-color: #ff9f43;
+    background-color: #FFAE34;
     color: white;
     border: none;
     border-radius: 50%;
@@ -374,7 +389,7 @@ body.story-page {
 }
 
 .next-btn:hover, .back-btn:hover {
-    background-color: #f39031;
+    background-color: #f79809;
     transform: scale(1.1);
 }
 
@@ -578,5 +593,341 @@ body.story-page {
 }
 
 .page.hidden {
+    display: none;
+}
+
+/* Journey Map Styles */
+.journey-page {
+    background-color: #f0f2f5;
+}
+
+.journey-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.journey-map {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.story-node {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.story-node:hover {
+    transform: translateY(-5px);
+}
+
+.story-node.locked {
+    opacity: 0.7;
+}
+
+/* Practice Page Styles */
+.practise-page {
+    background-color: #f8f5e9;
+}
+
+.practice-container {
+    width: 90%;
+    max-width: 800px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.practice-image {
+    width: 100%;
+    height: 250px;
+    margin: 20px 0 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #bdbdbd;
+    border-radius: 12px;
+}
+
+.practice-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* .question-container {
+    border: 1px solid red;
+} */
+
+.practice-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin: 30px 0;
+    width: 100%;
+    justify-content: center;
+}
+
+.practice-option-wrapper {
+    flex: 0 0 calc(50% - 10px); /* 50% width minus half the gap */
+    display: flex;
+}
+
+.practice-option {
+    display: none;
+}
+
+.practice-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 80px;
+    background-color: #eef2ff;
+    border: 3px solid #d1deff;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    font-weight: bold;
+    color: #4a6bdf;
+    text-align: center;
+    padding: 12px;
+    margin: 0;
+}
+
+.practice-label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(74, 107, 223, 0.2);
+    border-color: #4a6bdf;
+}
+
+.practice-option:checked + .practice-label {
+    background-color: #4a6bdf;
+    border-color: #3a59c7;
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(74, 107, 223, 0.3);
+}
+
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 4%;
+    width: 100%;
+    padding: 5px 0px;
+    box-sizing: border-box;
+}
+
+.navigation-buttons .back-btn-practise {
+    width: 35%;
+    height: 55px;
+    background-color: #ddd;
+    color: #555;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navigation-buttons .next-btn-practice {
+    width: 65%; 
+    height: 55px;
+    background-color: #8DBA36;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navigation-buttons .back-btn-practise:hover {
+    background-color: #ccc;
+    transform: translateY(-1px);
+}
+
+.navigation-buttons .next-btn-practice:hover {
+    background-color: #719922;
+    transform: translateY(-1px);
+}
+
+.question h2 {
+    color: #4a4a4a;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.question p {
+    color: #666;
+    font-size: 18px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Coins Display */
+.coins-display {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgb(255, 174, 52, 0.2);
+    padding: 10px 15px;
+    border-radius: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 1000;
+    cursor: help;
+}
+
+.coins-display .gem-icon {
+    fill: #FFAE34;
+    transition: fill 0.3s ease;
+}
+
+.coins-display:hover .gem-icon {
+    fill: #f79809;
+}
+
+.coins-display:hover::after {
+    content: 'Coins are earned from stories and practice';
+    position: absolute;
+    bottom: -40px;
+    right: 0;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+/* Completion Page */
+.completion-page {
+    text-align: center;
+    padding: 20px;
+}
+
+.completion-badge {
+    margin: 30px 0;
+}
+
+.completion-badge img {
+    width: 200px;
+    height: 200px;
+}
+
+.completion-summary {
+    margin: 30px 0;
+    text-align: left;
+}
+
+.coins-earned {
+    margin: 30px 0;
+    position: relative;
+}
+
+.coin-animation {
+    color: #ffd700;
+    font-size: 24px;
+    font-weight: bold;
+    animation: floatUp 1s ease-out;
+}
+
+.next-session-btn {
+    background: #4a6bdf;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.next-session-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(74, 107, 223, 0.3);
+}
+
+/* Journey Map Animations */
+.story-node.unlocking {
+    animation: unlock 1s ease-out forwards;
+}
+
+@keyframes floatUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes unlock {
+    0% {
+        opacity: 0.7;
+        transform: scale(0.95);
+    }
+    50% {
+        opacity: 0.85;
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Practice button styling */
+.practice-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background-color: #8DBA36;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 15px 30px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.practice-btn:hover {
+    background-color: #719922;
+    transform: translateY(-2px);
+}
+
+.practice-btn.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.hidden {
     display: none;
 }

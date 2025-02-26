@@ -1,10 +1,22 @@
 # InnerStepsWebApp
 Our AI-powered, anxiety support program provides families with a series of interactive picture/audio story adventures breaking down therapy into bite-sized lessons that help children build practical coping strategies, and confidence that suit their unique needs and reading level
 
-Notes:
+To Do:
 
-1. Once user has completed the onboarding form, they should not be able to reaccess or submit it from that window again.
-2. Potentially update story design so that the img is full capacity and the text is overlayed in a box in 1 corner of the screen.
+1. Potentially update story design so that the img is full capacity and the text is overlayed in a box in 1 corner of the screen.
+
+2. Look into open source lofi sleep sounds to play in the background of the story. 
+        Should start as soon as app loads and continue playing through the story. 
+        Add a simple button to pause/play the sound, and a volume slider to adjust the volume. 
+        Include a simple notification which asks to turn on sound for the best experience.
+
+3. Look into gamification elements such as game-like buttons and simple sounds (both in onboarding and app) 
+
+4. See if I can store user progress in local storage so that they can continue from where they left off.
+
+Have completed:
+
+1. Redesigned system architeture to account for all included pages and disabled the current onboarding form so I can work on other pages. Although I need to make sure I re-enable it once I've completed the other pages.
 
 Look into:
 
