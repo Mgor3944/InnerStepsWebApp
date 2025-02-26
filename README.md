@@ -18,10 +18,6 @@ To Do:
 
 4. See if I can store user progress in local storage so that they can continue from where they left off.
 
-Have completed:
-
-1. Redesigned system architeture to account for all included pages and disabled the current onboarding form so I can work on other pages. Although I need to make sure I re-enable it once I've completed the other pages.
-
 Look into:
 
 - PostHog for user analytics: https://posthog.com/talk-to-a-human

@@ -2,14 +2,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Comment out the onboarding check temporarily for testing
     // Check if user has completed onboarding
+    const hasCompletedOnboarding = localStorage.getItem('onboarding_completed');
     
-    // const hasCompletedOnboarding = localStorage.getItem('onboarding_completed');
-    
-    // // If on index.html and hasn't completed onboarding, redirect to onboarding
-    // if (window.location.pathname.endsWith('index.html') && !hasCompletedOnboarding) {
-    //     window.location.href = 'onboarding.html';
-    //     return;
-    // }
+    // If on index.html and hasn't completed onboarding, redirect to onboarding
+    if (window.location.pathname.endsWith('index.html') && !hasCompletedOnboarding) {
+        window.location.href = 'onboarding.html';
+        return;
+    }
     
     // Initialize appropriate page
     if (document.getElementById('onboardingForm')) {
@@ -455,12 +454,6 @@ function handlePracticeNext() {
 function showCompletionPage() {
     const practiceContainer = document.querySelector('.practice-container');
     const completionContainer = document.querySelector('.completion-container');
-    const questionsCompleted = document.querySelector('.questions-completed');
-    
-    // Update questions completed
-    if (questionsCompleted) {
-        questionsCompleted.textContent = window.totalQuestions;
-    }
     
     // Hide practice container
     practiceContainer.classList.add('hidden');
@@ -474,39 +467,16 @@ function showCompletionPage() {
 
 // === USER PROGRESS HANDLING ===
 function loadUserProgress() {
-    // Load coins from localStorage or initialize if not exists
-    window.userCoins = parseInt(localStorage.getItem('userCoins')) || 0;
-    updateCoinsDisplay();
-}
-
-function updateUserProgress() {
-    // Add coins
-    window.userCoins += 25;
-    localStorage.setItem('userCoins', window.userCoins);
-    updateCoinsDisplay();
-    
-    // Mark session as complete
-    localStorage.setItem('session1_complete', 'true');
-}
-
-function updateCoinsDisplay() {
-    if (!document.querySelector('.coins-display')) {
-        const coinsDisplay = document.createElement('div');
-        coinsDisplay.className = 'coins-display';
-        coinsDisplay.innerHTML = `
-            <svg class="gem-icon" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M21.0725 8.81987L18.1305 4.50188C17.6735 3.82488 16.9125 3.42188 16.0955 3.42188H7.90951C7.09351 3.42188 6.33351 3.82487 5.87751 4.49987L2.92651 8.81987C2.28551 9.75987 2.37251 11.0119 3.13951 11.8689L10.4455 19.8869C10.8425 20.3249 11.4085 20.5759 11.9985 20.5759C12.5895 20.5759 13.1545 20.3249 13.5515 19.8879L20.8575 11.8589C21.6275 11.0149 21.7155 9.76487 21.0725 8.81987Z"/>
-            </svg>
-            <span>${window.userCoins}/100</span>
-        `;
-        document.body.appendChild(coinsDisplay);
-    } else {
-        document.querySelector('.coins-display span').textContent = `${window.userCoins}/100`;
+    // Keep only story progression logic
+    const hasCompletedOnboarding = localStorage.getItem('onboarding_completed');
+    if (hasCompletedOnboarding) {
+        initJourneyMap();
     }
 }
 
-function goToJourneyMap() {
-    window.location.href = 'index.html';
+function updateUserProgress() {
+    // Mark session as complete
+    localStorage.setItem('session1_complete', 'true');
 }
 
 // === JOURNEY MAP HANDLING ===
@@ -639,10 +609,11 @@ function completeStory() {
     
     localStorage.setItem('chapter1_progress', progressPercentage);
     
-    // Add coins for completion
-    window.userCoins = (parseInt(localStorage.getItem('userCoins')) || 0) + 15;
-    localStorage.setItem('userCoins', window.userCoins);
-    
     // Redirect to practice page
     window.location.href = 'practice.html';
+}
+
+function goToJourneyMap() {
+    // Navigate to the journey map page
+    window.location.href = 'index.html';
 }
