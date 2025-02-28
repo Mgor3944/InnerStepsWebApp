@@ -1,36 +1,171 @@
-// === PAGE DETECTION AND INITIALIZATION ===
-document.addEventListener('DOMContentLoaded', function() {
-    // Comment out the onboarding check temporarily for testing
-    // Check if user has completed onboarding
-    const hasCompletedOnboarding = localStorage.getItem('onboarding_completed');
-    
-    // If on index.html and hasn't completed onboarding, redirect to onboarding
-    if (window.location.pathname.endsWith('index.html') && !hasCompletedOnboarding) {
-        window.location.href = 'onboarding.html';
-        return;
-    }
-    
-    // Initialize appropriate page
-    if (document.getElementById('onboardingForm')) {
-        initOnboardingForm();
-    } else if (document.querySelector('.story-container')) {
-        initStoryPage();
-    } else if (document.querySelector('.practice-page')) {
-        initPracticePage();
-    } else if (document.querySelector('.journey-page')) {
-        initJourneyMap();
-        loadUserProgress();
+// === USER AUTHENTICATION AND DATA MANAGEMENT ===
+class UserManager {
+    constructor() {
+        this.currentPin = null;
+        this.userData = null;
+        this.baseData = null; // Store the base data from JSON
     }
 
-    // Add coins display to relevant pages
-    if (document.querySelector('.story-page') || 
-        document.querySelector('.practice-page') || 
-        document.querySelector('.journey-page')) {
-        loadUserProgress();
+    async initialize() {
+        // Load user data if PIN exists in localStorage
+        const storedPin = localStorage.getItem('current_pin');
+        if (storedPin) {
+            this.currentPin = storedPin;
+            await this.loadUserData();
+        }
+    }
+
+    async validatePin(pin) {
+        try {
+            const response = await fetch('data/valid_pins.json');
+            const data = await response.json();
+            return data.valid_pins.includes(pin);
+        } catch (error) {
+            console.error('Error validating PIN:', error);
+            return false;
+        }
+    }
+
+    async loadUserData() {
+        try {
+            // First load the base data from JSON
+            const response = await fetch('data/user_data.json');
+            const data = await response.json();
+            this.baseData = data;
+
+            // Get the base profile for this PIN
+            const baseProfile = data.user_profiles[this.currentPin];
+            
+            // Try to get any stored modifications from localStorage
+            const storedData = localStorage.getItem(`user_data_${this.currentPin}`);
+            const localData = storedData ? JSON.parse(storedData) : null;
+
+            // Merge the base profile with any local modifications
+            this.userData = localData ? this.mergeUserData(baseProfile, localData) : baseProfile;
+            
+            return this.userData;
+        } catch (error) {
+            console.error('Error loading user data:', error);
+            return null;
+        }
+    }
+
+    mergeUserData(baseProfile, localData) {
+        // Deep merge the base profile with local modifications
+        const merged = { ...baseProfile };
+        
+        // Merge top-level properties
+        Object.keys(localData).forEach(key => {
+            if (key !== 'stories') {
+                merged[key] = localData[key];
+            }
+        });
+
+        // Specially handle stories to preserve the base story content
+        if (baseProfile.stories && localData.stories) {
+            merged.stories = { ...baseProfile.stories };
+            Object.keys(localData.stories).forEach(storyId => {
+                if (merged.stories[storyId]) {
+                    // Only merge the completion status and any user-specific data
+                    merged.stories[storyId] = {
+                        ...merged.stories[storyId],
+                        completed: localData.stories[storyId].completed
+                    };
+                }
+            });
+        }
+
+        return merged;
+    }
+
+    saveUserData() {
+        if (this.currentPin && this.userData) {
+            // Only save the modifications to localStorage
+            const dataToSave = {
+                name: this.userData.name,
+                age: this.userData.age,
+                interests: this.userData.interests,
+                favorite_color: this.userData.favorite_color,
+                favorite_animal: this.userData.favorite_animal,
+                progress: this.userData.progress,
+                stories: Object.keys(this.userData.stories).reduce((acc, storyId) => {
+                    acc[storyId] = {
+                        completed: this.userData.stories[storyId].completed
+                    };
+                    return acc;
+                }, {})
+            };
+            localStorage.setItem(`user_data_${this.currentPin}`, JSON.stringify(dataToSave));
+        }
+    }
+
+    updateUserProfile(profileData) {
+        if (this.userData) {
+            this.userData = { ...this.userData, ...profileData };
+            this.saveUserData();
+        }
+    }
+}
+
+// Initialize user manager
+const userManager = new UserManager();
+
+// === PAGE INITIALIZATION ===
+document.addEventListener('DOMContentLoaded', async function() {
+    await userManager.initialize();
+
+    // Handle different pages
+    if (document.querySelector('.login-page')) {
+        initLoginPage();
+    } else if (!userManager.currentPin) {
+        // No PIN, redirect to login
+        window.location.href = 'login.html';
+        return;
+    } else if (document.getElementById('onboardingForm')) {
+        // Check if user has completed onboarding
+        if (userManager.userData?.name) {
+            window.location.href = 'index.html';
+            return;
+        }
+        initOnboardingForm();
+    } else {
+        initializeAppropriateView();
     }
 });
 
-// === ONBOARDING FORM CODE ===
+function initLoginPage() {
+    const pinForm = document.getElementById('pinForm');
+    const inputs = pinForm.querySelectorAll('input');
+
+    // Auto-focus next input
+    inputs.forEach((input, index) => {
+        input.addEventListener('input', () => {
+            if (input.value && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+        });
+    });
+
+    pinForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const pin = Array.from(inputs).map(input => input.value).join('');
+        
+        if (await userManager.validatePin(pin)) {
+            userManager.currentPin = pin;
+            localStorage.setItem('current_pin', pin);
+            await userManager.loadUserData();
+            
+            // Redirect to onboarding if new user, otherwise to journey map
+            window.location.href = userManager.userData?.name ? 'index.html' : 'onboarding.html';
+        } else {
+            alert('Invalid PIN. Please try again.');
+            pinForm.reset();
+            inputs[0].focus();
+        }
+    });
+}
+
+// === PAGE DETECTION AND INITIALIZATION ===
 function initOnboardingForm() {
     // Add event listener to the form submission
     document.getElementById('onboardingForm').addEventListener('submit', handleFormSubmit);
@@ -138,42 +273,32 @@ function handleFormSubmit(e) {
         submitButton.disabled = true;
     }
     
-    // Collect all interests into a single string for better email readability
-    let interests = Array.from(document.querySelectorAll('input[name="interests[]"]'))
+    // Collect all interests into an array
+    const interests = Array.from(document.querySelectorAll('input[name="interests[]"]'))
         .map(input => input.value)
-        .filter(value => value) // Remove empty values
-        .join(', ');
-        
-    // Create a hidden field for the combined interests
-    let interestsField = document.createElement('input');
-    interestsField.type = 'hidden';
-    interestsField.name = 'interests';
-    interestsField.value = interests;
-    form.appendChild(interestsField);
+        .filter(value => value); // Remove empty values
     
-    // Use AJAX to submit the form
+    // Create the user profile data
     const formData = new FormData(form);
-    
-    // Add a delay before redirecting to show the loading animation
+    const profileData = {
+        name: formData.get('name'),
+        age: formData.get('age'),
+        interests: interests,
+        favorite_color: formData.get('color'),
+        favorite_animal: formData.get('animal')
+    };
+
+    // Add a delay to show the loading animation
     setTimeout(() => {
-        fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                // Redirect to story page
-                window.location.href = 'story.html';
-            } else {
-                throw new Error('Form submission failed');
-            }
-        })
-        .catch(error => {
+        try {
+            // Update user profile in UserManager
+            userManager.updateUserProfile(profileData);
+            
+            // Redirect to story page
+            window.location.href = 'story.html';
+        } catch (error) {
             console.error('Error:', error);
-            alert('There was a problem submitting your information. Please try again.');
+            alert('There was a problem saving your information. Please try again.');
             
             // Remove loading overlay
             const overlay = document.querySelector('.loading-overlay');
@@ -185,50 +310,68 @@ function handleFormSubmit(e) {
             if (submitButton) {
                 submitButton.disabled = false;
             }
-        });
+        }
     }, 3000); // 3 second loading animation
 }
 
 // === STORY PAGE CODE ===
 function initStoryPage() {
+    console.log('Initializing story page...');
+    console.log('User data:', userManager.userData);
+    
+    // Get current story data
+    const currentStoryId = userManager.userData.progress.current_story || 'story1';
+    console.log('Current story ID:', currentStoryId);
+    
+    const currentStory = userManager.userData.stories[currentStoryId];
+    console.log('Current story data:', currentStory);
+    
+    if (!currentStory) {
+        console.error('No story found!');
+        window.location.href = 'index.html';
+        return;
+    }
+    
     // Set up story variables
     window.currentPage = 1;
-    window.totalPages = document.querySelectorAll('.page').length;
+    window.totalPages = currentStory.pages.length;
     
-    // Set up story images array
-    window.storyImages = [
-        'assets/story_images/Alex/image_1.png',
-        'assets/story_images/Alex/image_2.png',
-        'assets/story_images/Alex/image_3.png'
-    ];
-    
-    console.log("=== Story Page Initialization ===");
-    console.log("Total pages found:", window.totalPages);
-    console.log("Current page:", window.currentPage);
-    console.log("Images array:", window.storyImages);
-    
-    // List all pages for debugging
-    document.querySelectorAll('.page').forEach((page, index) => {
-        console.log(`Page ${index + 1} ID:`, page.id);
-    });
-    
-    // Hide all pages except the first one
-    document.querySelectorAll('.page').forEach((page, index) => {
+    // Create story pages
+    const storyTextContainer = document.querySelector('.story-text');
+    currentStory.pages.forEach((page, index) => {
+        const pageDiv = document.createElement('div');
+        pageDiv.id = `page${index + 1}`;
+        pageDiv.className = `page ${index === 0 ? '' : 'hidden'}`;
+        
+        // Add title to first page, subtitle to others
         if (index === 0) {
-            page.classList.remove('hidden');
+            pageDiv.innerHTML = `<h1>${currentStory.title}</h1>`;
         } else {
-            page.classList.add('hidden');
+            pageDiv.innerHTML = `<h4>${currentStory.title}</h4>`;
         }
+        
+        // Add text content
+        const p = document.createElement('p');
+        p.textContent = personalizeStoryText(page.text);
+        pageDiv.appendChild(p);
+        
+        storyTextContainer.appendChild(pageDiv);
     });
+    
+    // Set initial image
+    const storyImage = document.getElementById('storyImage');
+    if (storyImage && currentStory.pages[0]) {
+        storyImage.src = currentStory.pages[0].image;
+    }
     
     // Add event listeners for navigation buttons
-    const nextButton = document.querySelector('.next-btn');
+    const nextButton = document.querySelector('.story-next-btn');
     if (nextButton) {
         nextButton.removeEventListener('click', nextPage);
         nextButton.addEventListener('click', nextPage);
     }
     
-    const backButton = document.querySelector('.back-btn');
+    const backButton = document.querySelector('.story-back-btn');
     if (backButton) {
         backButton.removeEventListener('click', previousPage);
         backButton.addEventListener('click', previousPage);
@@ -257,10 +400,11 @@ function nextPage() {
             
             // Update image with transition
             const storyImage = document.getElementById('storyImage');
-            if (storyImage && window.storyImages && window.storyImages[window.currentPage - 1]) {
+            const currentStory = userManager.userData.stories[userManager.userData.progress.current_story];
+            if (storyImage && currentStory.pages[window.currentPage - 1]) {
                 storyImage.style.transform = 'scale(0.95)';
                 setTimeout(() => {
-                    storyImage.src = window.storyImages[window.currentPage - 1];
+                    storyImage.src = currentStory.pages[window.currentPage - 1].image;
                     storyImage.style.transform = 'scale(1)';
                 }, 300);
             }
@@ -289,10 +433,11 @@ function previousPage() {
             
             // Update image with transition
             const storyImage = document.getElementById('storyImage');
-            if (storyImage && window.storyImages && window.storyImages[window.currentPage - 1]) {
+            const currentStory = userManager.userData.stories[userManager.userData.progress.current_story];
+            if (storyImage && currentStory.pages[window.currentPage - 1]) {
                 storyImage.style.transform = 'scale(0.95)';
                 setTimeout(() => {
-                    storyImage.src = window.storyImages[window.currentPage - 1];
+                    storyImage.src = currentStory.pages[window.currentPage - 1].image;
                     storyImage.style.transform = 'scale(1)';
                 }, 300);
             }
@@ -303,166 +448,214 @@ function previousPage() {
 }
 
 function updateNavigationButtons() {
-    const backButton = document.querySelector('.back-btn');
-    const nextButton = document.querySelector('.next-btn');
-    const practiceButton = document.querySelector('.practice-btn');
+    const backButton = document.querySelector('.story-back-btn');
+    const nextButton = document.querySelector('.story-next-btn');
     
     if (backButton) {
-        // Hide back button on first page
+        // First, remove all existing event listeners
+        const oldBackButton = backButton.cloneNode(true);
+        backButton.parentNode.replaceChild(oldBackButton, backButton);
+        
         if (window.currentPage === 1) {
-            backButton.style.opacity = '0';
-            backButton.style.pointerEvents = 'none';
+            // On first page, back button takes user to journey map
+            oldBackButton.addEventListener('click', () => window.location.href = 'index.html');
         } else {
-            backButton.style.opacity = '1';
-            backButton.style.pointerEvents = 'auto';
+            // On other pages, back button goes to previous page
+            oldBackButton.addEventListener('click', previousPage);
         }
+        oldBackButton.style.opacity = '1';
+        oldBackButton.style.pointerEvents = 'auto';
     }
     
-    if (nextButton && practiceButton) {
-        // On last page
+    if (nextButton) {
+        // First, remove all existing event listeners
+        const oldNextButton = nextButton.cloneNode(true);
+        nextButton.parentNode.replaceChild(oldNextButton, nextButton);
+        
         if (window.currentPage === window.totalPages) {
-            // Hide next button
-            nextButton.style.opacity = '0';
-            nextButton.style.pointerEvents = 'none';
-            
-            // Show practice button
-            practiceButton.classList.remove('hidden');
-            setTimeout(() => {
-                practiceButton.classList.add('show');
-            }, 300);
+            // On last page, transform next button into practice button
+            oldNextButton.textContent = 'Practice Questions';
+            oldNextButton.style.backgroundColor = '#4CAF50'; // Green color for practice
+            oldNextButton.addEventListener('click', completeStory);
         } else {
-            // Show next button and hide practice button
-            nextButton.style.opacity = '1';
-            nextButton.style.pointerEvents = 'auto';
-            
-            practiceButton.classList.remove('show');
-            setTimeout(() => {
-                practiceButton.classList.add('hidden');
-            }, 300);
+            // On other pages, keep as next button
+            oldNextButton.innerHTML = `Next Page
+                <svg class="story-next-arrow" width="35px" height="35px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g id="Iconly/Bold/Arrow---Right-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g id="Arrow---Right-2" transform="translate(7.000000, 6.000000)" fill="#ffffff" fill-rule="nonzero">
+                            <path d="M9.63078422,7.131 C9.57428154,7.189 9.36093522,7.437 9.16220166,7.641 C7.99707745,8.924 4.95762299,11.024 3.36678032,11.665 C3.12518266,11.768 2.51436922,11.986 2.18801754,12 C1.87530443,12 1.57720409,11.928 1.29274233,11.782 C0.938139308,11.578 0.653677545,11.257 0.497808086,10.878 C0.397467121,10.615 0.241597662,9.828 0.241597662,9.814 C0.0857282026,8.953 0,7.554 0,6.008 C0,4.535 0.0857282026,3.193 0.213346322,2.319 C0.227959084,2.305 0.383828544,1.327 0.554310765,0.992 C0.867023868,0.38 1.47783731,0 2.13151486,0 L2.18801754,0 C2.613736,0.015 3.5090112,0.395 3.5090112,0.409 C5.01412567,1.051 7.98343887,3.048 9.17681442,4.375 C9.17681442,4.375 9.51290794,4.716 9.65903556,4.929 C9.88699464,5.235 10,5.614 10,5.993 C10,6.416 9.87238188,6.81 9.63078422,7.131"></path>
+                        </g>
+                    </g>
+                </svg>`;
+            oldNextButton.style.backgroundColor = '#FFAE34'; // Reset to original color
+            oldNextButton.addEventListener('click', nextPage);
         }
+        oldNextButton.style.opacity = '1';
+        oldNextButton.style.pointerEvents = 'auto';
     }
 }
 
 // === PRACTICE PAGE HANDLING ===
 function initPracticePage() {
-    console.log('Initializing practice page...'); // Debug log
-    const practiceContainer = document.querySelector('.practice-container');
-    if (practiceContainer) {
-        // Initialize question tracking
-        window.currentQuestion = 1;
-        window.totalQuestions = document.querySelectorAll('.question').length;
+    const currentStory = userManager.getCurrentStory();
+    if (!currentStory || !currentStory.practice) {
+        console.error('No practice data found for current story');
+        return;
+    }
+
+    const practice = currentStory.practice;
+    let currentScenarioIndex = 0;
+    let ratings = [];
+
+    // Initialize progress tracking
+    const progressFill = document.querySelector('.progress-fill');
+    const progressText = document.querySelector('.progress-text');
+    
+    function updateProgress() {
+        const progress = ((currentScenarioIndex) / practice.scenarios.length) * 100;
+        progressFill.style.width = `${progress}%`;
+        progressText.textContent = `Question ${currentScenarioIndex + 1} of ${practice.scenarios.length}`;
+    }
+
+    // Initialize thermometer
+    const worrySlider = document.querySelector('.worry-slider-horizontal');
+    const thermometerFill = document.querySelector('.thermometer-fill-horizontal');
+
+    function updateThermometer(value) {
+        const fillWidth = (value / 10) * 100;
+        thermometerFill.style.width = `${fillWidth}%`;
+    }
+
+    // Event listener for slider
+    worrySlider.addEventListener('input', (e) => {
+        updateThermometer(e.target.value);
+    });
+
+    // Initialize demo thermometer
+    const demoSlider = document.querySelector('.demo-worry-slider');
+    const demoFill = document.querySelector('.demo-thermometer-fill');
+    
+    if (demoSlider && demoFill) {
+        demoSlider.addEventListener('input', (e) => {
+            const fillWidth = (e.target.value / 10) * 100;
+            demoFill.style.width = `${fillWidth}%`;
+        });
+    }
+
+    // Show scenario
+    function showScenario(index) {
+        const scenario = practice.scenarios[index];
+        const scenarioText = document.querySelector('.scenario-text');
+        scenarioText.textContent = scenario;
         
-        console.log('Total questions:', window.totalQuestions); // Debug log
+        // Reset slider to 1
+        worrySlider.value = 1;
+        updateThermometer(1);
         
-        // Initialize navigation with IDs
-        const practiceBackBtn = document.getElementById('practiceBackBtn');
-        const practiceNextBtn = document.getElementById('practiceNextBtn');
+        // Update progress
+        updateProgress();
         
-        console.log('Back button:', practiceBackBtn); // Debug log
-        console.log('Next button:', practiceNextBtn); // Debug log
+        // Update navigation buttons
+        const backBtn = document.querySelector('.back-btn');
+        const nextBtn = document.querySelector('.next-btn');
         
-        // Update next button text based on question number
-        updateNextButtonText();
-        
-        if (practiceBackBtn) {
-            practiceBackBtn.addEventListener('click', handlePracticePrevious);
+        backBtn.style.display = index === 0 ? 'none' : 'block';
+        nextBtn.textContent = index === practice.scenarios.length - 1 ? 'Finish' : 'Next';
+    }
+
+    // Handle navigation
+    document.querySelector('.start-btn').addEventListener('click', () => {
+        document.querySelector('.intro-section').style.display = 'none';
+        document.querySelector('.scenario-section').style.display = 'block';
+        showScenario(0);
+    });
+
+    document.querySelector('.back-btn').addEventListener('click', () => {
+        if (currentScenarioIndex > 0) {
+            currentScenarioIndex--;
+            showScenario(currentScenarioIndex);
         }
-        
-        if (practiceNextBtn) {
-            practiceNextBtn.addEventListener('click', handlePracticeNext);
+    });
+
+    document.querySelector('.next-btn').addEventListener('click', () => {
+        // Save current rating
+        ratings[currentScenarioIndex] = parseInt(worrySlider.value);
+
+        if (currentScenarioIndex < practice.scenarios.length - 1) {
+            currentScenarioIndex++;
+            showScenario(currentScenarioIndex);
+        } else {
+            showSummary();
         }
+    });
+
+    function showSummary() {
+        // Hide scenario section
+        document.querySelector('.scenario-section').style.display = 'none';
         
-        // Show first question and hide others
-        document.querySelectorAll('.question').forEach((question, index) => {
-            if (index === 0) {
-                question.classList.add('active');
-                question.classList.remove('hidden');
-            } else {
-                question.classList.remove('active');
-                question.classList.add('hidden');
-            }
+        // Show summary section
+        const summarySection = document.querySelector('.rating-summary');
+        summarySection.style.display = 'block';
+        
+        // Create summary content
+        let summaryHTML = '<h3>Your Worry Ratings:</h3>';
+        practice.scenarios.forEach((scenario, index) => {
+            const rating = ratings[index];
+            summaryHTML += `
+                <div class="rating-item">
+                    <div class="scenario">${scenario}</div>
+                    <div class="rating">Worry Level: ${rating}/10</div>
+                </div>
+            `;
         });
         
-        loadUserProgress();
-    }
-}
+        summarySection.innerHTML = summaryHTML;
 
-function updateNextButtonText() {
-    const nextButton = document.querySelector('.next-btn-practice');
-    if (nextButton) {
-        nextButton.textContent = window.currentQuestion === window.totalQuestions ? 'Complete' : 'Next';
-    }
-}
+        // Save analytics data
+        const analyticsData = {
+            timestamp: new Date().toISOString(),
+            ratings: ratings.map((rating, index) => ({
+                scenario: practice.scenarios[index],
+                rating: rating
+            }))
+        };
 
-function handlePracticePrevious() {
-    if (window.currentQuestion === 1) {
-        // If on first question, redirect to story page
-        window.location.href = 'story.html';
-    } else {
-        // Move to previous question
-        const currentQuestionElement = document.getElementById(`question${window.currentQuestion}`);
-        const prevQuestionElement = document.getElementById(`question${window.currentQuestion - 1}`);
-        
-        if (currentQuestionElement && prevQuestionElement) {
-            currentQuestionElement.classList.remove('active');
-            currentQuestionElement.classList.add('hidden');
-            
-            window.currentQuestion--;
-            
-            prevQuestionElement.classList.remove('hidden');
-            prevQuestionElement.classList.add('active');
-            
-            // Update next button text
-            updateNextButtonText();
+        // Update user data with analytics
+        if (!userManager.userData.analytics) {
+            userManager.userData.analytics = {};
         }
+        if (!userManager.userData.analytics.worry_ratings) {
+            userManager.userData.analytics.worry_ratings = [];
+        }
+        userManager.userData.analytics.worry_ratings.push(analyticsData);
+        
+        // Mark story as completed
+        userManager.completeStory();
+        userManager.saveUserData();
+
+        // Add return to journey button
+        const returnButton = document.createElement('button');
+        returnButton.className = 'next-btn';
+        returnButton.textContent = 'Return to Journey Map';
+        returnButton.addEventListener('click', () => {
+            window.location.href = 'journey.html';
+        });
+        summarySection.appendChild(returnButton);
     }
+
+    // Initialize first view (intro section)
+    document.querySelector('.scenario-section').style.display = 'none';
+    document.querySelector('.rating-summary').style.display = 'none';
+    updateProgress();
 }
 
-function handlePracticeNext() {
-    if (window.currentQuestion === window.totalQuestions) {
-        // If on last question, show completion page
-        const practiceContainer = document.querySelector('.practice-container');
-        const completionContainer = document.querySelector('.completion-container');
-        
-        if (practiceContainer && completionContainer) {
-            practiceContainer.classList.add('hidden');
-            completionContainer.classList.remove('hidden');
-            
-            // Update user progress
-            updateUserProgress();
+function personalizeText(text, userData) {
+    return text.replace(/\[(\w+)\]/g, (match, key) => {
+        if (key === 'name' || key === 'age' || key.startsWith('favorite_')) {
+            return userData[key] || match;
         }
-    } else {
-        // Move to next question
-        const currentQuestionElement = document.getElementById(`question${window.currentQuestion}`);
-        const nextQuestionElement = document.getElementById(`question${window.currentQuestion + 1}`);
-        
-        if (currentQuestionElement && nextQuestionElement) {
-            currentQuestionElement.classList.remove('active');
-            currentQuestionElement.classList.add('hidden');
-            
-            window.currentQuestion++;
-            
-            nextQuestionElement.classList.remove('hidden');
-            nextQuestionElement.classList.add('active');
-            
-            // Update next button text
-            updateNextButtonText();
-        }
-    }
-}
-
-function showCompletionPage() {
-    const practiceContainer = document.querySelector('.practice-container');
-    const completionContainer = document.querySelector('.completion-container');
-    
-    // Hide practice container
-    practiceContainer.classList.add('hidden');
-    
-    // Show completion container
-    completionContainer.classList.remove('hidden');
-    
-    // Update user progress
-    updateUserProgress();
+        return match;
+    });
 }
 
 // === USER PROGRESS HANDLING ===
@@ -493,10 +686,11 @@ function initJourneyMap() {
             .filter(Boolean).length;
         const progressPercentage = (completedStories / 4) * 100;
         
-        // Update progress bar
-        const progressBar = document.querySelector('.progress-bar');
+        // Update progress bar - Fix: Use correct class name
+        const progressBar = document.querySelector('.chapter-progress-bar');
         if (progressBar) {
-            progressBar.style.width = `${progressPercentage}%`;
+            // Ensure there's always some visible progress (at least 5%)
+            progressBar.style.width = `${Math.max(5, progressPercentage)}%`;
         }
         
         // Store progress in localStorage
@@ -534,6 +728,14 @@ function initJourneyMap() {
             updateStoryNodeStatus(storyNodes[3], 'completed', false);
             // Chapter complete - no need to unlock a next node
         }
+
+        // Add click handlers to story nodes
+        document.querySelectorAll('.story-node').forEach((node, index) => {
+            const storyId = `story${index + 1}`;
+            node.querySelector('button').addEventListener('click', () => {
+                startStory(storyId);
+            });
+        });
     }
 }
 
@@ -592,22 +794,21 @@ function updateStoryNodeStatus(node, status, checkAnimation = true) {
 
 // Update the completeStory function to handle story progression
 function completeStory() {
-    const currentStory = localStorage.getItem('currentStory') || 'alex_giant';
+    const currentStoryId = userManager.userData.progress.current_story;
     
-    // Mark current story as completed
-    localStorage.setItem(`${currentStory}_completed`, 'true');
+    // Mark current story as completed in user data
+    userManager.userData.stories[currentStoryId].completed = true;
+    userManager.saveUserData();
     
-    // Update chapter progress
-    const story1Complete = localStorage.getItem('alex_giant_completed') === 'true';
-    const story2Complete = localStorage.getItem('story2_completed') === 'true';
-    const story3Complete = localStorage.getItem('story3_completed') === 'true';
-    const story4Complete = localStorage.getItem('story4_completed') === 'true';
+    // Calculate progress
+    const completedStories = Object.values(userManager.userData.stories)
+        .filter(story => story.completed).length;
+    const totalStories = Object.keys(userManager.userData.stories).length;
+    const progressPercentage = (completedStories / totalStories) * 100;
     
-    const completedStories = [story1Complete, story2Complete, story3Complete, story4Complete]
-        .filter(Boolean).length;
-    const progressPercentage = (completedStories / 4) * 100;
-    
-    localStorage.setItem('chapter1_progress', progressPercentage);
+    // Update progress in user data
+    userManager.userData.progress.chapter1_progress = progressPercentage;
+    userManager.saveUserData();
     
     // Redirect to practice page
     window.location.href = 'practice.html';
@@ -617,3 +818,57 @@ function goToJourneyMap() {
     // Navigate to the journey map page
     window.location.href = 'index.html';
 }
+
+function personalizeStoryText(text) {
+    const userData = userManager.userData;
+    if (!userData) return text;
+    
+    return text
+        .replace(/\[name\]/g, userData.name || '[name]')
+        .replace(/\[age\]/g, userData.age || '[age]')
+        .replace(/\[favorite_color\]/g, userData.favorite_color || '[favorite_color]')
+        .replace(/\[favorite_animal\]/g, userData.favorite_animal || '[favorite_animal]');
+}
+
+// When a user clicks on a story in the journey map
+function startStory(storyId) {
+    // Update the current story in user data
+    userManager.userData.progress.current_story = storyId;
+    userManager.saveUserData();
+    window.location.href = 'story.html';
+}
+
+// === PAGE INITIALIZATION ===
+function initializeAppropriateView() {
+    // Check which page we're on and initialize accordingly
+    if (document.querySelector('.story-page')) {
+        initStoryPage();
+    } else if (document.querySelector('.practice-page')) {
+        initPracticePage();
+    } else if (document.querySelector('.journey-page')) {
+        initJourneyMap();
+    }
+}
+
+function updateThermometer(value) {
+    const thermometerFill = document.querySelector('.thermometer-fill');
+    const fillHeight = (value / 10) * 100;
+    thermometerFill.style.height = `${fillHeight}%`;
+
+    // Update the slider thumb color based on the value
+    const slider = document.querySelector('.worry-slider');
+    if (value <= 3) {
+        slider.style.setProperty('--thumb-color', '#95d5b2');  // Light green for little worries
+    } else if (value <= 7) {
+        slider.style.setProperty('--thumb-color', '#ffd93d');  // Yellow for medium worries
+    } else {
+        slider.style.setProperty('--thumb-color', '#ff6b6b');  // Red for big worries
+    }
+}
+
+// Add event listeners for the worry slider
+document.querySelectorAll('.worry-slider').forEach(slider => {
+    slider.addEventListener('input', (e) => {
+        updateThermometer(e.target.value);
+    });
+});

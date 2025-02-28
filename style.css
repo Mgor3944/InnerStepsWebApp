@@ -289,6 +289,16 @@ input[type="text"]:focus {
 /* === STORY PAGE STYLES === */
 body.story-page {
     background: #332416;
+    padding: 20px;
+}
+
+.story-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 40px;
 }
 
 .story-container {
@@ -297,18 +307,10 @@ body.story-page {
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     width: 90%;
     max-width: 1200px;
-    height: 85vh;
+    height: 80vh;
     max-height: 750px;
-    position: relative;
-    overflow: hidden;
     display: flex;
-    border: 5px solid #453423;
-    /* Book spine effect */
-    background-image: linear-gradient(to right, 
-        rgba(0,0,0,0.1) 0px, 
-        rgba(0,0,0,0.05) 1px, 
-        rgba(0,0,0,0) 5px
-    );
+    border: 10px solid #453423;
 }
 
 .story-text {
@@ -332,13 +334,14 @@ body.story-page {
     justify-content: center;
     overflow: hidden;
     padding: 20px;
+    border-radius: 15px;
 }
 
 .story-image img {
     width: 95%;
     height: 95%;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     transition: transform 0.6s ease;
 }
@@ -370,56 +373,35 @@ body.story-page {
 }
 
 /* Navigation buttons styling */
-.next-btn, .back-btn {
-    position: absolute;
-    bottom: 20px;
-    background-color: #FFAE34;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 60px;
+.story-nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 50px;
+    width: max-content;
+}
+
+.story-next-btn, .story-back-btn {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: max-content;
+    padding: 0 50px;
     height: 60px;
-    font-size: 24px;
+    font-size: 18px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: none;
+    background-color: #FFAE34;
+    color: white;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    z-index: 10;
     transition: transform 0.3s ease, background-color 0.3s, opacity 0.3s;
 }
 
-.next-btn {
-    right: 20px;
-}
-
-.back-btn {
-    left: 20px;
-}
-
-.next-btn:hover, .back-btn:hover {
+.story-next-btn:hover, .story-back-btn:hover {
     background-color: #f79809;
     transform: scale(1.1);
-}
-
-.arrow {
-    width: 20px;
-    height: 20px;
-    border-right: 4px solid white;
-    border-top: 4px solid white;
-    display: inline-block;
-    margin-left: -5px;
-}
-
-/* Next arrow points right */
-.next-btn .arrow {
-    transform: rotate(45deg);
-}
-
-/* Back arrow points left */
-.back-btn .arrow {
-    transform: rotate(-135deg);
-    margin-left: 5px; /* Adjust for visual balance */
 }
 
 .page {
@@ -731,7 +713,7 @@ body.story-page {
     text-align: center;
 }
 
-.chapter-progress {
+.chapter-progress-wrapper {
     width: 100%;
     height: 12px;
     background: rgba(0,0,0,0.1);
@@ -740,7 +722,7 @@ body.story-page {
     margin-top: 10px;
 }
 
-.progress-bar {
+.chapter-progress-bar {
     height: 100%;
     background: #3a59c7;
     width: 0%;
@@ -810,154 +792,216 @@ body.story-page {
 }
 
 /* Practice Page Styles */
-.practise-page {
-    background-color: #f8f5e9;
+.practice-page {
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    padding: 20px;
 }
 
 .practice-container {
-    width: 90%;
     max-width: 800px;
-    margin: 40px auto;
+    margin: 0 auto;
     background: white;
+    padding: 30px;
     border-radius: 15px;
-    padding: 40px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.intro-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.start-btn {
+    padding: 12px 24px;
+    font-size: 18px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.start-btn:hover {
+    background-color: #45a049;
+}
+
+/* Thermometer Styles */
+.thermometer-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.thermometer {
+    width: 60px;
+    height: 300px;
+    background: #ffffff;
+    border-radius: 30px;
+    margin: 0 auto;
     position: relative;
+    border: 4px solid #333;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.practice-image {
-    width: 100%;
-    height: 250px;
-    margin: 20px 0 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #bdbdbd;
-    border-radius: 12px;
-}
-
-.practice-image img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-}
-
-/* .question-container {
-    border: 1px solid red;
-} */
-
-.practice-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin: 30px 0;
-    width: 100%;
-    justify-content: center;
-}
-
-.practice-option-wrapper {
-    flex: 0 0 calc(50% - 10px); /* 50% width minus half the gap */
-    display: flex;
-}
-
-.practice-option {
-    display: none;
-}
-
-.practice-label {
+.thermometer-scale {
+    position: absolute;
+    left: -45px;
+    top: 0;
+    height: 100%;
+    width: 40px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 80px;
-    background-color: #eef2ff;
-    border: 3px solid #d1deff;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 16px;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+
+.scale-section {
+    text-align: right;
+    padding-right: 15px;
     font-weight: bold;
-    color: #4a6bdf;
+}
+
+.scale-section span {
+    display: block;
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+.scale-section.big-worries span {
+    color: #ff6b6b;
+}
+
+.scale-section.medium-worries span {
+    color: #ffd93d;
+}
+
+.scale-section.little-worries span {
+    color: #95d5b2;
+}
+
+.worry-slider {
+    position: absolute;
+    left: -5px;
+    bottom: 0;
+    width: calc(100% + 10px);
+    height: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    transform: rotate(180deg);
+    z-index: 2;
+}
+
+.worry-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 50px;
+    height: 50px;
+    background: #fff;
+    border: 4px solid #4CAF50;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.worry-slider::-moz-range-thumb {
+    width: 50px;
+    height: 50px;
+    background: #fff;
+    border: 4px solid #4CAF50;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.worry-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.thermometer-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    background: linear-gradient(to top, 
+        #95d5b2 0%, #95d5b2 30%,    /* Light green for little worries */
+        #ffd93d 30%, #ffd93d 70%,    /* Yellow for medium worries */
+        #ff6b6b 70%, #ff6b6b 100%    /* Red for big worries */
+    );
+    transition: height 0.3s ease;
+}
+
+.scenario-text {
     text-align: center;
-    padding: 12px;
-    margin: 0;
-}
-
-.practice-label:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(74, 107, 223, 0.2);
-    border-color: #4a6bdf;
-}
-
-.practice-option:checked + .practice-label {
-    background-color: #4a6bdf;
-    border-color: #3a59c7;
-    color: white;
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(74, 107, 223, 0.3);
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+    min-height: 60px;
 }
 
 .navigation-buttons {
     display: flex;
     justify-content: space-between;
-    gap: 4%;
-    width: 100%;
-    padding: 5px 0px;
-    box-sizing: border-box;
+    margin-top: 20px;
 }
 
-.navigation-buttons .back-btn-practise {
-    width: 35%;
-    height: 55px;
-    background-color: #ddd;
-    color: #555;
-    border: none;
-    border-radius: 8px;
+.back-btn, .next-btn {
+    padding: 10px 20px;
     font-size: 16px;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.navigation-buttons .next-btn-practice {
-    width: 65%; 
-    height: 55px;
-    background-color: #8DBA36;
+.back-btn {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.next-btn {
+    background-color: #4CAF50;
     color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-.navigation-buttons .back-btn-practise:hover {
-    background-color: #ccc;
-    transform: translateY(-1px);
+.back-btn:hover {
+    background-color: #e0e0e0;
 }
 
-.navigation-buttons .next-btn-practice:hover {
-    background-color: #719922;
-    transform: translateY(-1px);
+.next-btn:hover {
+    background-color: #45a049;
 }
 
-.question h2 {
-    color: #4a4a4a;
-    margin-bottom: 10px;
-    text-align: center;
+.hidden {
+    display: none;
 }
 
-.question p {
-    color: #666;
-    font-size: 18px;
-    margin-bottom: 20px;
-    text-align: center;
+/* Animation classes */
+.slide-in {
+    animation: slideIn 0.5s ease-out forwards;
+}
+
+.slide-out {
+    animation: slideOut 0.5s ease-out forwards;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideOut {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(-50px); }
 }
 
 /* Remove coins display styles */
@@ -1034,10 +1078,6 @@ body.story-page {
     pointer-events: auto;
 }
 
-.hidden {
-    display: none;
-}
-
 /* Fixed header container */
 .header-container {
     position: fixed;
@@ -1054,4 +1094,372 @@ body.story-page {
     padding: 20px;
     text-align: center;
     color: #164E75;
+}
+
+/* Progress Bar Styles */
+.progress-container {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #4CAF50;
+    width: 0;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 16px;
+    color: #666;
+}
+
+/* Horizontal Thermometer Styles */
+.demo-thermometer-container,
+.thermometer-container {
+    margin: 40px 0;
+}
+
+.thermometer-horizontal {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.thermometer-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.scale-section {
+    flex: 1;
+    text-align: center;
+    padding: 0 10px;
+}
+
+.scale-section .marks {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 5px;
+}
+
+.scale-section .marks span {
+    font-size: 14px;
+    color: #666;
+}
+
+.scale-section .label {
+    font-size: 14px;
+    font-weight: bold;
+    display: block;
+}
+
+.thermometer-track {
+    position: relative;
+    height: 40px;
+    background: #f0f0f0;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.worry-slider-horizontal {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    z-index: 2;
+}
+
+.worry-slider-horizontal::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 30px;
+    height: 30px;
+    background: #fff;
+    border: 3px solid #4CAF50;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: -5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.worry-slider-horizontal::-moz-range-thumb {
+    width: 30px;
+    height: 30px;
+    background: #fff;
+    border: 3px solid #4CAF50;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.thermometer-fill-horizontal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(to right, #95d5b2, #ffd93d, #ff6b6b);
+    transition: width 0.3s ease;
+}
+
+/* Scale Section Colors */
+.scale-section.little-worries .label {
+    color: #388e3c;
+}
+
+.scale-section.medium-worries .label {
+    color: #f57c00;
+}
+
+.scale-section.big-worries .label {
+    color: #d32f2f;
+}
+
+/* Demo Text */
+.demo-text {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 20px 0;
+}
+
+/* Navigation Buttons */
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 30px;
+    padding: 0 20px;
+}
+
+.back-btn, .next-btn {
+    flex: 1;
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-btn {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.next-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.back-btn:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+}
+
+.next-btn:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+}
+
+/* Rating Summary */
+.rating-summary {
+    margin: 30px 0;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.rating-summary h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.rating-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.rating-item .scenario {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.rating-item .rating {
+    color: #666;
+}
+
+/* Navigation Container Styles */
+.navigation-container {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 0 20px;
+    z-index: 10;
+}
+
+.next-btn, .back-btn {
+    position: relative;
+    background-color: #FFAE34;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 30px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease, background-color 0.3s;
+}
+
+.next-btn:hover, .back-btn:hover {
+    background-color: #f79809;
+    transform: scale(1.05);
+}
+
+.arrow {
+    width: 12px;
+    height: 12px;
+    border-right: 3px solid white;
+    border-top: 3px solid white;
+}
+
+.next-btn .arrow {
+    transform: rotate(45deg);
+}
+
+.back-btn .arrow {
+    transform: rotate(-135deg);
+}
+
+/* Child-friendly Thermometer Styles */
+.thermometer {
+    width: 60px;
+    height: 300px;
+    background: #ffffff;
+    border-radius: 30px;
+    margin: 0 auto;
+    position: relative;
+    border: 4px solid #333;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.thermometer-scale {
+    position: absolute;
+    left: -45px;
+    top: 0;
+    height: 100%;
+    width: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+
+.scale-section {
+    text-align: right;
+    padding-right: 15px;
+    font-weight: bold;
+}
+
+.scale-section span {
+    display: block;
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+.scale-section.big-worries span {
+    color: #ff6b6b;
+}
+
+.scale-section.medium-worries span {
+    color: #ffd93d;
+}
+
+.scale-section.little-worries span {
+    color: #95d5b2;
+}
+
+.worry-slider {
+    position: absolute;
+    left: -5px;
+    bottom: 0;
+    width: calc(100% + 10px);
+    height: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    transform: rotate(180deg);
+    z-index: 2;
+}
+
+.worry-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 50px;
+    height: 50px;
+    background: #fff;
+    border: 4px solid #4CAF50;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.worry-slider::-moz-range-thumb {
+    width: 50px;
+    height: 50px;
+    background: #fff;
+    border: 4px solid #4CAF50;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.worry-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.thermometer-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    background: linear-gradient(to top, 
+        #95d5b2 0%, #95d5b2 30%,    /* Light green for little worries */
+        #ffd93d 30%, #ffd93d 70%,    /* Yellow for medium worries */
+        #ff6b6b 70%, #ff6b6b 100%    /* Red for big worries */
+    );
+    transition: height 0.3s ease;
 }

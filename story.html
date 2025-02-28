@@ -9,40 +9,39 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="story-page">
-    <div class="story-container">
-        <div class="story-text">
-            <div id="page1" class="page">
-                <h1>Alex and the Ticklish Giant</h1>
-                <p>Alex hadn't planned on spending his Tuesday afternoon inside a giant's mouth, but here he was, squishing around on a massive tongue next to a neon green cat named Hungry.</p>
-                <p>Hungry's fur glowed like a nightlight in the dark, wet space, making the huge teeth around them look like a forest of white towers.</p>
+    <div class="story-wrap">
+        <div class="story-container">
+            <div class="story-text">
+                <!-- Pages will be dynamically inserted here -->
             </div>
-            <div id="page2" class="page hidden">
-                <h4>Alex and the Ticklish Giant</h4>
-                <p>"You know," Hungry said, giving his paw a quick wash like this was just another normal day, "when I said we should explore the Whispering Mountains, I didn't mean we should explore the inside of a giant's mouth."</p>
-                <p>Alex gave his cat friend an annoyed look, trying not to slip on the squishy tongue under his feet. "Well, maybe if someone hadn't chased that glowing butterfly right into a sleeping giant's mouth—"</p>
-            </div>
-            <div id="page3" class="page hidden">
-                <h4>Alex and the Ticklish Giant</h4>
-                <p>The whole place suddenly shook like a bouncy castle, and both boy and cat stumbled as the giant started to wake up. </p>
-                <p>They'd been looking for a super special treasure - the Crown of Unbreakable Will - when everything had gone wrong. Now, instead of finding the crown, they were trying really hard not to become giant tooth-paste.</p>
+            
+            <div class="story-image">
+                <img id="storyImage" alt="Story Scene">
             </div>
         </div>
-        
-        <div class="story-image">
-            <img id="storyImage" src="assets/story_images/Alex/image_1.png" alt="First Scene">
+
+        <div class="story-nav-buttons">
+            <button id="storyBackBtn" class="story-back-btn">
+                <svg class="story-back-arrow" width="35px" height="35px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g id="Iconly/Bold/Arrow---Left-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g id="Arrow---Left-2" transform="translate(7.000000, 6.000000)" fill="#ffffff" fill-rule="nonzero">
+                            <path d="M0.369215782,4.869 C0.425718461,4.811 0.639064783,4.563 0.837798344,4.359 C2.00292255,3.076 5.04237701,0.976 6.63321968,0.335 C6.87481734,0.232 7.48563078,0.014 7.81198246,0 C8.12469557,0 8.42279591,0.072 8.70725767,0.218 C9.06186069,0.422 9.34632245,0.743 9.50219191,1.122 C9.60253288,1.385 9.75840234,2.172 9.75840234,2.186 C9.9142718,3.047 10,4.446 10,5.992 C10,7.465 9.9142718,8.807 9.78665368,9.681 C9.77204092,9.695 9.61617146,10.673 9.44568924,11.008 C9.13297613,11.62 8.52216269,12 7.86848514,12 L7.81198246,12 C7.386264,11.985 6.4909888,11.605 6.4909888,11.591 C4.98587433,10.949 2.01656113,8.952 0.823185582,7.625 C0.823185582,7.625 0.48709206,7.284 0.340964442,7.071 C0.113005358,6.765 -8.8817842e-16,6.386 -8.8817842e-16,6.007 C-8.8817842e-16,5.584 0.12761812,5.19 0.369215782,4.869"></path>
+                        </g>
+                    </g>
+                </svg>
+                Go Back
+            </button>
+            <button id="storyNextBtn" class="story-next-btn">
+                Next Page
+                <svg class="story-next-arrow" width="35px" height="35px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g id="Iconly/Bold/Arrow---Right-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g id="Arrow---Right-2" transform="translate(7.000000, 6.000000)" fill="#ffffff" fill-rule="nonzero">
+                            <path d="M9.63078422,7.131 C9.57428154,7.189 9.36093522,7.437 9.16220166,7.641 C7.99707745,8.924 4.95762299,11.024 3.36678032,11.665 C3.12518266,11.768 2.51436922,11.986 2.18801754,12 C1.87530443,12 1.57720409,11.928 1.29274233,11.782 C0.938139308,11.578 0.653677545,11.257 0.497808086,10.878 C0.397467121,10.615 0.241597662,9.828 0.241597662,9.814 C0.0857282026,8.953 0,7.554 0,6.008 C0,4.535 0.0857282026,3.193 0.213346322,2.319 C0.227959084,2.305 0.383828544,1.327 0.554310765,0.992 C0.867023868,0.38 1.47783731,0 2.13151486,0 L2.18801754,0 C2.613736,0.015 3.5090112,0.395 3.5090112,0.409 C5.01412567,1.051 7.98343887,3.048 9.17681442,4.375 C9.17681442,4.375 9.51290794,4.716 9.65903556,4.929 C9.88699464,5.235 10,5.614 10,5.993 C10,6.416 9.87238188,6.81 9.63078422,7.131"></path>
+                        </g>
+                    </g>
+                </svg>
+            </button>
         </div>
-        
-        <button id="storyBackBtn" class="back-btn">
-            <span class="arrow back-arrow"></span>
-        </button>
-
-        <button id="storyNextBtn" class="next-btn">
-            <span class="arrow"></span>
-        </button>
-
-        <button id="storyPracticeBtn" class="practice-btn hidden" onclick="completeStory()">
-            Start Practice Questions
-        </button>
     </div>
 
     <!-- Link to an external JavaScript file  -->

@@ -18,6 +18,8 @@ To Do:
 
 4. See if I can store user progress in local storage so that they can continue from where they left off.
 
+5. Updated script file so that once the user has finished initial onboarding when they go to the home page after completing practise questions it doesn't automatically take them back to the onboarding.html page. This is screwing up the user flow.
+
 Look into:
 
 - PostHog for user analytics: https://posthog.com/talk-to-a-human

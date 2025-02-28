@@ -1,0 +1,70 @@
+{
+    "user_profiles": {
+        "1234": {
+            "name": "Alex",
+            "age": 9,
+            "interests": ["dinosaurs", "space", "drawing"],
+            "favorite_color": "blue",
+            "favorite_animal": "elephant",
+            "stories": {
+                "story1": {
+                    "completed": false,
+                    "title": "Alex and the Ticklish Giant",
+                    "pages": [
+                        {
+                            "text": "[name] hadn't planned on spending his Tuesday afternoon inside a giant's mouth, but here he was, squishing around on a massive tongue next to a neon green cat named Hungry. Hungry's fur glowed like a nightlight in the dark, wet space, making the huge teeth around them look like a forest of white towers.",
+                            "image": "../assets/story_images/Alex/image_1.png"
+                        },
+                        {
+                            "text": "\"You know,\" Hungry said, giving his paw a quick wash like this was just another normal day, \"when I said we should explore the Whispering Mountains, I didn't mean we should explore the inside of a giant's mouth.\" [name] gave his cat friend an annoyed look, trying not to slip on the squishy tongue under his feet. \"Well, maybe if someone hadn't chased that glowing butterfly right into a sleeping giant's mouth—\"",
+                            "image": "../assets/story_images/Alex/image_2.png"
+                        },
+                        {
+                            "text": "The whole place suddenly shook like a bouncy castle, and both boy and cat stumbled as the giant started to wake up. They'd been looking for a super special treasure - the Crown of Unbreakable Will - when everything had gone wrong. Now, instead of finding the crown, they were trying really hard not to become giant tooth-paste.",
+                            "image": "../assets/story_images/Alex/image_3.png"
+                        }
+                    ],
+                    "practice": {
+                        "title": "Practice Rating Your Worries",
+                        "intro_text": "Let's learn to measure our worries using this special worry thermometer. Slide up and down to see how different situations make you feel.",
+                        "scenarios": [
+                            {
+                                "id": "s1",
+                                "text": "You have to answer a question in class",
+                                "type": "common_scenario"
+                            },
+                            {
+                                "id": "s2",
+                                "text": "You're going to a birthday party with new friends",
+                                "type": "common_scenario"
+                            },
+                            {
+                                "id": "s3",
+                                "text": "You're learning to swim",
+                                "type": "common_scenario"
+                            },
+                            {
+                                "id": "s4",
+                                "text": "Where are you on the worry scale right now?",
+                                "type": "self_assessment"
+                            }
+                        ],
+                        "completion_message": "Great job [name]! You're getting better at understanding your worries."
+                    }
+                },
+                "story2": {
+                    "completed": false,
+                    "title": "The Midnight Adventure",
+                    "pages": []
+                }
+            },
+            "progress": {
+                "chapter1_progress": 0,
+                "current_story": null
+            },
+            "analytics": {
+                "worry_ratings": []
+            }
+        }
+    }
+} 

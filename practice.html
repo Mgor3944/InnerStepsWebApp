@@ -3,97 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InnerSteps - Practice Questions</title>
+    <title>InnerSteps - Practice Rating Your Worries</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="practice-page">
-    <!-- Practice Container -->
     <div class="practice-container">
-        <h1>Let's Practice!</h1>
-        
-        <!-- <div class="practice-image">
-            <img src="assets/practice_images/question1.png" alt="Question 1 IMG">
-        </div> -->
-
-        <div class="question-container">
-            <div class="question active" id="question1">
-                <h2>Question 1</h2>
-                <p>How did Alex feel when he was inside the giant's mouth?</p>
-                <div class="practice-options">
-                    <div class="practice-option-wrapper">
-                        <input type="radio" id="option1" name="q1" value="scared_brave" class="practice-option" required>
-                        <label for="option1" class="practice-label">Scared but brave</label>
-                    </div>
-                    
-                    <div class="practice-option-wrapper">
-                        <input type="radio" id="option2" name="q1" value="happy_excited" class="practice-option">
-                        <label for="option2" class="practice-label">Happy and excited</label>
-                    </div>
-                    
-                    <div class="practice-option-wrapper">
-                        <input type="radio" id="option3" name="q1" value="angry_frustrated" class="practice-option">
-                        <label for="option3" class="practice-label">Angry and frustrated</label>
-                    </div>
-                    
-                    <div class="practice-option-wrapper">
-                        <input type="radio" id="option4" name="q1" value="bored_sleepy" class="practice-option">
-                        <label for="option4" class="practice-label">Bored and sleepy</label>
+        <div class="intro-section">
+            <h2>Practice Rating Your Worries</h2>
+            <p>Sometimes we feel worried about things, and that's totally normal! Let's learn to measure our worries using this special worry thermometer.</p>
+            
+            <div class="thermometer-container">
+                <div class="thermometer">
+                    <input type="range" min="1" max="10" value="1" class="worry-slider">
+                    <div class="thermometer-fill"></div>
+                    <div class="thermometer-scale">
+                        <div class="scale-section big-worries">
+                            <span>10</span>
+                            <span>9</span>
+                            <span>8</span>
+                        </div>
+                        <div class="scale-section medium-worries">
+                            <span>7</span>
+                            <span>6</span>
+                            <span>5</span>
+                            <span>4</span>
+                        </div>
+                        <div class="scale-section little-worries">
+                            <span>3</span>
+                            <span>2</span>
+                            <span>1</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="question hidden" id="question2">
-                <h2>Question 2</h2>
-                <p>What helped Alex stay calm in this scary situation?</p>
-                <div class="practice-options">
-                    <div class="practice-option-wrapper">
-                        <input type="radio" id="q2option1" name="q2" value="friends_support" class="practice-option" required>
-                        <label for="q2option1" class="practice-label">Thinking about his friends' support</label>
-                    </div>
-                    
-                    <div class="practice-option-wrapper">
-                        <input type="radio" id="q2option2" name="q2" value="deep_breathing" class="practice-option">
-                        <label for="q2option2" class="practice-label">Taking deep breaths</label>
-                    </div>
-                    
-                    <div class="practice-option-wrapper">
-                        <input type="radio" id="q2option3" name="q2" value="counting" class="practice-option">
-                        <label for="q2option3" class="practice-label">Counting to ten</label>
-                    </div>
-                    
-                    <div class="practice-option-wrapper">
-                        <input type="radio" id="q2option4" name="q2" value="singing" class="practice-option">
-                        <label for="q2option4" class="practice-label">Singing a happy song</label>
+            <button class="start-btn">I'm Ready to Begin!</button>
+        </div>
+
+        <div class="scenario-section hidden">
+            <div class="scenario-text"></div>
+            
+            <div class="thermometer-container">
+                <div class="thermometer">
+                    <input type="range" min="1" max="10" value="1" class="worry-slider">
+                    <div class="thermometer-fill"></div>
+                    <div class="thermometer-scale">
+                        <div class="scale-section big-worries">
+                            <span>10</span>
+                            <span>9</span>
+                            <span>8</span>
+                        </div>
+                        <div class="scale-section medium-worries">
+                            <span>7</span>
+                            <span>6</span>
+                            <span>5</span>
+                            <span>4</span>
+                        </div>
+                        <div class="scale-section little-worries">
+                            <span>3</span>
+                            <span>2</span>
+                            <span>1</span>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <div class="navigation-buttons">
+                <button class="back-btn">Back</button>
+                <button class="next-btn">Next</button>
+            </div>
         </div>
 
-        <div class="navigation-buttons">
-            <button id="practiceBackBtn" class="back-btn-practise">Back</button>
-            <button id="practiceNextBtn" class="next-btn-practice">Next</button>
-        </div>
-    </div>
-
-    <!-- Completion Container -->
-    <div class="completion-container hidden">
-        <div class="completion-page">
-            <h1>Hooray! You finished the first session</h1>
-            
-            <div class="completion-badge">
-                <img src="assets/badges/session1_complete.png" alt="Session 1 Complete Badge">
-            </div>
-            
-            <div class="completion-summary">
-                <h2>What you've learned:</h2>
-                <ul>
-                    <li>How to handle unexpected situations bravely</li>
-                    <li>Working together with friends to solve problems</li>
-                    <li>Using humor to cope with scary moments</li>
-                </ul>
-            </div>
-            
-            <button class="next-session-btn" onclick="goToJourneyMap()">Unlock Next Story</button>
+        <div class="completion-container hidden">
+            <h2>Amazing Job!</h2>
+            <div class="completion-message"></div>
+            <button class="next-session-btn" onclick="goToJourneyMap()">Back to Journey Map</button>
         </div>
     </div>
 
