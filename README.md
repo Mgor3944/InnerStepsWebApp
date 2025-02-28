@@ -16,9 +16,7 @@ To Do:
 
 3. Look into gamification elements such as game-like buttons and simple sounds (both in onboarding and app) 
 
-4. See if I can store user progress in local storage so that they can continue from where they left off.
-
-5. Updated script file so that once the user has finished initial onboarding when they go to the home page after completing practise questions it doesn't automatically take them back to the onboarding.html page. This is screwing up the user flow.
+5. Need to fix the practise mode... navigation buttons are broken and layout looks terrible.
 
 Look into:
 

@@ -54,8 +54,57 @@
                 },
                 "story2": {
                     "completed": false,
-                    "title": "The Midnight Adventure",
-                    "pages": []
+                    "title": "Adventure Number Two",
+                    "pages": [
+                        {
+                            "text": "Write here",
+                            "image": "../assets/story_images/Alex/image_1.png"
+                        },
+                        {
+                            "text": "Write here",
+                            "image": "../assets/story_images/Alex/image_2.png"
+                        },
+                        {
+                            "text": "Write here",
+                            "image": "../assets/story_images/Alex/image_3.png"
+                        }
+                    ]
+                },
+                "story3": {
+                    "completed": false,
+                    "title": "Adventure Number Three",
+                    "pages": [
+                        {
+                            "text": "Write here",
+                            "image": "../assets/story_images/Alex/image_1.png"
+                        },
+                        {
+                            "text": "Write here",
+                            "image": "../assets/story_images/Alex/image_2.png"
+                        },
+                        {
+                            "text": "Write here",
+                            "image": "../assets/story_images/Alex/image_3.png"
+                        }
+                    ]
+                },
+                "story4": {
+                    "completed": false,
+                    "title": "Adventure Number Four",
+                    "pages": [
+                        {
+                            "text": "Write here",
+                            "image": "../assets/story_images/Alex/image_1.png"
+                        },
+                        {
+                            "text": "Write here",
+                            "image": "../assets/story_images/Alex/image_2.png"
+                        },
+                        {
+                            "text": "Write here",
+                            "image": "../assets/story_images/Alex/image_3.png"
+                        }
+                    ]
                 }
             },
             "progress": {

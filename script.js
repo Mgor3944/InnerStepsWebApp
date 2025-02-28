@@ -99,6 +99,14 @@ class UserManager {
         }
     }
 
+    getCurrentStory() {
+        if (!this.userData || !this.userData.progress || !this.userData.stories) {
+            return null;
+        }
+        const currentStoryId = this.userData.progress.current_story;
+        return this.userData.stories[currentStoryId];
+    }
+
     updateUserProfile(profileData) {
         if (this.userData) {
             this.userData = { ...this.userData, ...profileData };
@@ -457,10 +465,28 @@ function updateNavigationButtons() {
         backButton.parentNode.replaceChild(oldBackButton, backButton);
         
         if (window.currentPage === 1) {
-            // On first page, back button takes user to journey map
+            // On first page, back button takes user to journey map and says "Home"
+            oldBackButton.innerHTML = `
+                <svg class="story-back-arrow" width="35px" height="35px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g id="Iconly/Bold/Arrow---Left-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g id="Arrow---Left-2" transform="translate(7.000000, 6.000000)" fill="#ffffff" fill-rule="nonzero">
+                            <path d="M0.369215782,4.869 C0.425718461,4.811 0.639064783,4.563 0.837798344,4.359 C2.00292255,3.076 5.04237701,0.976 6.63321968,0.335 C6.87481734,0.232 7.48563078,0.014 7.81198246,0 C8.12469557,0 8.42279591,0.072 8.70725767,0.218 C9.06186069,0.422 9.34632245,0.743 9.50219191,1.122 C9.60253288,1.385 9.75840234,2.172 9.75840234,2.186 C9.9142718,3.047 10,4.446 10,5.992 C10,7.465 9.9142718,8.807 9.78665368,9.681 C9.77204092,9.695 9.61617146,10.673 9.44568924,11.008 C9.13297613,11.62 8.52216269,12 7.86848514,12 L7.81198246,12 C7.386264,11.985 6.4909888,11.605 6.4909888,11.591 C4.98587433,10.949 2.01656113,8.952 0.823185582,7.625 C0.823185582,7.625 0.48709206,7.284 0.340964442,7.071 C0.113005358,6.765 -8.8817842e-16,6.386 -8.8817842e-16,6.007 C-8.8817842e-16,5.584 0.12761812,5.19 0.369215782,4.869"></path>
+                        </g>
+                    </g>
+                </svg>
+                Home`;
             oldBackButton.addEventListener('click', () => window.location.href = 'index.html');
         } else {
             // On other pages, back button goes to previous page
+            oldBackButton.innerHTML = `
+                <svg class="story-back-arrow" width="35px" height="35px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g id="Iconly/Bold/Arrow---Left-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g id="Arrow---Left-2" transform="translate(7.000000, 6.000000)" fill="#ffffff" fill-rule="nonzero">
+                            <path d="M0.369215782,4.869 C0.425718461,4.811 0.639064783,4.563 0.837798344,4.359 C2.00292255,3.076 5.04237701,0.976 6.63321968,0.335 C6.87481734,0.232 7.48563078,0.014 7.81198246,0 C8.12469557,0 8.42279591,0.072 8.70725767,0.218 C9.06186069,0.422 9.34632245,0.743 9.50219191,1.122 C9.60253288,1.385 9.75840234,2.172 9.75840234,2.186 C9.9142718,3.047 10,4.446 10,5.992 C10,7.465 9.9142718,8.807 9.78665368,9.681 C9.77204092,9.695 9.61617146,10.673 9.44568924,11.008 C9.13297613,11.62 8.52216269,12 7.86848514,12 L7.81198246,12 C7.386264,11.985 6.4909888,11.605 6.4909888,11.591 C4.98587433,10.949 2.01656113,8.952 0.823185582,7.625 C0.823185582,7.625 0.48709206,7.284 0.340964442,7.071 C0.113005358,6.765 -8.8817842e-16,6.386 -8.8817842e-16,6.007 C-8.8817842e-16,5.584 0.12761812,5.19 0.369215782,4.869"></path>
+                        </g>
+                    </g>
+                </svg>
+                Go Back`;
             oldBackButton.addEventListener('click', previousPage);
         }
         oldBackButton.style.opacity = '1';
@@ -474,8 +500,14 @@ function updateNavigationButtons() {
         
         if (window.currentPage === window.totalPages) {
             // On last page, transform next button into practice button
-            oldNextButton.textContent = 'Practice Questions';
+            oldNextButton.textContent = 'Let\'s Practice Together!';
             oldNextButton.style.backgroundColor = '#4CAF50'; // Green color for practice
+            oldNextButton.addEventListener('mouseover', () => {
+                oldNextButton.style.backgroundColor = '#3d8b40'; // Darker green on hover
+            });
+            oldNextButton.addEventListener('mouseout', () => {
+                oldNextButton.style.backgroundColor = '#4CAF50'; // Return to original green
+            });
             oldNextButton.addEventListener('click', completeStory);
         } else {
             // On other pages, keep as next button
@@ -513,8 +545,8 @@ function initPracticePage() {
     
     function updateProgress() {
         const progress = ((currentScenarioIndex) / practice.scenarios.length) * 100;
-        progressFill.style.width = `${progress}%`;
-        progressText.textContent = `Question ${currentScenarioIndex + 1} of ${practice.scenarios.length}`;
+        if (progressFill) progressFill.style.width = `${progress}%`;
+        if (progressText) progressText.textContent = `Question ${currentScenarioIndex + 1} of ${practice.scenarios.length}`;
     }
 
     // Initialize thermometer
@@ -523,34 +555,38 @@ function initPracticePage() {
 
     function updateThermometer(value) {
         const fillWidth = (value / 10) * 100;
-        thermometerFill.style.width = `${fillWidth}%`;
+        if (thermometerFill) thermometerFill.style.width = `${fillWidth}%`;
+        
+        // Update color based on value
+        if (value <= 3) {
+            thermometerFill.style.backgroundColor = '#4CAF50'; // Green for little worries
+        } else if (value <= 6) {
+            thermometerFill.style.backgroundColor = '#FFC107'; // Yellow for medium worries
+        } else if (value <= 8) {
+            thermometerFill.style.backgroundColor = '#FF9800'; // Orange for bigger worries
+        } else {
+            thermometerFill.style.backgroundColor = '#f44336'; // Red for biggest worries
+        }
     }
 
     // Event listener for slider
-    worrySlider.addEventListener('input', (e) => {
-        updateThermometer(e.target.value);
-    });
-
-    // Initialize demo thermometer
-    const demoSlider = document.querySelector('.demo-worry-slider');
-    const demoFill = document.querySelector('.demo-thermometer-fill');
-    
-    if (demoSlider && demoFill) {
-        demoSlider.addEventListener('input', (e) => {
-            const fillWidth = (e.target.value / 10) * 100;
-            demoFill.style.width = `${fillWidth}%`;
+    if (worrySlider) {
+        worrySlider.addEventListener('input', (e) => {
+            updateThermometer(e.target.value);
         });
     }
 
     // Show scenario
     function showScenario(index) {
-        const scenario = practice.scenarios[index];
+        const scenario = practice.scenarios[index].text;
         const scenarioText = document.querySelector('.scenario-text');
-        scenarioText.textContent = scenario;
+        if (scenarioText) scenarioText.textContent = scenario;
         
         // Reset slider to 1
-        worrySlider.value = 1;
-        updateThermometer(1);
+        if (worrySlider) {
+            worrySlider.value = 1;
+            updateThermometer(1);
+        }
         
         // Update progress
         updateProgress();
@@ -559,42 +595,60 @@ function initPracticePage() {
         const backBtn = document.querySelector('.back-btn');
         const nextBtn = document.querySelector('.next-btn');
         
-        backBtn.style.display = index === 0 ? 'none' : 'block';
-        nextBtn.textContent = index === practice.scenarios.length - 1 ? 'Finish' : 'Next';
+        if (backBtn) backBtn.style.display = index === 0 ? 'none' : 'block';
+        if (nextBtn) nextBtn.textContent = index === practice.scenarios.length - 1 ? 'Finish' : 'Next';
     }
 
     // Handle navigation
-    document.querySelector('.start-btn').addEventListener('click', () => {
-        document.querySelector('.intro-section').style.display = 'none';
-        document.querySelector('.scenario-section').style.display = 'block';
-        showScenario(0);
-    });
+    const startBtn = document.querySelector('.start-btn');
+    const introSection = document.querySelector('.intro-section');
+    const scenarioSection = document.querySelector('.scenario-section');
+    
+    if (startBtn) {
+        startBtn.addEventListener('click', () => {
+            if (introSection) introSection.style.display = 'none';
+            if (scenarioSection) {
+                scenarioSection.style.display = 'block';
+                showScenario(0);
+            }
+        });
+    }
 
-    document.querySelector('.back-btn').addEventListener('click', () => {
-        if (currentScenarioIndex > 0) {
-            currentScenarioIndex--;
-            showScenario(currentScenarioIndex);
-        }
-    });
+    const backBtn = document.querySelector('.back-btn');
+    if (backBtn) {
+        backBtn.addEventListener('click', () => {
+            if (currentScenarioIndex > 0) {
+                currentScenarioIndex--;
+                showScenario(currentScenarioIndex);
+            }
+        });
+    }
 
-    document.querySelector('.next-btn').addEventListener('click', () => {
-        // Save current rating
-        ratings[currentScenarioIndex] = parseInt(worrySlider.value);
+    const nextBtn = document.querySelector('.next-btn');
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            // Save current rating
+            if (worrySlider) {
+                ratings[currentScenarioIndex] = parseInt(worrySlider.value);
+            }
 
-        if (currentScenarioIndex < practice.scenarios.length - 1) {
-            currentScenarioIndex++;
-            showScenario(currentScenarioIndex);
-        } else {
-            showSummary();
-        }
-    });
+            if (currentScenarioIndex < practice.scenarios.length - 1) {
+                currentScenarioIndex++;
+                showScenario(currentScenarioIndex);
+            } else {
+                showSummary();
+            }
+        });
+    }
 
     function showSummary() {
         // Hide scenario section
-        document.querySelector('.scenario-section').style.display = 'none';
+        if (scenarioSection) scenarioSection.style.display = 'none';
         
         // Show summary section
         const summarySection = document.querySelector('.rating-summary');
+        if (!summarySection) return;
+        
         summarySection.style.display = 'block';
         
         // Create summary content
@@ -603,7 +657,7 @@ function initPracticePage() {
             const rating = ratings[index];
             summaryHTML += `
                 <div class="rating-item">
-                    <div class="scenario">${scenario}</div>
+                    <div class="scenario">${scenario.text}</div>
                     <div class="rating">Worry Level: ${rating}/10</div>
                 </div>
             `;
@@ -615,7 +669,7 @@ function initPracticePage() {
         const analyticsData = {
             timestamp: new Date().toISOString(),
             ratings: ratings.map((rating, index) => ({
-                scenario: practice.scenarios[index],
+                scenario: practice.scenarios[index].text,
                 rating: rating
             }))
         };
@@ -630,22 +684,26 @@ function initPracticePage() {
         userManager.userData.analytics.worry_ratings.push(analyticsData);
         
         // Mark story as completed
-        userManager.completeStory();
-        userManager.saveUserData();
+        const currentStoryId = userManager.userData.progress.current_story;
+        if (currentStoryId) {
+            userManager.userData.stories[currentStoryId].completed = true;
+            userManager.saveUserData();
+        }
 
         // Add return to journey button
         const returnButton = document.createElement('button');
         returnButton.className = 'next-btn';
         returnButton.textContent = 'Return to Journey Map';
         returnButton.addEventListener('click', () => {
-            window.location.href = 'journey.html';
+            window.location.href = 'index.html';
         });
         summarySection.appendChild(returnButton);
     }
 
-    // Initialize first view (intro section)
-    document.querySelector('.scenario-section').style.display = 'none';
-    document.querySelector('.rating-summary').style.display = 'none';
+    // Initialize first view
+    if (scenarioSection) scenarioSection.style.display = 'none';
+    const ratingSummary = document.querySelector('.rating-summary');
+    if (ratingSummary) ratingSummary.style.display = 'none';
     updateProgress();
 }
 
@@ -675,66 +733,76 @@ function updateUserProgress() {
 // === JOURNEY MAP HANDLING ===
 function initJourneyMap() {
     if (document.querySelector('.journey-page')) {
-        // Get completion status of all stories
-        const story1Complete = localStorage.getItem('alex_giant_completed') === 'true';
-        const story2Complete = localStorage.getItem('story2_completed') === 'true';
-        const story3Complete = localStorage.getItem('story3_completed') === 'true';
-        const story4Complete = localStorage.getItem('story4_completed') === 'true';
+        // Get completion status of all stories from userData instead of localStorage
+        const userData = userManager.userData;
+        if (!userData || !userData.stories) {
+            console.error('No user data or stories found');
+            return;
+        }
+
+        // Calculate chapter progress based on userData
+        const completedStories = Object.values(userData.stories)
+            .filter(story => story.completed).length;
+        const totalStories = Object.keys(userData.stories).length;
+        const progressPercentage = (completedStories / totalStories) * 100;
         
-        // Calculate chapter progress
-        const completedStories = [story1Complete, story2Complete, story3Complete, story4Complete]
-            .filter(Boolean).length;
-        const progressPercentage = (completedStories / 4) * 100;
-        
-        // Update progress bar - Fix: Use correct class name
+        // Update progress bar
         const progressBar = document.querySelector('.chapter-progress-bar');
         if (progressBar) {
-            // Ensure there's always some visible progress (at least 5%)
             progressBar.style.width = `${Math.max(5, progressPercentage)}%`;
         }
-        
-        // Store progress in localStorage
-        localStorage.setItem('chapter1_progress', progressPercentage);
         
         // Update story nodes status
         const storyNodes = document.querySelectorAll('.story-node');
         
-        // Update story states based on completion
-        if (story1Complete) {
-            updateStoryNodeStatus(storyNodes[0], 'completed', false); // No animation for first story
-            updateStoryNodeStatus(storyNodes[1], 'next-to-complete', true); // Show animation if newly unlocked
-            unlockStoryNode(storyNodes[1]);
-        } else {
-            lockStoryNode(storyNodes[1]);
-        }
-        
-        if (story2Complete && story1Complete) {
-            updateStoryNodeStatus(storyNodes[1], 'completed', false);
-            updateStoryNodeStatus(storyNodes[2], 'next-to-complete', true);
-            unlockStoryNode(storyNodes[2]);
-        } else {
-            lockStoryNode(storyNodes[2]);
-        }
-        
-        if (story3Complete && story2Complete && story1Complete) {
-            updateStoryNodeStatus(storyNodes[2], 'completed', false);
-            updateStoryNodeStatus(storyNodes[3], 'next-to-complete', true);
-            unlockStoryNode(storyNodes[3]);
-        } else {
-            lockStoryNode(storyNodes[3]);
-        }
-        
-        if (story4Complete && story3Complete && story2Complete && story1Complete) {
-            updateStoryNodeStatus(storyNodes[3], 'completed', false);
-            // Chapter complete - no need to unlock a next node
-        }
-
-        // Add click handlers to story nodes
-        document.querySelectorAll('.story-node').forEach((node, index) => {
+        // Update each story node based on user data
+        storyNodes.forEach((node, index) => {
             const storyId = `story${index + 1}`;
-            node.querySelector('button').addEventListener('click', () => {
-                startStory(storyId);
-            });
+            const storyData = userData.stories[storyId];
+            
+            if (!storyData) {
+                // If no story data exists, keep it locked
+                lockStoryNode(node);
+                return;
+            }
+
+            // Update node content with story data
+            const title = node.querySelector('h3');
+            const coverImg = node.querySelector('.story-cover img');
+            if (title && storyData.title) {
+                title.textContent = storyData.title;
+            }
+            if (coverImg && storyData.cover_image) {
+                coverImg.src = storyData.cover_image;
+                coverImg.alt = storyData.title || `Story ${index + 1}`;
+            }
+
+            // Update story states based on completion
+            if (storyData.completed) {
+                updateStoryNodeStatus(node, 'completed', false);
+                // If this story is completed, unlock the next one
+                if (storyNodes[index + 1]) {
+                    unlockStoryNode(storyNodes[index + 1]);
+                    updateStoryNodeStatus(storyNodes[index + 1], 'next-to-complete', true);
+                }
+            } else if (index === 0 || (index > 0 && userData.stories[`story${index}`]?.completed)) {
+                // First story or previous story is completed
+                unlockStoryNode(node);
+                updateStoryNodeStatus(node, 'next-to-complete', true);
+            } else {
+                lockStoryNode(node);
+            }
+
+            // Add click handler
+            const button = node.querySelector('button');
+            if (button) {
+                button.onclick = null; // Remove any existing onclick handler
+                button.addEventListener('click', () => {
+                    if (storyData && !button.disabled) {
+                        startStory(storyId);
+                    }
+                });
+            }
         });
     }
 }
@@ -754,6 +822,7 @@ function lockStoryNode(node) {
     title.textContent = '????';
     button.textContent = 'Haven\'t Unlocked Yet';
     button.disabled = true;
+    button.style.pointerEvents = 'none';
 }
 
 function unlockStoryNode(node) {
@@ -763,18 +832,39 @@ function unlockStoryNode(node) {
     // Restore original content if it exists
     if (title.hasAttribute('data-original-text')) {
         title.textContent = title.dataset.originalText;
-        button.textContent = 'Begin Adventure';
-        button.disabled = false;
     }
+    
+    // Enable the button and set its text
+    button.textContent = 'Begin Adventure';
+    button.disabled = false;
+    button.style.pointerEvents = 'auto';
+    
+    // Get the story ID from the node
+    const storyId = node.id;
+    
+    // Remove any existing click handler
+    button.onclick = null;
+    
+    // Add the click handler
+    button.addEventListener('click', () => {
+        if (userManager.userData.stories[storyId]) {
+            startStory(storyId);
+        }
+    });
 }
 
 function updateStoryNodeStatus(node, status, checkAnimation = true) {
     node.setAttribute('data-status', status);
+    const button = node.querySelector('button');
     
     if (status === 'completed') {
-        const button = node.querySelector('button');
         button.textContent = 'Read Again';
+        button.disabled = false;
+        button.style.pointerEvents = 'auto';
     } else if (status === 'next-to-complete' && checkAnimation) {
+        button.disabled = false;
+        button.style.pointerEvents = 'auto';
+        
         // Only show animation if this story hasn't been unlocked before
         const storyId = node.id;
         const hasBeenUnlocked = localStorage.getItem(`${storyId}_unlocked`) === 'true';
@@ -830,11 +920,21 @@ function personalizeStoryText(text) {
         .replace(/\[favorite_animal\]/g, userData.favorite_animal || '[favorite_animal]');
 }
 
-// When a user clicks on a story in the journey map
+// Update startStory function to handle story data validation
 function startStory(storyId) {
+    const userData = userManager.userData;
+    const storyData = userData.stories[storyId];
+
+    if (!storyData) {
+        console.error('No story data found for:', storyId);
+        return;
+    }
+
     // Update the current story in user data
     userManager.userData.progress.current_story = storyId;
     userManager.saveUserData();
+    
+    // Redirect to story page
     window.location.href = 'story.html';
 }
 
@@ -851,18 +951,22 @@ function initializeAppropriateView() {
 }
 
 function updateThermometer(value) {
+    const fillWidth = (value / 10) * 100;
     const thermometerFill = document.querySelector('.thermometer-fill');
-    const fillHeight = (value / 10) * 100;
-    thermometerFill.style.height = `${fillHeight}%`;
-
-    // Update the slider thumb color based on the value
-    const slider = document.querySelector('.worry-slider');
-    if (value <= 3) {
-        slider.style.setProperty('--thumb-color', '#95d5b2');  // Light green for little worries
-    } else if (value <= 7) {
-        slider.style.setProperty('--thumb-color', '#ffd93d');  // Yellow for medium worries
-    } else {
-        slider.style.setProperty('--thumb-color', '#ff6b6b');  // Red for big worries
+    
+    if (thermometerFill) {
+        thermometerFill.style.width = `${fillWidth}%`;
+        
+        // Update color based on value
+        if (value <= 3) {
+            thermometerFill.style.backgroundColor = '#4CAF50'; // Green for little worries
+        } else if (value <= 6) {
+            thermometerFill.style.backgroundColor = '#FFC107'; // Yellow for medium worries
+        } else if (value <= 8) {
+            thermometerFill.style.backgroundColor = '#FF9800'; // Orange for bigger worries
+        } else {
+            thermometerFill.style.backgroundColor = '#f44336'; // Red for biggest worries
+        }
     }
 }
 
