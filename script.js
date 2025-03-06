@@ -281,11 +281,15 @@ document.addEventListener('DOMContentLoaded', function() {
         input.addEventListener('input', function(e) {
             // Remove any non-letter characters as they're typed
             this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
-            validateInput(this);
+            // Clear any existing errors when the user starts typing
+            clearError(this);
         });
         
         input.addEventListener('blur', function() {
-            validateInput(this);
+            // Only validate on blur if the input has a value
+            if (this.value.trim()) {
+                validateInput(this);
+            }
         });
     });
 });

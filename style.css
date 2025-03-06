@@ -226,7 +226,6 @@ body.login-page {
     align-items: center;
     gap: 20px;
     width: 100%;
-    margin-bottom: 20px;
     position: relative;
 }
 
@@ -238,14 +237,15 @@ label {
 
 input[type="text"] {
     width: 100%;
-    max-width: 400px;
-    padding: 15px;
-    font-size: 18px;
-    border: 3px solid #bfd5c9;
+    padding: 20px 15px;
+    background-color: rgb(66, 83, 95, 0.05);
+    border: 3px solid rgb(66, 83, 95, 0.2);
     border-radius: 12px;
-    background-color: #f0f7f4;
-    color: #42535F;
+    font-size: 18px;
+    box-sizing: border-box;
+    font-family: 'Quicksand', cursive, sans-serif;
     transition: all 0.2s ease-in-out;
+    color: #42535F;
 }
 
 input[type="text"]:focus {
@@ -255,8 +255,9 @@ input[type="text"]:focus {
 }
 
 .error-message {
-    color: #ff4757;
-    font-size: 14px;
+    color: #D25454;
+    font-size: 15px;
+    font-weight: 500;
     margin-top: 5px;
     display: none;
     opacity: 0;
@@ -269,13 +270,14 @@ input[type="text"]:focus {
 }
 
 input[type="text"].error {
-    border-color: #ff4757;
+    background-color: rgb(210, 84, 84, 0.05);
+    border-color: #D25454;
 }
 
-input[type="text"].error:focus {
-    border-color: #ff4757;
+/* input[type="text"].error:focus {
+    border-color: #D25454;
     box-shadow: 0 0 0 2px rgba(255, 71, 87, 0.2);
-}
+} */
 
 .onboarding-back {
     background-color: rgba(66, 83, 95, 0.05);
@@ -583,24 +585,6 @@ label {
     margin-bottom: 8px;
     font-weight: bold;
     font-size: 18px;
-}
-
-input[type="text"] {
-    width: 100%;
-    padding: 12px;
-    background-color: #f0f7f4;
-    border: 3px solid #bfd5c9;
-    border-radius: 12px;
-    font-size: 16px;
-    box-sizing: border-box;
-    font-family: 'Quicksand', cursive, sans-serif;
-    transition: all 0.2s ease-in-out;
-}
-
-input[type="text"]:focus {
-    background-color: #E4F5DA;
-    border-color: #8DBA36;
-    outline: none;
 }
 
 .interest-item {
@@ -1942,6 +1926,8 @@ body.story-page {
     word-wrap: break-word;
     overflow-wrap: break-word;
     text-align: left;
+    font-weight: 500;
+    font-size: 16px;
 }
 
 .welcome-box.show p.show {
@@ -1992,17 +1978,17 @@ body.story-page {
 .gender-options {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    align-items: center;
+    gap: 5px;
     width: 100%;
-    max-width: 400px;
 }
 
 .gender-label {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 120px;
-    height: 60px;
+    width: 100%;
+    height: 80px;
     background-color: rgba(66, 83, 95, 0.05);
     border: 2px solid rgba(66, 83, 95, 0.3);
     border-bottom: 6px solid rgba(66, 83, 95, 0.3);
@@ -2013,50 +1999,76 @@ body.story-page {
     transition: all 0.2s ease-in-out;
 }
 
+.gender-option {
+    appearance: none;
+}
+
 .gender-option:checked + .gender-label {
     background-color: #8DBA36;
     border-color: #658624;
     color: white;
-    transform: translateY(3px);
+    transform: translateY(2px);
     border-bottom: 3px solid #658624;
 }
 
 /* === CHARACTER SELECTION STYLES === */
 .character-options {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 30px;
-    width: 100%;
-    max-width: 500px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
     margin: 0 auto;
-    position: relative;
 }
 
 .character-label {
     display: block;
-    width: 150px;
-    height: 150px;
-    background-color: #DAF5E6;
-    border: 5px solid white;
+    width: 190px;
+    height: 170px;
+    background-color: rgba(66, 83, 95, 0.05);
+    border: 2px solid rgba(66, 83, 95, 0.3);
+    border-bottom: 6px solid rgba(66, 83, 95, 0.3);
     border-radius: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
     margin: 0 auto;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.character-option {
+    appearance: none;
 }
 
 .character-option:checked + .character-label {
-    transform: scale(1.1);
-    box-shadow: 0 0 0 3px white, 0 0 0 6px #8DBA36;
+    background-color: #8DBA36;
+    border-color: #658624;
+    color: white;
+    transform: translateY(2px);
+    border-bottom: 3px solid #658624;
 }
 
 /* === HOBBY OPTIONS STYLES === */
 .hobby-options {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(120px, calc(25% - 15px)));
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
     width: 100%;
-    max-width: 600px;
+    max-width: 700px;
     margin: 0 auto;
+}
+
+.hobby-option {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    width: 0;
+    height: 0;
+    position: absolute;
+    opacity: 0;
 }
 
 .hobby-label {
@@ -2083,44 +2095,45 @@ body.story-page {
     border-bottom: 3px solid #658624;
 }
 
+/* === CHARACTER NAME STYLES === */
+
 /* === ADVENTURE BOOKS STYLES === */
 .adventure-options {
     display: flex;
     justify-content: center;
-    gap: 40px;
+    gap: 20px;
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
 }
 
+.adventure-option {
+    appearance: none;
+}
+
 .adventure-label {
     display: block;
-    width: 200px;
-    height: 300px;
-    background-color: #42535F;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    width: 300px;
+    height: 220px;
+    background-color: rgba(66, 83, 95, 0.1);
+    border: 3px solid rgba(66, 83, 95, 0.3);
+    border-bottom: 8px solid rgba(66, 83, 95, 0.3);
+    border-radius: 20px;
     position: relative;
-    transform-style: preserve-3d;
-    transform: perspective(1000px) rotateY(0deg);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
 }
 
 .adventure-label:hover {
-    transform: perspective(1000px) rotateY(10deg);
-}
-
-.book-cover {
-    width: 100%;
-    height: 100%;
-    background-color: #42535F;
-    border-radius: 10px;
-    position: relative;
+    background-color: rgba(66, 83, 95, 0.18);
 }
 
 .adventure-option:checked + .adventure-label {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 3px white, 0 0 0 6px #8DBA36;
+    background-color: #8DBA36;
+    border-color: #658624;
+    color: white;
+    transform: translateY(3px);
+    border-bottom: 3px solid #658624;
 }
 
 /* === MOOD CHECK-IN STYLES === */
