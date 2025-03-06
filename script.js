@@ -80,7 +80,7 @@ class UserManager {
 
     saveUserData() {
         if (this.currentPin && this.userData) {
-            // Only save the modifications to localStorage
+            // Save to localStorage as before
             const dataToSave = {
                 name: this.userData.name,
                 age: this.userData.age,
@@ -96,6 +96,27 @@ class UserManager {
                 }, {})
             };
             localStorage.setItem(`user_data_${this.currentPin}`, JSON.stringify(dataToSave));
+
+            // Also send to server
+            fetch('/api/updateUserData', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    pin: this.currentPin,
+                    userData: dataToSave
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error('Failed to save data to server:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error saving data to server:', error);
+            });
         }
     }
 
@@ -125,6 +146,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Handle different pages
     if (document.querySelector('.login-page')) {
         initLoginPage();
+    } else if (document.querySelector('.welcome-page')) {
+        initWelcomePage();
     } else if (!userManager.currentPin) {
         // No PIN, redirect to login
         window.location.href = 'login.html';
@@ -145,6 +168,9 @@ function initLoginPage() {
     const pinForm = document.getElementById('pinForm');
     const inputs = pinForm.querySelectorAll('input');
 
+    // Focus the first input when the page loads
+    inputs[0].focus();
+
     // Auto-focus next input
     inputs.forEach((input, index) => {
         input.addEventListener('input', () => {
@@ -163,8 +189,8 @@ function initLoginPage() {
             localStorage.setItem('current_pin', pin);
             await userManager.loadUserData();
             
-            // Redirect to onboarding if new user, otherwise to journey map
-            window.location.href = userManager.userData?.name ? 'index.html' : 'onboarding.html';
+            // Redirect to welcome page for new users, otherwise to journey map
+            window.location.href = userManager.userData?.name ? 'index.html' : 'welcome.html';
         } else {
             alert('Invalid PIN. Please try again.');
             pinForm.reset();
@@ -173,49 +199,155 @@ function initLoginPage() {
     });
 }
 
+function initWelcomePage() {
+    // Add fade-in animation to text elements
+    const h1 = document.querySelector('.welcome-page h1');
+    const h3 = document.querySelector('.welcome-page h3');
+    
+    if (h1) {
+        h1.style.opacity = '0';
+        h1.style.animation = 'fadeIn 0.6s ease-in forwards';
+    }
+    
+    if (h3) {
+        h3.style.opacity = '0';
+        h3.style.animation = 'fadeIn 0.6s ease-in forwards 1s';
+    }
+
+    // After 5 seconds, redirect to onboarding
+    setTimeout(() => {
+        window.location.href = 'onboarding.html';
+    }, 4000);
+}
+
 // === PAGE DETECTION AND INITIALIZATION ===
 function initOnboardingForm() {
     // Add event listener to the form submission
     document.getElementById('onboardingForm').addEventListener('submit', handleFormSubmit);
+    
+    // Initialize welcome animation if we're on step 1
+    if (document.querySelector('.step.active').id === 'step1') {
+        initWelcomeAnimation();
+    }
 }
 
-function nextStep(current, next) {
-    // Validate current step
-    let currentStep = document.getElementById(`step${current}`);
+function showError(input, message) {
+    input.classList.add('error');
     
-    // Skip validation for step 1 (intro) and step 6 (final)
-    if (current !== 1 && current !== 6) {
+    // Find or create error message element
+    let errorDiv = input.nextElementSibling;
+    if (!errorDiv || !errorDiv.classList.contains('error-message')) {
+        errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        input.parentNode.insertBefore(errorDiv, input.nextElementSibling);
+    }
+    
+    errorDiv.textContent = message;
+    errorDiv.classList.add('show');
+}
+
+function clearError(input) {
+    input.classList.remove('error');
+    const errorDiv = input.nextElementSibling;
+    if (errorDiv && errorDiv.classList.contains('error-message')) {
+        errorDiv.classList.remove('show');
+    }
+    input.style.borderColor = '#bfd5c9';
+}
+
+function validateInput(input) {
+    const value = input.value.trim();
+    
+    // Check if empty
+    if (!value) {
+        showError(input, 'This field is required');
+        return false;
+    }
+    
+    // Check for numbers and special characters
+    if (input.type === 'text' && !/^[a-zA-Z\s]*$/.test(value)) {
+        showError(input, 'Please use only letters and spaces');
+        return false;
+    }
+    
+    clearError(input);
+    return true;
+}
+
+// Add input event listeners to all text inputs
+document.addEventListener('DOMContentLoaded', function() {
+    const textInputs = document.querySelectorAll('input[type="text"]');
+    textInputs.forEach(input => {
+        input.addEventListener('input', function(e) {
+            // Remove any non-letter characters as they're typed
+            this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+            validateInput(this);
+        });
+        
+        input.addEventListener('blur', function() {
+            validateInput(this);
+        });
+    });
+});
+
+function nextStep(current, next) {
+    // Only validate if moving forward (next > current)
+    if (next > current) {
+        // Validate current step
+        let currentStep = document.getElementById(`step${current}`);
         let inputs = currentStep.querySelectorAll('input[required], select[required]');
         let valid = true;
         
         inputs.forEach(input => {
-            if (input.type === 'radio') {
+            if (input.type === 'radio' || input.type === 'checkbox') {
                 let name = input.name;
-                let radioGroup = currentStep.querySelectorAll(`input[name="${name}"]`);
+                let inputGroup = currentStep.querySelectorAll(`input[name="${name}"]`);
                 let checked = false;
                 
-                radioGroup.forEach(radio => {
-                    if (radio.checked) checked = true;
+                inputGroup.forEach(input => {
+                    if (input.checked) checked = true;
                 });
                 
-                if (!checked) valid = false;
-            } else if (!input.value) {
-                input.style.borderColor = '#ff4757';
-                valid = false;
+                if (!checked && input.required) {
+                    valid = false;
+                    // Find the input group container and show error
+                    const container = input.closest('.form-group');
+                    showError(container, "Please select an option");
+                }
             } else {
-                input.style.borderColor = '#ddd';
+                if (!validateInput(input)) {
+                    valid = false;
+                }
             }
         });
         
         if (!valid) {
-            alert("Please fill in all required fields before continuing.");
             return;
         }
+        
+        // Clear any remaining errors before moving to next step
+        inputs.forEach(input => clearError(input));
+    }
+    
+    // Update progress bar
+    const progressBar = document.querySelector('.onboarding-progress-bar');
+    if (progressBar) {
+        const progress = (next / 7) * 100;
+        progressBar.style.width = `${progress}%`;
     }
     
     // Move to next step
     document.getElementById(`step${current}`).classList.remove('active');
     document.getElementById(`step${next}`).classList.add('active');
+    
+    // Update character pronoun based on gender selection
+    if (current === 2 && next === 3) {
+        const gender = document.querySelector('input[name="gender"]:checked')?.value;
+        const pronoun = gender === 'girl' ? 'she' : 'he';
+        document.querySelectorAll('.character-pronoun').forEach(el => {
+            el.textContent = pronoun;
+        });
+    }
 }
 
 function validateInterests() {
@@ -281,26 +413,41 @@ function handleFormSubmit(e) {
         submitButton.disabled = true;
     }
     
-    // Collect all interests into an array
-    const interests = Array.from(document.querySelectorAll('input[name="interests[]"]'))
-        .map(input => input.value)
-        .filter(value => value); // Remove empty values
-    
-    // Create the user profile data
+    // Collect all form data
     const formData = new FormData(form);
     const profileData = {
-        name: formData.get('name'),
-        age: formData.get('age'),
-        interests: interests,
-        favorite_color: formData.get('color'),
-        favorite_animal: formData.get('animal')
+        gender: formData.get('gender'),
+        character: formData.get('character'),
+        characterName: formData.get('characterName'),
+        hobbies: Array.from(formData.getAll('hobbies')),
+        adventure: formData.get('adventure'),
+        mood: formData.get('mood')
     };
 
     // Add a delay to show the loading animation
-    setTimeout(() => {
+    setTimeout(async () => {
         try {
-            // Update user profile in UserManager
-            userManager.updateUserProfile(profileData);
+            // Get the current base data
+            const response = await fetch('data/user_data.json');
+            const data = await response.json();
+            
+            // Get the base profile for this PIN
+            const baseProfile = data.user_profiles[userManager.currentPin];
+            
+            // Create a new merged profile
+            const mergedProfile = {
+                ...baseProfile,
+                ...profileData,
+                progress: baseProfile.progress,
+                stories: baseProfile.stories,
+                analytics: baseProfile.analytics || { worry_ratings: [] }
+            };
+
+            // Save to localStorage
+            localStorage.setItem(`user_data_${userManager.currentPin}`, JSON.stringify(mergedProfile));
+            
+            // Update UserManager
+            userManager.userData = mergedProfile;
             
             // Redirect to story page
             window.location.href = 'story.html';
@@ -319,7 +466,7 @@ function handleFormSubmit(e) {
                 submitButton.disabled = false;
             }
         }
-    }, 3000); // 3 second loading animation
+    }, 3000);
 }
 
 // === STORY PAGE CODE ===
@@ -708,11 +855,21 @@ function initPracticePage() {
 }
 
 function personalizeText(text, userData) {
+    if (!text || !userData) return text;
+    
+    const placeholders = {
+        name: userData.name,
+        age: userData.age,
+        favorite_color: userData.favorite_color,
+        interests: userData.interests ? userData.interests.join(', ') : '',
+        first_interest: userData.interests && userData.interests.length > 0 ? userData.interests[0] : '',
+        second_interest: userData.interests && userData.interests.length > 1 ? userData.interests[1] : ''
+    };
+
+    // Replace placeholders with actual values
     return text.replace(/\[(\w+)\]/g, (match, key) => {
-        if (key === 'name' || key === 'age' || key.startsWith('favorite_')) {
-            return userData[key] || match;
-        }
-        return match;
+        // If the placeholder exists in our mapping, use it; otherwise keep the original placeholder
+        return placeholders[key] !== undefined ? placeholders[key] : match;
     });
 }
 
@@ -916,8 +1073,7 @@ function personalizeStoryText(text) {
     return text
         .replace(/\[name\]/g, userData.name || '[name]')
         .replace(/\[age\]/g, userData.age || '[age]')
-        .replace(/\[favorite_color\]/g, userData.favorite_color || '[favorite_color]')
-        .replace(/\[favorite_animal\]/g, userData.favorite_animal || '[favorite_animal]');
+        .replace(/\[favorite_color\]/g, userData.favorite_color || '[favorite_color]');
 }
 
 // Update startStory function to handle story data validation
@@ -976,3 +1132,45 @@ document.querySelectorAll('.worry-slider').forEach(slider => {
         updateThermometer(e.target.value);
     });
 });
+
+// === WELCOME ANIMATION HANDLING ===
+function initWelcomeAnimation() {
+    const welcomeBoxes = document.querySelectorAll('.welcome-box');
+    const welcomeButton = document.querySelector('.welcome-button');
+    const typingDots = document.querySelectorAll('.typing-dots');
+
+    // Hide all welcome boxes and button initially
+    welcomeBoxes.forEach(box => {
+        box.style.display = 'none';
+    });
+    welcomeButton.style.display = 'none';
+
+    // Function to animate each welcome box
+    function animateWelcomeBox(index) {
+        const box = welcomeBoxes[index];
+        const dots = typingDots[index];
+        const text = box.querySelector('p');
+
+        // Show the box and typing dots
+        box.style.display = 'block';
+        dots.style.display = 'flex';
+        box.classList.add('show');
+
+        // After 1.5 seconds, hide dots and show text
+        setTimeout(() => {
+            dots.style.display = 'none';
+            text.classList.add('show');
+        }, 1500);
+    }
+
+    // Animate each box in sequence
+    setTimeout(() => animateWelcomeBox(0), 0);      // First box at 0s
+    setTimeout(() => animateWelcomeBox(1), 3000);   // Second box at 3s
+    setTimeout(() => animateWelcomeBox(2), 6000);   // Third box at 6s
+
+    // Show welcome button after the third text has been displayed (7.5s)
+    setTimeout(() => {
+        welcomeButton.style.display = 'block';
+        welcomeButton.classList.add('show');
+    }, 7500);
+}

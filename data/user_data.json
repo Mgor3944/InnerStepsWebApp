@@ -1,15 +1,19 @@
 {
     "user_profiles": {
         "1234": {
-            "name": "Alex",
-            "age": 9,
-            "interests": ["dinosaurs", "space", "drawing"],
-            "favorite_color": "blue",
-            "favorite_animal": "elephant",
+            "name": null,
+            "age": null,
+            "interests": [],
+            "favorite_color": null,
+            "progress": {
+                "current_story": "story1",
+                "chapter1_progress": 0
+            },
             "stories": {
                 "story1": {
-                    "completed": false,
                     "title": "Alex and the Ticklish Giant",
+                    "completed": false,
+                    "cover_image": "assets/story_images/Alex/image_cover.jpeg",
                     "pages": [
                         {
                             "text": "[name] hadn't planned on spending his Tuesday afternoon inside a giant's mouth, but here he was, squishing around on a massive tongue next to a neon green cat named Hungry. Hungry's fur glowed like a nightlight in the dark, wet space, making the huge teeth around them look like a forest of white towers.",
@@ -57,7 +61,7 @@
                     "title": "Adventure Number Two",
                     "pages": [
                         {
-                            "text": "Write here",
+                            "text": "Rain drummed against Pip's bedroom window as morning light filtered through the clouds. \n\n\nIt was the third rainy day in a row in Greenleaf, and Pip was tired of trudging to school with soggy socks.",
                             "image": "../assets/story_images/Alex/image_1.png"
                         },
                         {
@@ -106,10 +110,6 @@
                         }
                     ]
                 }
-            },
-            "progress": {
-                "chapter1_progress": 0,
-                "current_story": null
             },
             "analytics": {
                 "worry_ratings": []

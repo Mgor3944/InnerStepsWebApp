@@ -6,22 +6,25 @@
     <title>InnerSteps - Login</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="login-page">
-    <div class="container">
-        <h1>Welcome to InnerSteps</h1>
-        <div class="pin-entry">
-            <h2>Enter your 4-digit PIN</h2>
-            <form id="pinForm">
-                <div class="pin-inputs">
-                    <input type="text" maxlength="1" pattern="\d" required>
-                    <input type="text" maxlength="1" pattern="\d" required>
-                    <input type="text" maxlength="1" pattern="\d" required>
-                    <input type="text" maxlength="1" pattern="\d" required>
-                </div>
-                <button type="submit">Enter</button>
-            </form>
+    <body class="login-page">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>Welcome to InnerSteps</h1>
+                <p>Before we can start, please enter the 4-digit unique pin code we sent to you via email.</p>
+            </div>
+            <div class="pin-entry">
+                <!-- <h2>Enter your 4-digit PIN</h2> -->
+                <form id="pinForm">
+                    <div class="pin-inputs">
+                        <input type="number" maxlength="1" min="0" max="9" inputmode="numeric" pattern="[0-9]" required>
+                        <input type="number" maxlength="1" min="0" max="9" inputmode="numeric" pattern="[0-9]" required>
+                        <input type="number" maxlength="1" min="0" max="9" inputmode="numeric" pattern="[0-9]" required>
+                        <input type="number" maxlength="1" min="0" max="9" inputmode="numeric" pattern="[0-9]" required>
+                    </div>
+                    <button type="submit">Enter</button>
+                </form>
+            </div>
         </div>
-    </div>
-    <script src="script.js"></script>
-</body>
+        <script src="script.js"></script>
+    </body>
 </html> 
