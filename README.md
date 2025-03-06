@@ -20,9 +20,9 @@ To Do:
 
 5. Need to fix the practise mode... initial screen looks decent, but actual practise mode sucks (layout, thought process, usability, personalisation etc)
 
-6. Add a log out button to the home screen and a coin system to unlock custom picturebook printed and sent to child!
-
-7. Fix the UI of pin page so that it has 4 simple boxes spaced evenly in one row in the center of the page. Align all items to the center of the page too. Add same bg as other pages.
+6. Add a log out button to the home screen (top left) and a coin system (top right) to unlock custom picturebook printed and sent to child!
+        a. Fix the home page buttons and potentially the layout too.
+        b. Could add simple tabs in between stories to show practise questions... incase users want to exit and come back to them
 
 Look into:
 

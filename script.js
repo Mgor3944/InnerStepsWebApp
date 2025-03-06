@@ -294,6 +294,103 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Add pronoun sets to our data structure
+function initializeUserData() {
+    if (!localStorage.getItem('user_data')) {
+        const initialData = {
+            gender: '',
+            pronouns: {
+                subject: '',    // he/she/they
+                object: '',     // him/her/them
+                possessive: '', // his/her/their
+            },
+            character: '',
+            characterName: '',
+            hobbies: [],
+            adventure: '',
+            mood: '',
+            progress: 0
+        };
+        localStorage.setItem('user_data', JSON.stringify(initialData));
+    }
+    return JSON.parse(localStorage.getItem('user_data'));
+}
+
+// Function to set pronouns based on gender
+function updatePronouns(gender) {
+    const pronounSets = {
+        'boy': {
+            subject: 'he',
+            object: 'him',
+            possessive: 'his'
+        },
+        'girl': {
+            subject: 'she',
+            object: 'her',
+            possessive: 'her'
+        },
+        'other': {
+            subject: 'they',
+            object: 'them',
+            possessive: 'their'
+        }
+    };
+
+    const userData = JSON.parse(localStorage.getItem('user_data'));
+    userData.pronouns = pronounSets[gender];
+    localStorage.setItem('user_data', JSON.stringify(userData));
+
+    // Update any pronoun placeholders in the UI
+    updatePronounPlaceholders();
+}
+
+// Function to update pronoun placeholders in the UI
+function updatePronounPlaceholders() {
+    const userData = JSON.parse(localStorage.getItem('user_data'));
+    if (!userData || !userData.pronouns) return;
+
+    // Update character name title
+    const characterNameTitle = document.querySelector('#step4 h1');
+    if (characterNameTitle) {
+        characterNameTitle.textContent = `What's ${userData.pronouns.possessive} Name?`;
+    }
+
+    // Update all pronoun spans in the document
+    document.querySelectorAll('.character-pronoun').forEach(span => {
+        const type = span.dataset.pronounType || 'subject'; // default to subject pronoun
+        span.textContent = userData.pronouns[type];
+    });
+}
+
+// Update user data in localStorage
+function updateUserData(key, value) {
+    const userData = JSON.parse(localStorage.getItem('user_data')) || initializeUserData();
+    userData[key] = value;
+    localStorage.setItem('user_data', JSON.stringify(userData));
+    
+    // If updating character name, refresh all name placeholders
+    if (key === 'characterName') {
+        updateNamePlaceholders();
+    }
+}
+
+// New function to update name placeholders
+function updateNamePlaceholders() {
+    const userData = JSON.parse(localStorage.getItem('user_data'));
+    if (!userData || !userData.characterName) return;
+
+    // Update all character name placeholders
+    document.querySelectorAll('.character-name-placeholder').forEach(element => {
+        // Check if we need to add possessive 's
+        if (element.dataset.possessive === 'true') {
+            element.textContent = `${userData.characterName}'s`;
+        } else {
+            element.textContent = userData.characterName;
+        }
+    });
+}
+
+// Modify the nextStep function to handle pronoun updates
 function nextStep(current, next) {
     // Only validate if moving forward (next > current)
     if (next > current) {
@@ -331,6 +428,45 @@ function nextStep(current, next) {
         
         // Clear any remaining errors before moving to next step
         inputs.forEach(input => clearError(input));
+
+        // Save form data based on current step
+        switch(current) {
+            case 2:
+                const gender = document.querySelector('input[name="gender"]:checked')?.value;
+                if (gender) {
+                    updateUserData('gender', gender);
+                    updatePronouns(gender); // Update pronouns when gender is selected
+                }
+                break;
+            case 3:
+                const character = document.querySelector('input[name="character"]:checked')?.value;
+                if (character) updateUserData('character', character);
+                break;
+            case 4:
+                const characterName = document.getElementById('characterName').value;
+                if (characterName) {
+                    updateUserData('characterName', characterName);
+                    // Name placeholders will be updated by updateUserData
+                }
+                break;
+            case 5:
+                const hobbies = Array.from(document.querySelectorAll('input[name="hobbies"]:checked'))
+                    .map(checkbox => checkbox.value);
+                updateUserData('hobbies', hobbies);
+                break;
+            case 6:
+                const adventure = document.querySelector('input[name="adventure"]:checked')?.value;
+                if (adventure) updateUserData('adventure', adventure);
+                break;
+            case 7:
+                const mood = document.querySelector('input[name="mood"]:checked')?.value;
+                if (mood) updateUserData('mood', mood);
+                break;
+        }
+
+        // Update progress
+        const progress = (next / 7) * 100;
+        updateUserData('progress', progress);
     }
     
     // Update progress bar
@@ -1178,3 +1314,22 @@ function initWelcomeAnimation() {
         welcomeButton.classList.add('show');
     }, 7500);
 }
+
+// Add event listeners for gender selection to update pronouns immediately
+document.addEventListener('DOMContentLoaded', function() {
+    initializeUserData();
+    updateNamePlaceholders(); // Update name placeholders on page load
+
+    // Add event listeners to gender radio buttons
+    document.querySelectorAll('input[name="gender"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            updatePronouns(this.value);
+        });
+    });
+
+    // Check if we already have gender data and update pronouns
+    const userData = JSON.parse(localStorage.getItem('user_data'));
+    if (userData && userData.gender) {
+        updatePronouns(userData.gender);
+    }
+});
