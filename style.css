@@ -41,7 +41,7 @@ p {
 }
 
 button {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Quicksand', cursive, sans-serif;
     background-color: #8DBA36;
     border: none;
     border-bottom: 7px solid #658624;
@@ -1902,15 +1902,16 @@ body.story-page {
     background-color: #DAF5E6;
     border: 1px solid #fff;
     padding: 15px 20px;
-    border-radius: 12px;
+    border-radius: 20px 20px 0 20px;
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease, width 0.3s ease, height 0.3s ease;
     width: max-content;
     min-width: 50px;
     max-width: 100%;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    position: relative;
 }
 
 .welcome-box.show {
@@ -1926,18 +1927,32 @@ body.story-page {
     word-wrap: break-word;
     overflow-wrap: break-word;
     text-align: left;
-    font-weight: 500;
-    font-size: 16px;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 2.2;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    /* padding: 15px 20px; */
+    box-sizing: border-box;
 }
 
 .welcome-box.show p.show {
     opacity: 1;
+    position: relative;
 }
 
 .typing-dots {
     display: none;
     gap: 8px;
     padding: 5px;
+    width: max-content;
+    height: max-content;
+    position: relative;
 }
 
 .typing-dots.show {
@@ -1972,6 +1987,17 @@ body.story-page {
 
 #welcomeBox2, #welcomeBox3 {
     width: max-content;
+}
+
+.welcome-button {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.welcome-button.show {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* === GENDER SELECTION STYLES === */
