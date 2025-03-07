@@ -245,7 +245,6 @@ class UserManager {
                 name: this.userData.name,
                 age: this.userData.age,
                 interests: this.userData.interests,
-                favorite_color: this.userData.favorite_color,
                 favorite_animal: this.userData.favorite_animal,
                 progress: this.userData.progress,
                 stories: Object.keys(this.userData.stories).reduce((acc, storyId) => {
@@ -733,7 +732,6 @@ async function handleFormSubmit(e) {
         character: formData.get('character'),
         characterName: formData.get('characterName'),
         hobbies: Array.from(formData.getAll('hobbies')),
-        favorite_color: formData.get('favorite_color'),
         progress: {
             selectedCharacter: formData.get('character'),
             selectedStoryline: formData.get('adventure'),
@@ -1044,6 +1042,41 @@ function initPracticePage() {
         if (progressText) progressText.textContent = `Question ${currentScenarioIndex + 1} of ${practice.scenarios.length}`;
     }
 
+    // Add showSummary function
+    function showSummary() {
+        const scenarioSection = document.querySelector('.scenario-section');
+        if (scenarioSection) {
+            scenarioSection.innerHTML = `
+                <h2>Great job!</h2>
+                <p>You've completed all the practice scenarios.</p>
+                <div class="summary-stats">
+                    <p>Average worry level: ${calculateAverageWorry(ratings)}</p>
+                    <p>Highest worry: ${Math.max(...ratings)}</p>
+                    <p>Lowest worry: ${Math.min(...ratings)}</p>
+                </div>
+                <button class="finish-btn" onclick="goToJourneyMap()">Return to Journey Map</button>
+            `;
+        }
+        
+        // Save the ratings to user analytics
+        if (!userManager.userData.analytics) {
+            userManager.userData.analytics = { worry_ratings: [] };
+        }
+        userManager.userData.analytics.worry_ratings.push({
+            story_id: userManager.userData.progress.current_story,
+            timestamp: new Date().toISOString(),
+            ratings: ratings
+        });
+        userManager.saveUserData();
+    }
+
+    // Helper function to calculate average worry
+    function calculateAverageWorry(ratings) {
+        if (!ratings.length) return 0;
+        const sum = ratings.reduce((a, b) => a + b, 0);
+        return Math.round((sum / ratings.length) * 10) / 10;
+    }
+
     // Initialize overview screen
     function showOverview() {
         const overviewSection = document.querySelector('.overview-section');
@@ -1158,7 +1191,6 @@ function personalizeText(text, userData) {
     const placeholders = {
         name: userData.name,
         age: userData.age,
-        favorite_color: userData.favorite_color,
         interests: userData.interests ? userData.interests.join(', ') : '',
         first_interest: userData.interests && userData.interests.length > 0 ? userData.interests[0] : '',
         second_interest: userData.interests && userData.interests.length > 1 ? userData.interests[1] : ''
@@ -1226,108 +1258,82 @@ async function initJourneyMap() {
         progressBar.style.width = `${Math.max(5, progressPercentage)}%`;
     }
     
-    // Update story nodes status
-    const storyNodes = document.querySelectorAll('.story-node');
-    let foundNextToComplete = false;
+    // Get the container for story nodes
+    const storyNodesContainer = document.querySelector('.story-nodes-container');
+    if (!storyNodesContainer) return;
+
+    // Clear existing story nodes
+    storyNodesContainer.innerHTML = '';
     
-    storyNodes.forEach((node, index) => {
-        const storyId = node.id;
+    // Get current character and storyline
+    const character = userManager.userData.progress.selectedCharacter;
+    const storyline = userManager.userData.progress.selectedStoryline;
+    const structureStories = userManager.structureData.chapter_1.storylines[storyline].stories;
+    
+    // Create story nodes
+    let foundNextToComplete = false;
+    Object.entries(structureStories).forEach(([storyId, storyData]) => {
         const story = userManager.userData.stories[storyId];
+        const isCompleted = story?.completed || false;
         
-        if (!story) return;
-        
-        if (story.completed) {
-            node.setAttribute('data-status', 'completed');
+        // Determine node status
+        let status;
+        if (isCompleted) {
+            status = 'completed';
         } else if (!foundNextToComplete) {
-            node.setAttribute('data-status', 'next-to-complete');
+            status = 'next-to-complete';
             foundNextToComplete = true;
         } else {
-            node.setAttribute('data-status', 'locked');
+            status = 'locked';
         }
+
+        // Create story node
+        const storyNode = document.createElement('div');
+        storyNode.className = 'story-node';
+        storyNode.id = storyId;
+        storyNode.setAttribute('data-status', status);
+
+        // Create cover image container
+        const coverContainer = document.createElement('div');
+        coverContainer.className = 'story-cover';
         
-        // Add click handlers for interactive nodes
-        if (node.getAttribute('data-status') !== 'locked') {
-            node.addEventListener('click', () => startStory(storyId));
+        // Create and set up image
+        const coverImage = document.createElement('img');
+        const imagePath = storyData.cover_image.replace('[character]', character);
+        coverImage.src = imagePath;
+        coverImage.alt = storyData.title;
+        
+        // Add error handling for cover image
+        coverImage.onerror = function() {
+            console.log(`Failed to load cover image: ${this.src}`);
+            this.src = 'assets/images/default_placeholder.png';
+        };
+        
+        // Create title and button
+        const title = document.createElement('h3');
+        title.textContent = storyData.title;
+        
+        const button = document.createElement('button');
+        if (status === 'locked') {
+            button.textContent = 'Locked';
+            button.disabled = true;
+            button.style.pointerEvents = 'none';
+        } else {
+            button.textContent = status === 'completed' ? 'Read Again' : 'Begin Adventure';
+            button.onclick = () => startStory(storyId);
         }
+
+        // Assemble the node
+        coverContainer.appendChild(coverImage);
+        storyNode.appendChild(coverContainer);
+        storyNode.appendChild(title);
+        storyNode.appendChild(button);
+        
+        // Add to container
+        storyNodesContainer.appendChild(storyNode);
     });
 }
 
-function lockStoryNode(node) {
-    updateStoryNodeStatus(node, 'locked');
-    const title = node.querySelector('h3');
-    const button = node.querySelector('button');
-    
-    // Store original content as data attributes
-    if (!title.hasAttribute('data-original-text')) {
-        title.dataset.originalText = title.textContent;
-        button.dataset.originalText = button.textContent;
-    }
-    
-    // Update to locked content
-    title.textContent = '????';
-    button.textContent = 'Haven\'t Unlocked Yet';
-    button.disabled = true;
-    button.style.pointerEvents = 'none';
-}
-
-function unlockStoryNode(node) {
-    const title = node.querySelector('h3');
-    const button = node.querySelector('button');
-    
-    // Restore original content if it exists
-    if (title.hasAttribute('data-original-text')) {
-        title.textContent = title.dataset.originalText;
-    }
-    
-    // Enable the button and set its text
-    button.textContent = 'Begin Adventure';
-    button.disabled = false;
-    button.style.pointerEvents = 'auto';
-    
-    // Get the story ID from the node
-    const storyId = node.id;
-    
-    // Remove any existing click handler
-    button.onclick = null;
-    
-    // Add the click handler
-    button.addEventListener('click', () => {
-        if (userManager.userData.stories[storyId]) {
-            startStory(storyId);
-        }
-    });
-}
-
-function updateStoryNodeStatus(node, status, checkAnimation = true) {
-    node.setAttribute('data-status', status);
-    const button = node.querySelector('button');
-    
-    if (status === 'completed') {
-        button.textContent = 'Read Again';
-        button.disabled = false;
-        button.style.pointerEvents = 'auto';
-    } else if (status === 'next-to-complete' && checkAnimation) {
-        button.disabled = false;
-        button.style.pointerEvents = 'auto';
-        
-        // Only show animation if this story hasn't been unlocked before
-        const storyId = node.id;
-        const hasBeenUnlocked = localStorage.getItem(`${storyId}_unlocked`) === 'true';
-        
-        if (!hasBeenUnlocked) {
-            node.setAttribute('data-animation', 'unlocking');
-            
-            // Remove animation attributes after animation completes
-            node.addEventListener('animationend', () => {
-                node.removeAttribute('data-animation');
-                // Mark this story as having shown its unlock animation
-                localStorage.setItem(`${storyId}_unlocked`, 'true');
-            }, { once: true });
-        }
-    }
-}
-
-// Update the completeStory function to handle story progression
 function completeStory() {
     const currentStoryId = userManager.userData.progress.current_story;
     
@@ -1369,7 +1375,6 @@ function personalizeStoryText(text) {
     return text
         .replace(/\[name\]/g, userData.name || '[name]')
         .replace(/\[age\]/g, userData.age || '[age]')
-        .replace(/\[favorite_color\]/g, userData.favorite_color || '[favorite_color]')
         .replace(/\[they\]/g, pronouns.they)
         .replace(/\[their\]/g, pronouns.their)
         .replace(/\[them\]/g, pronouns.them);
