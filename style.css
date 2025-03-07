@@ -1637,7 +1637,7 @@ body.story-page {
     pointer-events: auto;
 }
 
-/* Fixed header container */
+/* === HEADER CONTAINER STYLES === */
 .header-container {
     position: fixed;
     top: 0;
@@ -1653,6 +1653,17 @@ body.story-page {
     padding: 20px;
     text-align: center;
     color: #164E75;
+}
+
+.header-container .first-visit,
+.header-container .return-visit {
+    display: none;
+}
+
+.header-container .first-visit.show,
+.header-container .return-visit.show {
+    display: block;
+    animation: fadeIn 0.5s ease-out;
 }
 
 /* === PRACTICE PROGRESS BAR STYLES === */

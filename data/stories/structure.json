@@ -1,0 +1,109 @@
+{
+    "storylines": {
+        "umbrella_racing": {
+            "stories": {
+                "story1": {
+                    "title": "The Invitation",
+                    "description": "A mysterious invitation arrives to join the Flying Umbrella Racing League.",
+                    "practice": {
+                        "title": "Understanding Our Worries",
+                        "scenarios": [
+                            {
+                                "text": "How worried do you feel when trying something new?",
+                                "type": "worry_rating"
+                            },
+                            {
+                                "text": "What helps you feel brave when facing a challenge?",
+                                "type": "reflection"
+                            }
+                        ]
+                    }
+                },
+                "story2": {
+                    "title": "First Flight",
+                    "description": "Learning to fly isn't easy, but that's okay.",
+                    "practice": {
+                        "title": "Managing Our Worries",
+                        "scenarios": [
+                            {
+                                "text": "How do you feel when things don't go as planned?",
+                                "type": "worry_rating"
+                            },
+                            {
+                                "text": "What helps you stay calm in difficult situations?",
+                                "type": "reflection"
+                            }
+                        ]
+                    }
+                },
+                "story3": {
+                    "title": "Making the Team",
+                    "description": "Sometimes the best support comes from unexpected places.",
+                    "practice": {
+                        "title": "Working with Others",
+                        "scenarios": [
+                            {
+                                "text": "How do you feel about asking for help?",
+                                "type": "worry_rating"
+                            },
+                            {
+                                "text": "What makes a good friend?",
+                                "type": "reflection"
+                            }
+                        ]
+                    }
+                },
+                "story4": {
+                    "title": "The Big Race",
+                    "description": "It's not about winning, it's about believing in yourself.",
+                    "practice": {
+                        "title": "Celebrating Progress",
+                        "scenarios": [
+                            {
+                                "text": "How do you feel about your journey so far?",
+                                "type": "reflection"
+                            },
+                            {
+                                "text": "What's your proudest moment?",
+                                "type": "reflection"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "alt_storyline": {
+            "title": "Alternative Storyline",
+            "stories": {
+                "story1": {
+                    "title": "Building Self-Confidence",
+                    "description": "A story about finding inner strength",
+                    "practice": {
+                        "type": "confidence_rating"
+                    }
+                },
+                "story2": {
+                    "title": "Social Confidence",
+                    "description": "Learning to be confident with others",
+                    "practice": {
+                        "type": "confidence_rating"
+                    }
+                },
+                "story3": {
+                    "title": "Overcoming Challenges",
+                    "description": "Growing through difficulties",
+                    "practice": {
+                        "type": "confidence_rating"
+                    }
+                },
+                "story4": {
+                    "title": "Celebrating Progress",
+                    "description": "Recognizing personal growth",
+                    "practice": {
+                        "type": "confidence_rating"
+                    }
+                }
+            }
+        }
+    }
+} 

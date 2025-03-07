@@ -1,9 +1,24 @@
 // === USER AUTHENTICATION AND DATA MANAGEMENT ===
 class UserManager {
+    // Define character constants
+    static CHARACTERS = {
+        PIP: 'pip',
+        KOA: 'koa',
+        MILO: 'milo',
+        ZURI: 'zuri'
+    };
+
+    // Define storyline constants
+    static STORYLINES = {
+        UMBRELLA_RACING: 'umbrella_racing',
+        ALT_STORYLINE: 'alt_storyline'
+    };
+
     constructor() {
         this.currentPin = null;
         this.userData = null;
-        this.baseData = null; // Store the base data from JSON
+        this.baseData = null;
+        this.structureData = null;
     }
 
     async initialize() {
@@ -12,17 +27,19 @@ class UserManager {
         if (storedPin) {
             this.currentPin = storedPin;
             await this.loadUserData();
+            // Load story structure data
+            await this.loadStoryStructure();
         }
     }
 
-    async validatePin(pin) {
+    async loadStoryStructure() {
         try {
-            const response = await fetch('data/valid_pins.json');
-            const data = await response.json();
-            return data.valid_pins.includes(pin);
+            const response = await fetch('data/stories/structure.json');
+            this.structureData = await response.json();
+            return this.structureData;
         } catch (error) {
-            console.error('Error validating PIN:', error);
-            return false;
+            console.error('Error loading story structure:', error);
+            return null;
         }
     }
 
@@ -34,20 +51,117 @@ class UserManager {
             this.baseData = data;
 
             // Get the base profile for this PIN
-            const baseProfile = data.user_profiles[this.currentPin];
+            const baseProfile = data.user_profiles[this.currentPin] || {};
+            
+            // Initialize default values if they don't exist
+            const defaultProfile = {
+                progress: {
+                    current_story: 'story1',
+                    chapter1_progress: 0,
+                    selectedCharacter: UserManager.CHARACTERS.PIP, // Default to Pip
+                    selectedStoryline: UserManager.STORYLINES.UMBRELLA_RACING // Default to Umbrella Racing
+                },
+                stories: {},  // Will be populated based on character and storyline selection
+                analytics: { worry_ratings: [] }
+            };
             
             // Try to get any stored modifications from localStorage
             const storedData = localStorage.getItem(`user_data_${this.currentPin}`);
             const localData = storedData ? JSON.parse(storedData) : null;
 
-            // Merge the base profile with any local modifications
-            this.userData = localData ? this.mergeUserData(baseProfile, localData) : baseProfile;
+            // Merge the base profile with any local modifications and defaults
+            this.userData = localData ? 
+                this.mergeUserData({ ...defaultProfile, ...baseProfile }, localData) : 
+                { ...defaultProfile, ...baseProfile };
+            
+            // If character and storyline are selected, load the appropriate stories
+            if (this.userData.progress.selectedCharacter && this.userData.progress.selectedStoryline) {
+                await this.loadStoriesForSelection();
+            }
             
             return this.userData;
         } catch (error) {
             console.error('Error loading user data:', error);
             return null;
         }
+    }
+
+    async loadStoriesForSelection() {
+        try {
+            const character = this.userData.progress.selectedCharacter;
+            const storyline = this.userData.progress.selectedStoryline;
+            
+            // Load the stories data for this combination
+            const storiesResponse = await fetch(`data/stories/${character}_${storyline}.json`);
+            const storiesData = await storiesResponse.json();
+            
+            // Load the structure data if not already loaded
+            if (!this.structureData) {
+                await this.loadStoryStructure();
+            }
+            
+            // Merge story content with structure data
+            const mergedStories = {};
+            Object.keys(storiesData.stories).forEach(storyId => {
+                mergedStories[storyId] = {
+                    ...this.structureData.storylines[storyline].stories[storyId],
+                    ...storiesData.stories[storyId],
+                    completed: false
+                };
+            });
+            
+            // Update the stories in userData
+            this.userData.stories = mergedStories;
+            
+            // Ensure story progress is maintained if there's local data
+            const storedData = localStorage.getItem(`user_data_${this.currentPin}`);
+            const localData = storedData ? JSON.parse(storedData) : null;
+            
+            if (localData && localData.stories) {
+                Object.keys(localData.stories).forEach(storyId => {
+                    if (this.userData.stories[storyId]) {
+                        this.userData.stories[storyId].completed = localData.stories[storyId].completed;
+                    }
+                });
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Error loading stories for selection:', error);
+            return false;
+        }
+    }
+
+    // Helper method to validate character selection
+    isValidCharacter(character) {
+        return Object.values(UserManager.CHARACTERS).includes(character);
+    }
+
+    // Helper method to validate storyline selection
+    isValidStoryline(storyline) {
+        return Object.values(UserManager.STORYLINES).includes(storyline);
+    }
+
+    async setCharacterAndStoryline(character, storyline) {
+        // Validate inputs
+        if (!this.isValidCharacter(character)) {
+            console.error('Invalid character selected:', character);
+            return false;
+        }
+        if (!this.isValidStoryline(storyline)) {
+            console.error('Invalid storyline selected:', storyline);
+            return false;
+        }
+
+        this.userData.progress.selectedCharacter = character;
+        this.userData.progress.selectedStoryline = storyline;
+        
+        // Load the appropriate stories
+        await this.loadStoriesForSelection();
+        
+        // Save the updated user data
+        this.saveUserData();
+        return true;
     }
 
     mergeUserData(baseProfile, localData) {
@@ -159,6 +273,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             return;
         }
         initOnboardingForm();
+    } else if (document.querySelector('.journey-page')) {
+        // Initialize journey map if we're on the journey page
+        initJourneyMap();
     } else {
         initializeAppropriateView();
     }
@@ -555,42 +672,45 @@ function handleFormSubmit(e) {
     
     // Collect all form data
     const formData = new FormData(form);
+    const selectedCharacter = formData.get('character');
+    
+    // Map the form's character value to our character constants
+    const characterMap = {
+        'character1': UserManager.CHARACTERS.PIP,
+        'character2': UserManager.CHARACTERS.KOA,
+        'character3': UserManager.CHARACTERS.MILO,
+        'character4': UserManager.CHARACTERS.ZURI
+    };
+
     const profileData = {
+        name: formData.get('name'),
         gender: formData.get('gender'),
-        character: formData.get('character'),
+        character: characterMap[selectedCharacter] || UserManager.CHARACTERS.PIP,
         characterName: formData.get('characterName'),
         hobbies: Array.from(formData.getAll('hobbies')),
-        adventure: formData.get('adventure'),
-        mood: formData.get('mood')
+        favorite_color: formData.get('favorite_color'),
+        progress: {
+            selectedCharacter: characterMap[selectedCharacter] || UserManager.CHARACTERS.PIP,
+            selectedStoryline: UserManager.STORYLINES.UMBRELLA_RACING,
+            current_story: 'story1',
+            chapter1_progress: 0
+        }
     };
 
     // Add a delay to show the loading animation
     setTimeout(async () => {
         try {
-            // Get the current base data
-            const response = await fetch('data/user_data.json');
-            const data = await response.json();
+            // Update UserManager with the new profile data
+            await userManager.updateUserProfile(profileData);
             
-            // Get the base profile for this PIN
-            const baseProfile = data.user_profiles[userManager.currentPin];
-            
-            // Create a new merged profile
-            const mergedProfile = {
-                ...baseProfile,
-                ...profileData,
-                progress: baseProfile.progress,
-                stories: baseProfile.stories,
-                analytics: baseProfile.analytics || { worry_ratings: [] }
-            };
-
-            // Save to localStorage
-            localStorage.setItem(`user_data_${userManager.currentPin}`, JSON.stringify(mergedProfile));
-            
-            // Update UserManager
-            userManager.userData = mergedProfile;
+            // Set the character and storyline
+            await userManager.setCharacterAndStoryline(
+                profileData.progress.selectedCharacter,
+                profileData.progress.selectedStoryline
+            );
             
             // Redirect to story page
-            window.location.href = 'story.html';
+            window.location.href = 'index.html';
         } catch (error) {
             console.error('Error:', error);
             alert('There was a problem saving your information. Please try again.');
@@ -612,17 +732,23 @@ function handleFormSubmit(e) {
 // === STORY PAGE CODE ===
 function initStoryPage() {
     console.log('Initializing story page...');
-    console.log('User data:', userManager.userData);
+    
+    // Ensure user data and story selection are available
+    if (!userManager.userData || !userManager.userData.progress.selectedCharacter || !userManager.userData.progress.selectedStoryline) {
+        console.error('Missing character or storyline selection');
+        window.location.href = 'index.html';
+        return;
+    }
     
     // Get current story data
-    const currentStoryId = userManager.userData.progress.current_story || 'story1';
+    const currentStoryId = userManager.userData.progress.current_story;
     console.log('Current story ID:', currentStoryId);
     
     const currentStory = userManager.userData.stories[currentStoryId];
     console.log('Current story data:', currentStory);
     
-    if (!currentStory) {
-        console.error('No story found!');
+    if (!currentStory || !currentStory.pages || currentStory.pages.length === 0) {
+        console.error('No valid story content found!');
         window.location.href = 'index.html';
         return;
     }
@@ -633,6 +759,15 @@ function initStoryPage() {
     
     // Create story pages
     const storyTextContainer = document.querySelector('.story-text');
+    if (!storyTextContainer) {
+        console.error('Story text container not found!');
+        return;
+    }
+    
+    // Clear any existing content
+    storyTextContainer.innerHTML = '';
+    
+    // Create pages
     currentStory.pages.forEach((page, index) => {
         const pageDiv = document.createElement('div');
         pageDiv.id = `page${index + 1}`;
@@ -645,7 +780,7 @@ function initStoryPage() {
             pageDiv.innerHTML = `<h4>${currentStory.title}</h4>`;
         }
         
-        // Add text content
+        // Add text content with personalization
         const p = document.createElement('p');
         p.textContent = personalizeStoryText(page.text);
         pageDiv.appendChild(p);
@@ -657,6 +792,13 @@ function initStoryPage() {
     const storyImage = document.getElementById('storyImage');
     if (storyImage && currentStory.pages[0]) {
         storyImage.src = currentStory.pages[0].image;
+        storyImage.alt = `Page 1 of ${currentStory.title}`;
+        
+        // Add error handling for images
+        storyImage.onerror = function() {
+            console.error(`Failed to load image: ${this.src}`);
+            this.src = '/images/placeholder.jpg'; // Fallback image
+        };
     }
     
     // Add event listeners for navigation buttons
@@ -1028,80 +1170,70 @@ function updateUserProgress() {
 }
 
 // === JOURNEY MAP HANDLING ===
-function initJourneyMap() {
-    if (document.querySelector('.journey-page')) {
-        // Get completion status of all stories from userData instead of localStorage
-        const userData = userManager.userData;
-        if (!userData || !userData.stories) {
-            console.error('No user data or stories found');
-            return;
-        }
-
-        // Calculate chapter progress based on userData
-        const completedStories = Object.values(userData.stories)
-            .filter(story => story.completed).length;
-        const totalStories = Object.keys(userData.stories).length;
-        const progressPercentage = (completedStories / totalStories) * 100;
-        
-        // Update progress bar
-        const progressBar = document.querySelector('.chapter-progress-bar');
-        if (progressBar) {
-            progressBar.style.width = `${Math.max(5, progressPercentage)}%`;
-        }
-        
-        // Update story nodes status
-        const storyNodes = document.querySelectorAll('.story-node');
-        
-        // Update each story node based on user data
-        storyNodes.forEach((node, index) => {
-            const storyId = `story${index + 1}`;
-            const storyData = userData.stories[storyId];
-            
-            if (!storyData) {
-                // If no story data exists, keep it locked
-                lockStoryNode(node);
-                return;
-            }
-
-            // Update node content with story data
-            const title = node.querySelector('h3');
-            const coverImg = node.querySelector('.story-cover img');
-            if (title && storyData.title) {
-                title.textContent = storyData.title;
-            }
-            if (coverImg && storyData.cover_image) {
-                coverImg.src = storyData.cover_image;
-                coverImg.alt = storyData.title || `Story ${index + 1}`;
-            }
-
-            // Update story states based on completion
-            if (storyData.completed) {
-                updateStoryNodeStatus(node, 'completed', false);
-                // If this story is completed, unlock the next one
-                if (storyNodes[index + 1]) {
-                    unlockStoryNode(storyNodes[index + 1]);
-                    updateStoryNodeStatus(storyNodes[index + 1], 'next-to-complete', true);
-                }
-            } else if (index === 0 || (index > 0 && userData.stories[`story${index}`]?.completed)) {
-                // First story or previous story is completed
-                unlockStoryNode(node);
-                updateStoryNodeStatus(node, 'next-to-complete', true);
-            } else {
-                lockStoryNode(node);
-            }
-
-            // Add click handler
-            const button = node.querySelector('button');
-            if (button) {
-                button.onclick = null; // Remove any existing onclick handler
-                button.addEventListener('click', () => {
-                    if (storyData && !button.disabled) {
-                        startStory(storyId);
-                    }
-                });
-            }
-        });
+async function initJourneyMap() {
+    if (!document.querySelector('.journey-page')) return;
+    
+    // Ensure user data is loaded
+    if (!userManager.userData) {
+        await userManager.loadUserData();
     }
+    
+    // Check user data again after loading
+    if (!userManager.userData || !userManager.userData.stories) {
+        console.error('No user data or stories found');
+        // Redirect to login if no valid user data
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Show appropriate welcome message
+    const firstVisit = document.querySelector('.first-visit');
+    const returnVisit = document.querySelector('.return-visit');
+    const hasVisitedBefore = localStorage.getItem('has_visited_journey');
+
+    if (!hasVisitedBefore) {
+        firstVisit.classList.add('show');
+        localStorage.setItem('has_visited_journey', 'true');
+    } else {
+        returnVisit.classList.add('show');
+    }
+
+    // Calculate chapter progress based on userData
+    const completedStories = Object.values(userManager.userData.stories)
+        .filter(story => story.completed).length;
+    const totalStories = Object.keys(userManager.userData.stories).length;
+    const progressPercentage = (completedStories / totalStories) * 100;
+    
+    // Update progress bar
+    const progressBar = document.querySelector('.chapter-progress-bar');
+    if (progressBar) {
+        progressBar.style.width = `${Math.max(5, progressPercentage)}%`;
+    }
+    
+    // Update story nodes status
+    const storyNodes = document.querySelectorAll('.story-node');
+    let foundNextToComplete = false;
+    
+    storyNodes.forEach((node, index) => {
+        const storyId = node.id;
+        const story = userManager.userData.stories[storyId];
+        
+        if (!story) return;
+        
+        if (story.completed) {
+            node.setAttribute('data-status', 'completed');
+        } else if (!foundNextToComplete) {
+            node.setAttribute('data-status', 'next-to-complete');
+            foundNextToComplete = true;
+        } else {
+            node.setAttribute('data-status', 'locked');
+        }
+        
+        // Add click handlers for interactive nodes
+        if (node.getAttribute('data-status') !== 'locked') {
+            node.addEventListener('click', () => startStory(storyId));
+        }
+    });
 }
 
 function lockStoryNode(node) {
@@ -1210,10 +1342,21 @@ function personalizeStoryText(text) {
     const userData = userManager.userData;
     if (!userData) return text;
     
+    // Get pronouns based on selected character
+    const pronouns = {
+        they: 'they',
+        their: 'their',
+        them: 'them'
+    };
+    
+    // Replace all placeholders
     return text
         .replace(/\[name\]/g, userData.name || '[name]')
         .replace(/\[age\]/g, userData.age || '[age]')
-        .replace(/\[favorite_color\]/g, userData.favorite_color || '[favorite_color]');
+        .replace(/\[favorite_color\]/g, userData.favorite_color || '[favorite_color]')
+        .replace(/\[they\]/g, pronouns.they)
+        .replace(/\[their\]/g, pronouns.their)
+        .replace(/\[them\]/g, pronouns.them);
 }
 
 // Update startStory function to handle story data validation
