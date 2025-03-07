@@ -45,34 +45,21 @@ class UserManager {
 
     async loadUserData() {
         try {
-            // First load the base data from JSON
-            const response = await fetch('data/user_data.json');
-            const data = await response.json();
-            this.baseData = data;
-
-            // Get the base profile for this PIN
-            const baseProfile = data.user_profiles[this.currentPin] || {};
-            
-            // Initialize default values if they don't exist
+            // Initialize default values
             const defaultProfile = {
                 progress: {
                     current_story: 'story1',
                     chapter1_progress: 0,
-                    selectedCharacter: UserManager.CHARACTERS.PIP, // Default to Pip
-                    selectedStoryline: UserManager.STORYLINES.UMBRELLA_RACING // Default to Umbrella Racing
+                    selectedCharacter: UserManager.CHARACTERS.PIP,
+                    selectedStoryline: UserManager.STORYLINES.UMBRELLA_RACING
                 },
-                stories: {},  // Will be populated based on character and storyline selection
+                stories: {},
                 analytics: { worry_ratings: [] }
             };
             
             // Try to get any stored modifications from localStorage
             const storedData = localStorage.getItem(`user_data_${this.currentPin}`);
-            const localData = storedData ? JSON.parse(storedData) : null;
-
-            // Merge the base profile with any local modifications and defaults
-            this.userData = localData ? 
-                this.mergeUserData({ ...defaultProfile, ...baseProfile }, localData) : 
-                { ...defaultProfile, ...baseProfile };
+            this.userData = storedData ? JSON.parse(storedData) : defaultProfile;
             
             // If character and storyline are selected, load the appropriate stories
             if (this.userData.progress.selectedCharacter && this.userData.progress.selectedStoryline) {
@@ -91,24 +78,80 @@ class UserManager {
             const character = this.userData.progress.selectedCharacter;
             const storyline = this.userData.progress.selectedStoryline;
             
-            // Load the stories data for this combination
-            const storiesResponse = await fetch(`data/stories/${character}_${storyline}.json`);
-            const storiesData = await storiesResponse.json();
+            console.log(`Loading stories for character: ${character}, storyline: ${storyline}`);
             
-            // Load the structure data if not already loaded
+            // Load structure data if not already loaded
             if (!this.structureData) {
                 await this.loadStoryStructure();
             }
             
+            // Debug log the structure data
+            console.log('Structure data:', this.structureData);
+            
+            // Validate storyline exists in structure
+            if (!this.structureData?.chapter_1?.storylines?.[storyline]?.stories) {
+                console.error(`Storyline "${storyline}" or its stories not found in structure data`);
+                return false;
+            }
+            
+            // Load the stories data
+            const storiesResponse = await fetch(`data/stories/${character}_${storyline}.json`);
+            if (!storiesResponse.ok) {
+                console.error(`No story content found for ${character} with storyline ${storyline}`);
+                return false;
+            }
+            
+            const storiesData = await storiesResponse.json();
+            if (!storiesData || !storiesData.stories) {
+                console.error('Invalid story data format');
+                return false;
+            }
+            
+            // Debug log the stories data
+            console.log('Stories data:', storiesData);
+            
+            // Get structure stories and validate
+            const structureStories = this.structureData.chapter_1.storylines[storyline].stories;
+            if (!structureStories || typeof structureStories !== 'object') {
+                console.error('Invalid structure stories format');
+                return false;
+            }
+            
             // Merge story content with structure data
             const mergedStories = {};
-            Object.keys(storiesData.stories).forEach(storyId => {
+            
+            // First, validate that we have matching stories
+            const storyIds = Object.keys(storiesData.stories);
+            console.log('Story IDs to process:', storyIds);
+            
+            storyIds.forEach(storyId => {
+                const structureStory = structureStories[storyId];
+                const contentStory = storiesData.stories[storyId];
+                
+                if (!structureStory) {
+                    console.log(`Story ${storyId} not found in structure data, skipping`);
+                    return;
+                }
+                
+                if (!contentStory) {
+                    console.log(`Story ${storyId} not found in content data, skipping`);
+                    return;
+                }
+                
                 mergedStories[storyId] = {
-                    ...this.structureData.storylines[storyline].stories[storyId],
-                    ...storiesData.stories[storyId],
+                    ...contentStory,
+                    title: structureStory.title || '',
+                    description: structureStory.description || '',
+                    cover_image: structureStory.cover_image || '',
+                    practice: structureStory.practice || null,
                     completed: false
                 };
             });
+            
+            if (Object.keys(mergedStories).length === 0) {
+                console.error('No stories were successfully merged');
+                return false;
+            }
             
             // Update the stories in userData
             this.userData.stories = mergedStories;
@@ -125,9 +168,12 @@ class UserManager {
                 });
             }
             
+            console.log(`Successfully loaded stories for ${character} with storyline ${storyline}`);
+            console.log('Final merged stories:', this.userData.stories);
             return true;
         } catch (error) {
-            console.error('Error loading stories for selection:', error);
+            console.error('Error loading stories:', error);
+            console.error('Error stack:', error.stack);
             return false;
         }
     }
@@ -194,7 +240,7 @@ class UserManager {
 
     saveUserData() {
         if (this.currentPin && this.userData) {
-            // Save to localStorage as before
+            // Save to localStorage
             const dataToSave = {
                 name: this.userData.name,
                 age: this.userData.age,
@@ -210,27 +256,6 @@ class UserManager {
                 }, {})
             };
             localStorage.setItem(`user_data_${this.currentPin}`, JSON.stringify(dataToSave));
-
-            // Also send to server
-            fetch('/api/updateUserData', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    pin: this.currentPin,
-                    userData: dataToSave
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.success) {
-                    console.error('Failed to save data to server:', data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error saving data to server:', error);
-            });
         }
     }
 
@@ -248,6 +273,17 @@ class UserManager {
             this.saveUserData();
         }
     }
+
+    async validatePin(pin) {
+        try {
+            const response = await fetch('data/user_data.json');
+            const data = await response.json();
+            return data.valid_pins.includes(pin);
+        } catch (error) {
+            console.error('Error validating PIN:', error);
+            return false;
+        }
+    }
 }
 
 // Initialize user manager
@@ -257,13 +293,32 @@ const userManager = new UserManager();
 document.addEventListener('DOMContentLoaded', async function() {
     await userManager.initialize();
 
+    // Check for stored PIN first
+    const storedPin = localStorage.getItem('current_pin');
+    if (storedPin) {
+        // Validate the stored PIN
+        if (await userManager.validatePin(storedPin)) {
+            userManager.currentPin = storedPin;
+            await userManager.loadUserData();
+            
+            // If we're on the login page, redirect to journey map
+            if (document.querySelector('.login-page')) {
+                window.location.href = 'index.html';
+                return;
+            }
+        } else {
+            // Invalid stored PIN, clear it
+            localStorage.removeItem('current_pin');
+        }
+    }
+
     // Handle different pages
     if (document.querySelector('.login-page')) {
         initLoginPage();
     } else if (document.querySelector('.welcome-page')) {
         initWelcomePage();
     } else if (!userManager.currentPin) {
-        // No PIN, redirect to login
+        // No valid PIN, redirect to login
         window.location.href = 'login.html';
         return;
     } else if (document.getElementById('onboardingForm')) {
@@ -274,7 +329,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         initOnboardingForm();
     } else if (document.querySelector('.journey-page')) {
-        // Initialize journey map if we're on the journey page
         initJourneyMap();
     } else {
         initializeAppropriateView();
@@ -656,7 +710,7 @@ function showLoadingOverlay() {
     document.body.appendChild(overlay);
 }
 
-function handleFormSubmit(e) {
+async function handleFormSubmit(e) {
     e.preventDefault();
     
     const form = this;
@@ -672,26 +726,17 @@ function handleFormSubmit(e) {
     
     // Collect all form data
     const formData = new FormData(form);
-    const selectedCharacter = formData.get('character');
     
-    // Map the form's character value to our character constants
-    const characterMap = {
-        'character1': UserManager.CHARACTERS.PIP,
-        'character2': UserManager.CHARACTERS.KOA,
-        'character3': UserManager.CHARACTERS.MILO,
-        'character4': UserManager.CHARACTERS.ZURI
-    };
-
     const profileData = {
         name: formData.get('name'),
         gender: formData.get('gender'),
-        character: characterMap[selectedCharacter] || UserManager.CHARACTERS.PIP,
+        character: formData.get('character'),
         characterName: formData.get('characterName'),
         hobbies: Array.from(formData.getAll('hobbies')),
         favorite_color: formData.get('favorite_color'),
         progress: {
-            selectedCharacter: characterMap[selectedCharacter] || UserManager.CHARACTERS.PIP,
-            selectedStoryline: UserManager.STORYLINES.UMBRELLA_RACING,
+            selectedCharacter: formData.get('character'),
+            selectedStoryline: formData.get('adventure'),
             current_story: 'story1',
             chapter1_progress: 0
         }
@@ -703,14 +748,23 @@ function handleFormSubmit(e) {
             // Update UserManager with the new profile data
             await userManager.updateUserProfile(profileData);
             
-            // Set the character and storyline
-            await userManager.setCharacterAndStoryline(
+            // Try to load the selected character's story content
+            const success = await userManager.setCharacterAndStoryline(
                 profileData.progress.selectedCharacter,
                 profileData.progress.selectedStoryline
             );
             
+            if (!success) {
+                console.log('Selected story content not found, falling back to default (Pip\'s Umbrella Racing)');
+                // Fall back to Pip's umbrella racing story
+                await userManager.setCharacterAndStoryline(
+                    UserManager.CHARACTERS.PIP,
+                    UserManager.STORYLINES.UMBRELLA_RACING
+                );
+            }
+            
             // Redirect to story page
-            window.location.href = 'index.html';
+            window.location.href = 'story.html';
         } catch (error) {
             console.error('Error:', error);
             alert('There was a problem saving your information. Please try again.');
@@ -791,13 +845,24 @@ function initStoryPage() {
     // Set initial image
     const storyImage = document.getElementById('storyImage');
     if (storyImage && currentStory.pages[0]) {
-        storyImage.src = currentStory.pages[0].image;
+        // Get the character and storyline for the image path
+        const character = userManager.userData.progress.selectedCharacter;
+        const storyline = userManager.userData.progress.selectedStoryline;
+        
+        // Construct the image path using assets/images directory
+        const imagePath = `assets/images/${character}/chapter_1/${storyline}/story${currentStoryId.replace('story', '')}_${window.currentPage}.jpg`;
+        console.log('Attempting to load story image:', imagePath);
+        
+        storyImage.src = imagePath;
         storyImage.alt = `Page 1 of ${currentStory.title}`;
         
         // Add error handling for images
         storyImage.onerror = function() {
-            console.error(`Failed to load image: ${this.src}`);
-            this.src = '/images/placeholder.jpg'; // Fallback image
+            console.log(`Failed to load story image: ${this.src}`);
+            // Try to load the default placeholder
+            const defaultPlaceholder = 'assets/images/default_placeholder.png';
+            console.log('Falling back to default placeholder:', defaultPlaceholder);
+            this.src = defaultPlaceholder;
         };
     }
     
@@ -965,7 +1030,7 @@ function initPracticePage() {
     }
 
     const practice = currentStory.practice;
-    let currentScenarioIndex = 0;
+    let currentScenarioIndex = -1; // Start at -1 for overview screen
     let ratings = [];
 
     // Initialize progress tracking
@@ -973,48 +1038,67 @@ function initPracticePage() {
     const progressText = document.querySelector('.progress-text');
     
     function updateProgress() {
+        if (currentScenarioIndex === -1) return; // Don't show progress on overview
         const progress = ((currentScenarioIndex) / practice.scenarios.length) * 100;
         if (progressFill) progressFill.style.width = `${progress}%`;
         if (progressText) progressText.textContent = `Question ${currentScenarioIndex + 1} of ${practice.scenarios.length}`;
     }
 
-    // Initialize thermometer
-    const worrySlider = document.querySelector('.worry-slider-horizontal');
-    const thermometerFill = document.querySelector('.thermometer-fill-horizontal');
-
-    function updateThermometer(value) {
-        const fillWidth = (value / 10) * 100;
-        if (thermometerFill) thermometerFill.style.width = `${fillWidth}%`;
+    // Initialize overview screen
+    function showOverview() {
+        const overviewSection = document.querySelector('.overview-section');
+        const scenarioSection = document.querySelector('.scenario-section');
         
-        // Update color based on value
-        if (value <= 3) {
-            thermometerFill.style.backgroundColor = '#4CAF50'; // Green for little worries
-        } else if (value <= 6) {
-            thermometerFill.style.backgroundColor = '#FFC107'; // Yellow for medium worries
-        } else if (value <= 8) {
-            thermometerFill.style.backgroundColor = '#FF9800'; // Orange for bigger worries
-        } else {
-            thermometerFill.style.backgroundColor = '#f44336'; // Red for biggest worries
+        if (overviewSection && scenarioSection) {
+            overviewSection.style.display = 'block';
+            scenarioSection.style.display = 'none';
+            
+            // Initialize demo worry meter
+            const demoSlider = overviewSection.querySelector('.worry-slider');
+            const demoThermometer = overviewSection.querySelector('.thermometer-fill');
+            
+            if (demoSlider && demoThermometer) {
+                demoSlider.addEventListener('input', (e) => {
+                    const value = e.target.value;
+                    const fillWidth = (value / 9) * 100;
+                    demoThermometer.style.width = `${fillWidth}%`;
+                    
+                    // Update color based on value
+                    if (value <= 3) {
+                        demoThermometer.style.backgroundColor = '#4CAF50'; // Green
+                    } else if (value <= 5) {
+                        demoThermometer.style.backgroundColor = '#FFC107'; // Yellow
+                    } else if (value <= 7) {
+                        demoThermometer.style.backgroundColor = '#FF9800'; // Orange
+                    } else {
+                        demoThermometer.style.backgroundColor = '#f44336'; // Red
+                    }
+                });
+            }
         }
-    }
-
-    // Event listener for slider
-    if (worrySlider) {
-        worrySlider.addEventListener('input', (e) => {
-            updateThermometer(e.target.value);
-        });
     }
 
     // Show scenario
     function showScenario(index) {
-        const scenario = practice.scenarios[index].text;
+        if (index === -1) {
+            showOverview();
+            return;
+        }
+
+        const scenario = practice.scenarios[index];
         const scenarioText = document.querySelector('.scenario-text');
-        if (scenarioText) scenarioText.textContent = scenario;
+        const overviewSection = document.querySelector('.overview-section');
+        const scenarioSection = document.querySelector('.scenario-section');
         
-        // Reset slider to 1
+        if (overviewSection) overviewSection.style.display = 'none';
+        if (scenarioSection) scenarioSection.style.display = 'block';
+        if (scenarioText) scenarioText.textContent = scenario.text;
+        
+        // Reset slider to 0
+        const worrySlider = document.querySelector('.worry-slider');
         if (worrySlider) {
-            worrySlider.value = 1;
-            updateThermometer(1);
+            worrySlider.value = 0;
+            updateThermometer(0);
         }
         
         // Update progress
@@ -1030,16 +1114,10 @@ function initPracticePage() {
 
     // Handle navigation
     const startBtn = document.querySelector('.start-btn');
-    const introSection = document.querySelector('.intro-section');
-    const scenarioSection = document.querySelector('.scenario-section');
-    
     if (startBtn) {
         startBtn.addEventListener('click', () => {
-            if (introSection) introSection.style.display = 'none';
-            if (scenarioSection) {
-                scenarioSection.style.display = 'block';
-                showScenario(0);
-            }
+            currentScenarioIndex = 0;
+            showScenario(currentScenarioIndex);
         });
     }
 
@@ -1056,7 +1134,7 @@ function initPracticePage() {
     const nextBtn = document.querySelector('.next-btn');
     if (nextBtn) {
         nextBtn.addEventListener('click', () => {
-            // Save current rating
+            const worrySlider = document.querySelector('.worry-slider');
             if (worrySlider) {
                 ratings[currentScenarioIndex] = parseInt(worrySlider.value);
             }
@@ -1070,70 +1148,8 @@ function initPracticePage() {
         });
     }
 
-    function showSummary() {
-        // Hide scenario section
-        if (scenarioSection) scenarioSection.style.display = 'none';
-        
-        // Show summary section
-        const summarySection = document.querySelector('.rating-summary');
-        if (!summarySection) return;
-        
-        summarySection.style.display = 'block';
-        
-        // Create summary content
-        let summaryHTML = '<h3>Your Worry Ratings:</h3>';
-        practice.scenarios.forEach((scenario, index) => {
-            const rating = ratings[index];
-            summaryHTML += `
-                <div class="rating-item">
-                    <div class="scenario">${scenario.text}</div>
-                    <div class="rating">Worry Level: ${rating}/10</div>
-                </div>
-            `;
-        });
-        
-        summarySection.innerHTML = summaryHTML;
-
-        // Save analytics data
-        const analyticsData = {
-            timestamp: new Date().toISOString(),
-            ratings: ratings.map((rating, index) => ({
-                scenario: practice.scenarios[index].text,
-                rating: rating
-            }))
-        };
-
-        // Update user data with analytics
-        if (!userManager.userData.analytics) {
-            userManager.userData.analytics = {};
-        }
-        if (!userManager.userData.analytics.worry_ratings) {
-            userManager.userData.analytics.worry_ratings = [];
-        }
-        userManager.userData.analytics.worry_ratings.push(analyticsData);
-        
-        // Mark story as completed
-        const currentStoryId = userManager.userData.progress.current_story;
-        if (currentStoryId) {
-            userManager.userData.stories[currentStoryId].completed = true;
-            userManager.saveUserData();
-        }
-
-        // Add return to journey button
-        const returnButton = document.createElement('button');
-        returnButton.className = 'next-btn';
-        returnButton.textContent = 'Return to Journey Map';
-        returnButton.addEventListener('click', () => {
-            window.location.href = 'index.html';
-        });
-        summarySection.appendChild(returnButton);
-    }
-
-    // Initialize first view
-    if (scenarioSection) scenarioSection.style.display = 'none';
-    const ratingSummary = document.querySelector('.rating-summary');
-    if (ratingSummary) ratingSummary.style.display = 'none';
-    updateProgress();
+    // Initialize first view (overview)
+    showScenario(-1);
 }
 
 function personalizeText(text, userData) {

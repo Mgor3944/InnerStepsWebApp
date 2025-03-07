@@ -1,106 +1,129 @@
 {
-    "storylines": {
-        "umbrella_racing": {
-            "stories": {
-                "story1": {
-                    "title": "The Invitation",
-                    "description": "A mysterious invitation arrives to join the Flying Umbrella Racing League.",
-                    "practice": {
-                        "title": "Understanding Our Worries",
-                        "scenarios": [
-                            {
-                                "text": "How worried do you feel when trying something new?",
-                                "type": "worry_rating"
-                            },
-                            {
-                                "text": "What helps you feel brave when facing a challenge?",
-                                "type": "reflection"
-                            }
-                        ]
-                    }
-                },
-                "story2": {
-                    "title": "First Flight",
-                    "description": "Learning to fly isn't easy, but that's okay.",
-                    "practice": {
-                        "title": "Managing Our Worries",
-                        "scenarios": [
-                            {
-                                "text": "How do you feel when things don't go as planned?",
-                                "type": "worry_rating"
-                            },
-                            {
-                                "text": "What helps you stay calm in difficult situations?",
-                                "type": "reflection"
-                            }
-                        ]
-                    }
-                },
-                "story3": {
-                    "title": "Making the Team",
-                    "description": "Sometimes the best support comes from unexpected places.",
-                    "practice": {
-                        "title": "Working with Others",
-                        "scenarios": [
-                            {
-                                "text": "How do you feel about asking for help?",
-                                "type": "worry_rating"
-                            },
-                            {
-                                "text": "What makes a good friend?",
-                                "type": "reflection"
-                            }
-                        ]
-                    }
-                },
-                "story4": {
-                    "title": "The Big Race",
-                    "description": "It's not about winning, it's about believing in yourself.",
-                    "practice": {
-                        "title": "Celebrating Progress",
-                        "scenarios": [
-                            {
-                                "text": "How do you feel about your journey so far?",
-                                "type": "reflection"
-                            },
-                            {
-                                "text": "What's your proudest moment?",
-                                "type": "reflection"
-                            }
-                        ]
+    "chapter_1": {
+        "storylines": {
+            "umbrella_racing": {
+                "title": "The Flying Umbrella Racing League",
+                "description": "Learn to soar through the skies and face your fears",
+                "stories": {
+                    "story1": {
+                        "title": "Discovering The Hidden Races",
+                        "description": "A mysterious invitation arrives to join the Flying Umbrella Racing League.",
+                        "cover_image": "assets/images/[character]/chapter_1/umbrella_racing/story1_cover.jpg",
+                        "practice": {
+                            "title": "Understanding Our Worries",
+                            "type": "worry_meter",
+                            "description": "Let's explore how different situations make us feel.",
+                            "instructions": "Move the slider to show how worried you feel about each situation.",
+                            "scenarios": [
+                                {
+                                    "text": "How worried do you feel about trying something new for the first time?",
+                                    "type": "worry_rating"
+                                },
+                                {
+                                    "text": "How do you feel when you have to speak in front of others?",
+                                    "type": "worry_rating"
+                                },
+                                {
+                                    "text": "How worried do you feel when meeting new friends?",
+                                    "type": "worry_rating"
+                                },
+                                {
+                                    "text": "How do you feel when you make a mistake?",
+                                    "type": "worry_rating"
+                                },
+                                {
+                                    "text": "How worried do you feel right now?",
+                                    "type": "self_assessment"
+                                }
+                            ]
+                        }
+                    },
+                    "story2": {
+                        "title": "How Pip Learned to Fly",
+                        "description": "Learning to fly isn't easy, but that's okay.",
+                        "cover_image": "/images/[character]/chapter_1/umbrella_racing/story2_cover.jpg",
+                        "practice": {
+                            "title": "Managing Our Worries",
+                            "scenarios": [
+                                {
+                                    "text": "How do you feel when things don't go as planned?",
+                                    "type": "worry_rating"
+                                },
+                                {
+                                    "text": "What helps you stay calm in difficult situations?",
+                                    "type": "reflection"
+                                }
+                            ]
+                        }
+                    },
+                    "story3": {
+                        "title": "Meeting Our Control Centre",
+                        "description": "Sometimes the best support comes from unexpected places.",
+                        "cover_image": "/images/[character]/chapter_1/umbrella_racing/story3_cover.jpg",
+                        "practice": {
+                            "title": "Working with Others",
+                            "scenarios": [
+                                {
+                                    "text": "How do you feel about asking for help?",
+                                    "type": "worry_rating"
+                                },
+                                {
+                                    "text": "What makes a good friend?",
+                                    "type": "reflection"
+                                }
+                            ]
+                        }
+                    },
+                    "story4": {
+                        "title": "The Golden Droplet Qualifiers",
+                        "description": "It's not about winning, it's about believing in yourself.",
+                        "cover_image": "/images/[character]/chapter_1/umbrella_racing/story4_cover.jpg",
+                        "practice": {
+                            "title": "Celebrating Progress",
+                            "scenarios": [
+                                {
+                                    "text": "How do you feel about your journey so far?",
+                                    "type": "reflection"
+                                },
+                                {
+                                    "text": "What's your proudest moment?",
+                                    "type": "reflection"
+                                }
+                            ]
+                        }
                     }
                 }
-            }
-        },
-        "alt_storyline": {
-            "title": "Alternative Storyline",
-            "stories": {
-                "story1": {
-                    "title": "Building Self-Confidence",
-                    "description": "A story about finding inner strength",
-                    "practice": {
-                        "type": "confidence_rating"
-                    }
-                },
-                "story2": {
-                    "title": "Social Confidence",
-                    "description": "Learning to be confident with others",
-                    "practice": {
-                        "type": "confidence_rating"
-                    }
-                },
-                "story3": {
-                    "title": "Overcoming Challenges",
-                    "description": "Growing through difficulties",
-                    "practice": {
-                        "type": "confidence_rating"
-                    }
-                },
-                "story4": {
-                    "title": "Celebrating Progress",
-                    "description": "Recognizing personal growth",
-                    "practice": {
-                        "type": "confidence_rating"
+            },
+            "alt_storyline": {
+                "title": "Alternative Storyline TBC",
+                "description": "A different path to building confidence",
+                "stories": {
+                    "story1": {
+                        "title": "Building Self-Confidence",
+                        "description": "A story about finding inner strength",
+                        "cover_image": "/images/[character]/chapter_1/alt_storyline/story1_cover.jpg",
+                        "practice": {
+                            "title": "Understanding Our Worries",
+                            "type": "worry_meter",
+                            "description": "Let's explore how different situations make us feel.",
+                            "instructions": "Move the slider to show how worried you feel about each situation.",
+                            "scenarios": [
+                                {
+                                    "text": "How worried do you feel when trying something new?",
+                                    "type": "worry_rating",
+                                    "feedback": {
+                                        "low": "That's great! You seem pretty comfortable with new experiences.",
+                                        "medium": "It's normal to feel a bit nervous about new things.",
+                                        "high": "New things can feel scary, and that's okay. Let's work on this together."
+                                    }
+                                },
+                                {
+                                    "text": "What helps you feel brave when facing a challenge?",
+                                    "type": "reflection",
+                                    "prompt": "Think about a time when you felt brave..."
+                                }
+                            ]
+                        }
                     }
                 }
             }

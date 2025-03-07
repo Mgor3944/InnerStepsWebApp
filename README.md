@@ -18,7 +18,7 @@ To Do:
 
 3. Look into gamification elements such as game-like buttons and simple sounds (both in onboarding and app) 
 
-5. Need to fix the practise mode... initial screen looks decent, but actual practise mode sucks (layout, thought process, usability, personalisation etc)
+5. I just realised that my code is self-contained so there is actually no point in having a 4-digit pin verification system as we do not need to limit the number of using accessing the platform which is what it was originally being used for. Is it possible 
 
 6. Add a log out button to the home screen (top left) and a coin system (top right) to unlock custom picturebook printed and sent to child!
         a. Fix the home page buttons and potentially the layout too.
