@@ -106,24 +106,9 @@ async function initPracticePage() {
             
             // Get all data from the story structure in one try-catch block
             try {
-                // First try to get character name from localStorage (where onboarding stores it)
-                try {
-                    const localUserData = JSON.parse(localStorage.getItem('user_data')) || {};
-                    if (localUserData.characterName) {
-                        characterName = localUserData.characterName;
-                        console.log('Found characterName in localStorage:', characterName);
-                    }
-                } catch (e) {
-                    console.log('Error reading from localStorage:', e);
-                }
-                
-                // If not found in localStorage, try userManager
-                if (!characterName && userManager.userData) {
-                    if (userManager.userData.characterName) {
-                        characterName = userManager.userData.characterName;
-                    } else if (userManager.userData.name) {
-                        characterName = userManager.userData.name;
-                    }
+                // Get character name directly from userManager
+                if (userManager.userData && userManager.userData.characterName) {
+                    characterName = userManager.userData.characterName;
                 }
                 
                 // Get badge and key message from story data

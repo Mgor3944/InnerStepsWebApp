@@ -22,14 +22,11 @@ class UserManager {
     }
 
     async initialize() {
-        // Load user data if PIN exists in localStorage
-        const storedPin = localStorage.getItem('current_pin');
-        if (storedPin) {
-            this.currentPin = storedPin;
-            await this.loadUserData();
-            // Load story structure data
-            await this.loadStoryStructure();
-        }
+        // Load user data directly without PIN dependency
+        await this.loadUserData();
+        
+        // Load story structure data
+        await this.loadStoryStructure();
     }
 
     async loadStoryStructure() {
@@ -57,8 +54,8 @@ class UserManager {
                 analytics: { worry_ratings: [] }
             };
             
-            // Try to get any stored modifications from localStorage
-            const storedData = localStorage.getItem(`user_data_${this.currentPin}`);
+            // Use a single consistent key for user data
+            const storedData = localStorage.getItem('user_data');
             this.userData = storedData ? JSON.parse(storedData) : defaultProfile;
             
             // If character and storyline are selected, load the appropriate stories
@@ -91,90 +88,93 @@ class UserManager {
             // Validate storyline exists in structure
             if (!this.structureData?.chapter_1?.storylines?.[storyline]?.stories) {
                 console.error(`Storyline "${storyline}" or its stories not found in structure data`);
-                return false;
+                return { error: "This storyline is coming soon! Please select a different option." };
             }
             
-            // Load the stories data
-            const storiesResponse = await fetch(`data/stories/${character}_${storyline}.json`);
-            if (!storiesResponse.ok) {
-                console.error(`No story content found for ${character} with storyline ${storyline}`);
-                return false;
-            }
-            
-            const storiesData = await storiesResponse.json();
-            if (!storiesData || !storiesData.stories) {
-                console.error('Invalid story data format');
-                return false;
-            }
-            
-            // Debug log the stories data
-            console.log('Stories data:', storiesData);
-            
-            // Get structure stories and validate
-            const structureStories = this.structureData.chapter_1.storylines[storyline].stories;
-            if (!structureStories || typeof structureStories !== 'object') {
-                console.error('Invalid structure stories format');
-                return false;
-            }
-            
-            // Merge story content with structure data
-            const mergedStories = {};
-            
-            // First, validate that we have matching stories
-            const storyIds = Object.keys(storiesData.stories);
-            console.log('Story IDs to process:', storyIds);
-            
-            storyIds.forEach(storyId => {
-                const structureStory = structureStories[storyId];
-                const contentStory = storiesData.stories[storyId];
-                
-                if (!structureStory) {
-                    console.log(`Story ${storyId} not found in structure data, skipping`);
-                    return;
+            // Try to load the stories data
+            try {
+                const storiesResponse = await fetch(`data/stories/${character}_${storyline}.json`);
+                if (!storiesResponse.ok) {
+                    console.warn(`No story content found for ${character} with storyline ${storyline}`);
+                    return { error: "Stories for this character and storyline are coming soon! Please select a different option." };
                 }
                 
-                if (!contentStory) {
-                    console.log(`Story ${storyId} not found in content data, skipping`);
-                    return;
+                const storiesData = await storiesResponse.json();
+                
+                if (!storiesData || !storiesData.stories) {
+                    console.error('Invalid story data format');
+                    return { error: "There was a problem loading the story content. Please try a different option." };
                 }
                 
-                mergedStories[storyId] = {
-                    ...contentStory,
-                    title: structureStory.title || '',
-                    description: structureStory.description || '',
-                    cover_image: structureStory.cover_image || '',
-                    practice: structureStory.practice || null,
-                    completed: false
-                };
-            });
-            
-            if (Object.keys(mergedStories).length === 0) {
-                console.error('No stories were successfully merged');
-                return false;
-            }
-            
-            // Update the stories in userData
-            this.userData.stories = mergedStories;
-            
-            // Ensure story progress is maintained if there's local data
-            const storedData = localStorage.getItem(`user_data_${this.currentPin}`);
-            const localData = storedData ? JSON.parse(storedData) : null;
-            
-            if (localData && localData.stories) {
-                Object.keys(localData.stories).forEach(storyId => {
-                    if (this.userData.stories[storyId]) {
-                        this.userData.stories[storyId].completed = localData.stories[storyId].completed;
+                // Debug log the stories data
+                console.log('Stories data:', storiesData);
+                
+                // Get structure stories and validate
+                const structureStories = this.structureData.chapter_1.storylines[storyline].stories;
+                if (!structureStories || typeof structureStories !== 'object') {
+                    console.error('Invalid structure stories format');
+                    return { error: "There was a problem with the story structure. Please try a different option." };
+                }
+                
+                // Merge story content with structure data
+                const mergedStories = {};
+                
+                // First, validate that we have matching stories
+                const storyIds = Object.keys(storiesData.stories);
+                console.log('Story IDs to process:', storyIds);
+                
+                storyIds.forEach(storyId => {
+                    const structureStory = structureStories[storyId];
+                    const contentStory = storiesData.stories[storyId];
+                    
+                    if (!structureStory) {
+                        console.log(`Story ${storyId} not found in structure data, skipping`);
+                        return;
                     }
+                    
+                    if (!contentStory) {
+                        console.log(`Story ${storyId} not found in content data, skipping`);
+                        return;
+                    }
+                    
+                    mergedStories[storyId] = {
+                        ...contentStory,
+                        title: structureStory.title || '',
+                        description: structureStory.description || '',
+                        cover_image: structureStory.cover_image || '',
+                        practice: structureStory.practice || null,
+                        completed: false
+                    };
                 });
+                
+                if (Object.keys(mergedStories).length === 0) {
+                    console.error('No stories were successfully merged');
+                    return { error: "No stories are available for this selection. Please try a different option." };
+                }
+                
+                // Update the stories in userData
+                this.userData.stories = mergedStories;
+                
+                // Ensure story progress is maintained if there's local data
+                const storedData = localStorage.getItem('user_data');
+                const localData = storedData ? JSON.parse(storedData) : null;
+                
+                if (localData && localData.stories) {
+                    Object.keys(localData.stories).forEach(storyId => {
+                        if (this.userData.stories[storyId]) {
+                            this.userData.stories[storyId].completed = localData.stories[storyId].completed || false;
+                        }
+                    });
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Error loading story data:', error);
+                return { error: "There was a problem loading the story content. Please try a different option." };
             }
-            
-            console.log(`Successfully loaded stories for ${character} with storyline ${storyline}`);
-            console.log('Final merged stories:', this.userData.stories);
-            return true;
         } catch (error) {
-            console.error('Error loading stories:', error);
-            console.error('Error stack:', error.stack);
-            return false;
+            console.error('Error in loadStoriesForSelection:', error);
+            return { error: "An unexpected error occurred. Please try a different option." };
         }
     }
 
@@ -192,22 +192,22 @@ class UserManager {
         // Validate inputs
         if (!this.isValidCharacter(character)) {
             console.error('Invalid character selected:', character);
-            return false;
+            return { error: "Invalid character selected. Please choose a valid character." };
         }
         if (!this.isValidStoryline(storyline)) {
             console.error('Invalid storyline selected:', storyline);
-            return false;
+            return { error: "Invalid storyline selected. Please choose a valid storyline." };
         }
 
         this.userData.progress.selectedCharacter = character;
         this.userData.progress.selectedStoryline = storyline;
         
         // Load the appropriate stories
-        await this.loadStoriesForSelection();
+        const result = await this.loadStoriesForSelection();
         
         // Save the updated user data
         this.saveUserData();
-        return true;
+        return result;
     }
 
     mergeUserData(baseProfile, localData) {
@@ -239,22 +239,64 @@ class UserManager {
     }
 
     saveUserData() {
-        if (this.currentPin && this.userData) {
-            // Save to localStorage
-            const dataToSave = {
-                name: this.userData.name,
-                age: this.userData.age,
-                interests: this.userData.interests,
-                favorite_animal: this.userData.favorite_animal,
-                progress: this.userData.progress,
-                stories: Object.keys(this.userData.stories).reduce((acc, storyId) => {
-                    acc[storyId] = {
-                        completed: this.userData.stories[storyId].completed
-                    };
-                    return acc;
-                }, {})
-            };
-            localStorage.setItem(`user_data_${this.currentPin}`, JSON.stringify(dataToSave));
+        if (this.userData) {
+            // Ensure required objects exist
+            if (!this.userData.stories) {
+                this.userData.stories = {
+                    story1: { completed: false }
+                };
+            }
+            
+            if (!this.userData.progress) {
+                this.userData.progress = {
+                    current_story: 'story1',
+                    chapter1_progress: 0,
+                    selectedCharacter: this.userData.character || 'pip',
+                    selectedStoryline: 'umbrella_racing'
+                };
+            }
+            
+            if (!this.userData.analytics) {
+                this.userData.analytics = { 
+                    worry_ratings: [],
+                    last_session: new Date().toISOString()
+                };
+            }
+            
+            // Create a deep copy of userData to avoid reference issues
+            const dataToSave = JSON.parse(JSON.stringify(this.userData));
+            
+            // Ensure stories have the correct format
+            if (dataToSave.stories) {
+                Object.keys(dataToSave.stories || {}).forEach(storyId => {
+                    if (!dataToSave.stories[storyId].hasOwnProperty('completed')) {
+                        dataToSave.stories[storyId].completed = false;
+                    }
+                });
+            }
+            
+            // Ensure all required fields are present
+            const requiredFields = ['name', 'gender', 'character', 'characterName', 'hobbies', 'mood'];
+            requiredFields.forEach(field => {
+                if (dataToSave[field] === undefined) {
+                    console.warn(`Missing required field: ${field}`);
+                    // Set default values for missing fields
+                    switch (field) {
+                        case 'hobbies':
+                            dataToSave[field] = [];
+                            break;
+                        case 'mood':
+                            dataToSave[field] = 'happy';
+                            break;
+                        default:
+                            dataToSave[field] = '';
+                    }
+                }
+            });
+            
+            // Save all user data to localStorage
+            localStorage.setItem('user_data', JSON.stringify(dataToSave));
+            console.log('Saved user data to localStorage:', dataToSave);
         }
     }
 
@@ -317,21 +359,66 @@ class UserManager {
     }
 
     updateUserProfile(profileData) {
-        if (this.userData) {
-            this.userData = { ...this.userData, ...profileData };
-            this.saveUserData();
+        if (!this.userData) {
+            // Initialize userData if it doesn't exist
+            this.userData = {
+                ...profileData,
+                stories: profileData.stories || {
+                    story1: { completed: false }
+                },
+                progress: profileData.progress || {
+                    current_story: 'story1',
+                    chapter1_progress: 0
+                },
+                analytics: profileData.analytics || { 
+                    worry_ratings: [],
+                    last_session: new Date().toISOString()
+                }
+            };
+        } else {
+            // Create a deep copy of the current userData
+            const currentData = JSON.parse(JSON.stringify(this.userData));
+            
+            // Merge top-level properties
+            this.userData = { 
+                ...currentData,
+                ...profileData
+            };
+            
+            // Ensure nested objects are properly merged
+            if (profileData.progress) {
+                this.userData.progress = {
+                    ...currentData.progress || {},
+                    ...profileData.progress
+                };
+            }
+            
+            if (profileData.analytics) {
+                this.userData.analytics = {
+                    ...currentData.analytics || {},
+                    ...profileData.analytics
+                };
+            }
+            
+            // Ensure stories object exists and is properly merged
+            if (profileData.stories) {
+                this.userData.stories = {
+                    ...currentData.stories || {},
+                    ...profileData.stories
+                };
+            } else if (!this.userData.stories) {
+                this.userData.stories = {
+                    story1: { completed: false }
+                };
+            }
         }
+        
+        this.saveUserData();
     }
 
     async validatePin(pin) {
-        try {
-            const response = await fetch('data/user_data.json');
-            const data = await response.json();
-            return data.valid_pins.includes(pin);
-        } catch (error) {
-            console.error('Error validating PIN:', error);
-            return false;
-        }
+        // PIN validation is no longer used, always return true
+        return true;
     }
 }
 
@@ -342,34 +429,11 @@ const userManager = new UserManager();
 document.addEventListener('DOMContentLoaded', async function() {
     await userManager.initialize();
 
-    // Check for stored PIN first
-    const storedPin = localStorage.getItem('current_pin');
-    if (storedPin) {
-        // Validate the stored PIN
-        if (await userManager.validatePin(storedPin)) {
-            userManager.currentPin = storedPin;
-            await userManager.loadUserData();
-            
-            // If we're on the login page, redirect to journey map
-            if (document.querySelector('.login-page')) {
-                window.location.href = 'index.html';
-                return;
-            }
-        } else {
-            // Invalid stored PIN, clear it
-            localStorage.removeItem('current_pin');
-        }
-    }
-
     // Handle different pages
     if (document.querySelector('.login-page')) {
         initLoginPage();
     } else if (document.querySelector('.welcome-page')) {
         initWelcomePage();
-    } else if (!userManager.currentPin) {
-        // No valid PIN, redirect to login
-        window.location.href = 'login.html';
-        return;
     } else if (document.getElementById('onboardingForm')) {
         // Check if user has completed onboarding
         if (userManager.userData?.name) {
@@ -385,38 +449,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 function initLoginPage() {
-    const pinForm = document.getElementById('pinForm');
-    const inputs = pinForm.querySelectorAll('input');
-
-    // Focus the first input when the page loads
-    inputs[0].focus();
-
-    // Auto-focus next input
-    inputs.forEach((input, index) => {
-        input.addEventListener('input', () => {
-            if (input.value && index < inputs.length - 1) {
-                inputs[index + 1].focus();
-            }
-        });
-    });
-
-    pinForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const pin = Array.from(inputs).map(input => input.value).join('');
-        
-        if (await userManager.validatePin(pin)) {
-            userManager.currentPin = pin;
-            localStorage.setItem('current_pin', pin);
-            await userManager.loadUserData();
-            
-            // Redirect to welcome page for new users, otherwise to journey map
-            window.location.href = userManager.userData?.name ? 'index.html' : 'welcome.html';
-        } else {
-            alert('Invalid PIN. Please try again.');
-            pinForm.reset();
-            inputs[0].focus();
-        }
-    });
+    // Login page now has inline script for simplicity
+    console.log('Login page loaded');
 }
 
 function initWelcomePage() {
@@ -434,7 +468,7 @@ function initWelcomePage() {
         h3.style.animation = 'fadeIn 0.6s ease-in forwards 1s';
     }
 
-    // After 5 seconds, redirect to onboarding
+    // After 4 seconds, redirect to onboarding
     setTimeout(() => {
         window.location.href = 'onboarding.html';
     }, 4000);
@@ -777,44 +811,91 @@ async function handleFormSubmit(e) {
     const formData = new FormData(form);
     
     const profileData = {
-        name: formData.get('name'),
+        name: formData.get('characterName'), // Using characterName as the user's name
         gender: formData.get('gender'),
         character: formData.get('character'),
         characterName: formData.get('characterName'),
         hobbies: Array.from(formData.getAll('hobbies')),
+        mood: formData.get('mood'), // Adding mood from the form
         progress: {
             selectedCharacter: formData.get('character'),
             selectedStoryline: formData.get('adventure'),
             current_story: 'story1',
             chapter1_progress: 0
+        },
+        stories: {
+            story1: { completed: false }
+        },
+        analytics: {
+            worry_ratings: [],
+            last_session: new Date().toISOString()
         }
     };
+
+    console.log('Saving user profile data:', profileData);
 
     // Add a delay to show the loading animation
     setTimeout(async () => {
         try {
+            console.log('Step 1: Updating user profile');
             // Update UserManager with the new profile data
             await userManager.updateUserProfile(profileData);
             
+            console.log('Step 2: Setting character and storyline');
+            console.log('Selected character:', profileData.progress.selectedCharacter);
+            console.log('Selected storyline:', profileData.progress.selectedStoryline);
+            
             // Try to load the selected character's story content
-            const success = await userManager.setCharacterAndStoryline(
+            const result = await userManager.setCharacterAndStoryline(
                 profileData.progress.selectedCharacter,
                 profileData.progress.selectedStoryline
             );
             
-            if (!success) {
-                console.log('Selected story content not found, falling back to default (Pip\'s Umbrella Racing)');
-                // Fall back to Pip's umbrella racing story
-                await userManager.setCharacterAndStoryline(
-                    UserManager.CHARACTERS.PIP,
-                    UserManager.STORYLINES.UMBRELLA_RACING
-                );
+            // Check if there was an error loading the stories
+            if (result && result.error) {
+                // Remove loading overlay
+                const overlay = document.querySelector('.loading-overlay');
+                if (overlay) {
+                    overlay.remove();
+                }
+                
+                // Show error message
+                alert(result.error);
+                
+                // Re-enable submit button
+                if (submitButton) {
+                    submitButton.disabled = false;
+                }
+                
+                return;
             }
             
+            console.log('Story content loaded successfully');
+            
+            // Save to localStorage directly as well to ensure it's saved
+            console.log('Step 3: Saving to localStorage directly');
+            const userData = {
+                ...profileData
+            };
+            localStorage.setItem('user_data', JSON.stringify(userData));
+            
+            console.log('User data saved successfully:', userData);
+            
             // Redirect to story page
+            console.log('Step 4: Redirecting to story page');
             window.location.href = 'story.html';
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Detailed error information:', error);
+            console.error('Error stack:', error.stack);
+            
+            // Try to save basic user data even if there's an error
+            try {
+                localStorage.setItem('user_data', JSON.stringify(profileData));
+                console.log('Basic user data saved despite error');
+            } catch (saveError) {
+                console.error('Failed to save even basic user data:', saveError);
+            }
+            
             alert('There was a problem saving your information. Please try again.');
             
             // Remove loading overlay

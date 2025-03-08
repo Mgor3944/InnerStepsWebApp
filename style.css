@@ -1857,7 +1857,7 @@ body.story-page {
 
 /* === CHARACTER PRONOUN STYLES === */
 .character-pronoun {
-    font-weight: bold;
+    font-style: italic;
     color: #8DBA36;
 }
 
@@ -1874,11 +1874,38 @@ body.story-page {
 }
 
 .header-container h1 {
-    margin: 0;
-    padding: 20px;
-    text-align: center;
+    font-size: 36px;
     color: #42535F;
-    font-size: 40px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.header-actions {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.insights-btn {
+    background-color: #42535F;
+    border: none;
+    border-bottom: 5px solid #2a363f;
+    color: white;
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-size: 14px;
+    width: auto;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+}
+
+.insights-btn:hover {
+    background-color: #536a7a;
+}
+
+.insights-btn:active {
+    border-bottom: 2px solid #2a363f;
+    transform: translateY(3px);
 }
 
 .header-container .first-visit,
@@ -1920,4 +1947,130 @@ body.story-page {
     color: #42535F;
     font-style: italic;
     margin: 0;
+}
+
+/* New start journey button */
+.start-journey {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.start-journey-btn {
+    background-color: #8DBA36;
+    border: none;
+    border-bottom: 7px solid #658624;
+    color: white;
+    border-radius: 12px;
+    padding: 20px 40px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    width: 280px;
+}
+
+.start-journey-btn:hover {
+    background-color: #96c43a;
+    transform: translateY(-2px);
+}
+
+.start-journey-btn:active {
+    border-bottom: 3px solid #658624;
+    transform: translateY(4px);
+}
+
+/* === INSIGHTS PAGE STYLES === */
+.insights-page {
+    background: url('assets/images/bg3.png') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+}
+
+.insights-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 40px;
+    position: relative;
+}
+
+.insights-container h1 {
+    color: #42535F;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.insights-container p {
+    color: #42535F;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.insights-step {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+
+.insights-step.active {
+    display: block;
+}
+
+.verification-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.verification-inputs input {
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    font-size: 24px;
+    border: 2px solid rgba(66, 83, 95, 0.3);
+    border-radius: 8px;
+    -moz-appearance: textfield;
+}
+
+.verification-inputs input::-webkit-outer-spin-button,
+.verification-inputs input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.success-message {
+    text-align: center;
+    padding: 20px;
+}
+
+.success-message h2 {
+    color: #8DBA36;
+    margin-bottom: 15px;
+}
+
+.return-btn {
+    background-color: #8DBA36;
+    border: none;
+    border-bottom: 7px solid #658624;
+    margin-top: 20px;
+}
+
+.back-to-journey-btn {
+    background-color: rgba(66, 83, 95, 0.1);
+    color: #42535F;
+    border: 2px solid rgba(66, 83, 95, 0.3);
+    border-bottom: 5px solid rgba(66, 83, 95, 0.3);
+    width: auto;
+    padding: 10px 20px;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}
+
+.back-to-journey-btn:hover {
+    background-color: rgba(66, 83, 95, 0.15);
 }

@@ -3,28 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InnerSteps - Login</title>
+    <title>InnerSteps - Welcome</title>
     <link rel="stylesheet" href="style.css">
 </head>
     <body class="login-page">
         <div class="login-container">
             <div class="login-header">
                 <h1>Welcome to InnerSteps</h1>
-                <p>Before we can start, please enter the 4-digit unique pin code we sent to you via email.</p>
+                <p>A journey to help children understand and manage their feelings.</p>
             </div>
-            <div class="pin-entry">
-                <!-- <h2>Enter your 4-digit PIN</h2> -->
-                <form id="pinForm">
-                    <div class="pin-inputs">
-                        <input type="number" maxlength="1" min="0" max="9" inputmode="numeric" pattern="[0-9]" required>
-                        <input type="number" maxlength="1" min="0" max="9" inputmode="numeric" pattern="[0-9]" required>
-                        <input type="number" maxlength="1" min="0" max="9" inputmode="numeric" pattern="[0-9]" required>
-                        <input type="number" maxlength="1" min="0" max="9" inputmode="numeric" pattern="[0-9]" required>
-                    </div>
-                    <button type="submit">Enter</button>
-                </form>
+            <div class="start-journey">
+                <button id="startJourneyBtn" class="start-journey-btn">Start Your Journey</button>
             </div>
         </div>
         <script src="script.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Simple start button that takes user directly to onboarding or welcome page
+                document.getElementById('startJourneyBtn').addEventListener('click', function() {
+                    // Check if user has completed onboarding before
+                    const userData = localStorage.getItem('user_data');
+                    if (userData) {
+                        // Returning user - go directly to journey map
+                        window.location.href = 'index.html';
+                    } else {
+                        // New user - go to welcome page first
+                        window.location.href = 'welcome.html';
+                    }
+                });
+            });
+        </script>
     </body>
 </html> 

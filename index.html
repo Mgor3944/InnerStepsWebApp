@@ -11,6 +11,9 @@
     <div class="header-container">
         <h1 class="first-visit">Welcome To <span class="character-name-placeholder" data-possessive="true">Your</span> Adventures</h1>
         <h1 class="return-visit">Welcome Back To <span class="character-name-placeholder" data-possessive="true">Your</span> Adventures</h1>
+        <div class="header-actions">
+            <button id="insightsBtn" class="insights-btn">Receive Progress Insights</button>
+        </div>
     </div>
 
     <div class="journey-container">
@@ -41,5 +44,13 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up insights button
+            document.getElementById('insightsBtn').addEventListener('click', function() {
+                window.location.href = 'insights.html';
+            });
+        });
+    </script>
 </body>
 </html>

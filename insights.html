@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InnerSteps - Progress Insights</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="insights-page">
+    <div class="insights-container">
+        <h1>Receive Progress Insights</h1>
+        <p>Enter your email address to receive updates and insights about your child's progress.</p>
+        
+        <div id="emailStep" class="insights-step active">
+            <form id="emailForm">
+                <div class="form-group">
+                    <label for="parentEmail">Parent/Guardian Email:</label>
+                    <input type="email" id="parentEmail" name="parentEmail" required>
+                </div>
+                <button type="submit" class="submit-btn">Send Verification Code</button>
+            </form>
+        </div>
+        
+        <div id="verificationStep" class="insights-step">
+            <p>We've sent a 4-digit verification code to your email.</p>
+            <form id="verificationForm">
+                <div class="form-group">
+                    <label for="verificationCode">Enter Verification Code:</label>
+                    <div class="verification-inputs">
+                        <input type="number" maxlength="1" min="0" max="9" required>
+                        <input type="number" maxlength="1" min="0" max="9" required>
+                        <input type="number" maxlength="1" min="0" max="9" required>
+                        <input type="number" maxlength="1" min="0" max="9" required>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Verify</button>
+            </form>
+        </div>
+        
+        <div id="successStep" class="insights-step">
+            <div class="success-message">
+                <h2>Success!</h2>
+                <p>Your email has been verified. You will now receive progress insights about your child's journey.</p>
+                <button id="returnBtn" class="return-btn">Return to Journey Map</button>
+            </div>
+        </div>
+        
+        <button id="backToJourneyBtn" class="back-to-journey-btn">Back to Journey Map</button>
+    </div>
+    
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailStep = document.getElementById('emailStep');
+            const verificationStep = document.getElementById('verificationStep');
+            const successStep = document.getElementById('successStep');
+            const emailForm = document.getElementById('emailForm');
+            const verificationForm = document.getElementById('verificationForm');
+            const backToJourneyBtn = document.getElementById('backToJourneyBtn');
+            const returnBtn = document.getElementById('returnBtn');
+            const verificationInputs = verificationForm.querySelectorAll('input');
+            
+            // For demo purposes, we'll use a fixed verification code
+            const DEMO_CODE = '1234';
+            
+            // Handle email form submission
+            emailForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('parentEmail').value;
+                
+                // Store email in localStorage
+                const userData = JSON.parse(localStorage.getItem('user_data')) || {};
+                userData.parentEmail = email;
+                localStorage.setItem('user_data', JSON.stringify(userData));
+                
+                // In a real app, you would send a verification code to this email
+                console.log('Verification code sent to:', email);
+                
+                // Show verification step
+                emailStep.classList.remove('active');
+                verificationStep.classList.add('active');
+                verificationInputs[0].focus();
+            });
+            
+            // Auto-focus next input in verification code
+            verificationInputs.forEach((input, index) => {
+                input.addEventListener('input', () => {
+                    if (input.value && index < verificationInputs.length - 1) {
+                        verificationInputs[index + 1].focus();
+                    }
+                });
+            });
+            
+            // Handle verification form submission
+            verificationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const code = Array.from(verificationInputs).map(input => input.value).join('');
+                
+                // In a real app, you would validate this code against what was sent
+                if (code === DEMO_CODE) {
+                    // Mark email as verified in localStorage
+                    const userData = JSON.parse(localStorage.getItem('user_data')) || {};
+                    userData.emailVerified = true;
+                    localStorage.setItem('user_data', JSON.stringify(userData));
+                    
+                    // Show success step
+                    verificationStep.classList.remove('active');
+                    successStep.classList.add('active');
+                    backToJourneyBtn.style.display = 'none';
+                } else {
+                    alert('Invalid verification code. Please try again.');
+                    verificationForm.reset();
+                    verificationInputs[0].focus();
+                }
+            });
+            
+            // Return to journey map
+            backToJourneyBtn.addEventListener('click', function() {
+                window.location.href = 'index.html';
+            });
+            
+            returnBtn.addEventListener('click', function() {
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html> 
