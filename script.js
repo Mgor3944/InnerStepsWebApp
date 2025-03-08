@@ -796,7 +796,7 @@ function initStoryPage() {
     const currentStoryId = userManager.userData.progress.current_story;
     console.log('Current story ID:', currentStoryId);
     
-    const currentStory = userManager.userData.stories[currentStoryId];
+    const currentStory = userManager.getCurrentStory();
     console.log('Current story data:', currentStory);
     
     if (!currentStory || !currentStory.pages || currentStory.pages.length === 0) {
@@ -809,213 +809,176 @@ function initStoryPage() {
     window.currentPage = 1;
     window.totalPages = currentStory.pages.length;
     
-    // Create story pages
+    // Get story container elements
     const storyTextContainer = document.querySelector('.story-text');
-    if (!storyTextContainer) {
-        console.error('Story text container not found!');
+    const backBtn = document.getElementById('storyBackBtn');
+    const nextBtn = document.getElementById('storyNextBtn');
+    
+    if (!storyTextContainer || !backBtn || !nextBtn) {
+        console.error('Story container elements not found!');
         return;
     }
     
-    // Clear any existing content
-    storyTextContainer.innerHTML = '';
+    // Load the first page
+    loadStoryContent(currentStory);
     
-    // Create pages
-    currentStory.pages.forEach((page, index) => {
-        const pageDiv = document.createElement('div');
-        pageDiv.id = `page${index + 1}`;
-        pageDiv.className = `page ${index === 0 ? '' : 'hidden'}`;
-        
-        // Add title to first page, subtitle to others
-        if (index === 0) {
-            pageDiv.innerHTML = `<h1>${currentStory.title}</h1>`;
-        } else {
-            pageDiv.innerHTML = `<h4>${currentStory.title}</h4>`;
-        }
-        
-        // Add text content with personalization
-        const p = document.createElement('p');
-        p.textContent = personalizeStoryText(page.text);
-        pageDiv.appendChild(p);
-        
-        storyTextContainer.appendChild(pageDiv);
-    });
+    // Set up navigation buttons
+    backBtn.addEventListener('click', handleBackNavigation);
+    nextBtn.addEventListener('click', handleNextNavigation);
     
-    // Set initial image
-    const storyImage = document.getElementById('storyImage');
-    if (storyImage && currentStory.pages[0]) {
-        // Get the character and storyline for the image path
-        const character = userManager.userData.progress.selectedCharacter;
-        const storyline = userManager.userData.progress.selectedStoryline;
-        
-        // Construct the image path using assets/images directory
-        const imagePath = `assets/images/${character}/chapter_1/${storyline}/story${currentStoryId.replace('story', '')}_${window.currentPage}.jpg`;
-        console.log('Attempting to load story image:', imagePath);
-        
-        storyImage.src = imagePath;
-        storyImage.alt = `Page 1 of ${currentStory.title}`;
-        
-        // Add error handling for images
-        storyImage.onerror = function() {
-            console.log(`Failed to load story image: ${this.src}`);
-            // Try to load the default placeholder
-            const defaultPlaceholder = 'assets/images/default_placeholder.png';
-            console.log('Falling back to default placeholder:', defaultPlaceholder);
-            this.src = defaultPlaceholder;
-        };
-    }
-    
-    // Add event listeners for navigation buttons
-    const nextButton = document.querySelector('.story-next-btn');
-    if (nextButton) {
-        nextButton.removeEventListener('click', nextPage);
-        nextButton.addEventListener('click', nextPage);
-    }
-    
-    const backButton = document.querySelector('.story-back-btn');
-    if (backButton) {
-        backButton.removeEventListener('click', previousPage);
-        backButton.addEventListener('click', previousPage);
-    }
-    
-    // Initialize navigation buttons
-    updateNavigationButtons();
-}
-
-function nextPage() {
-    if (window.currentPage < window.totalPages) {
-        const currentPageElement = document.getElementById(`page${window.currentPage}`);
-        currentPageElement.classList.add('turning-forward');
-        
-        setTimeout(() => {
-            // Hide current page
-            currentPageElement.classList.add('hidden');
-            currentPageElement.classList.remove('turning-forward');
-            
-            // Move to next page
-            window.currentPage++;
-            
-            // Show next page
-            const nextPageElement = document.getElementById(`page${window.currentPage}`);
-            nextPageElement.classList.remove('hidden');
-            
-            // Update image with transition
-            const storyImage = document.getElementById('storyImage');
-            const currentStory = userManager.userData.stories[userManager.userData.progress.current_story];
-            if (storyImage && currentStory.pages[window.currentPage - 1]) {
-                storyImage.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    storyImage.src = currentStory.pages[window.currentPage - 1].image;
-                    storyImage.style.transform = 'scale(1)';
-                }, 300);
-            }
-            
-            updateNavigationButtons();
-        }, 300);
-    }
-}
-
-function previousPage() {
-    if (window.currentPage > 1) {
-        const currentPageElement = document.getElementById(`page${window.currentPage}`);
-        currentPageElement.classList.add('turning-backward');
-        
-        setTimeout(() => {
-            // Hide current page
-            currentPageElement.classList.add('hidden');
-            currentPageElement.classList.remove('turning-backward');
-            
-            // Move to previous page
+    // Function to handle back navigation
+    function handleBackNavigation() {
+        if (window.currentPage > 1) {
             window.currentPage--;
-            
-            // Show previous page
-            const prevPageElement = document.getElementById(`page${window.currentPage}`);
-            prevPageElement.classList.remove('hidden');
-            
-            // Update image with transition
-            const storyImage = document.getElementById('storyImage');
-            const currentStory = userManager.userData.stories[userManager.userData.progress.current_story];
-            if (storyImage && currentStory.pages[window.currentPage - 1]) {
-                storyImage.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    storyImage.src = currentStory.pages[window.currentPage - 1].image;
-                    storyImage.style.transform = 'scale(1)';
-                }, 300);
-            }
-            
-            updateNavigationButtons();
-        }, 300);
+            loadStoryContent(currentStory);
+        } else {
+            // If we're on the first page, go back to the journey map (home page)
+            window.location.href = 'index.html';
+        }
     }
-}
-
-function updateNavigationButtons() {
-    const backButton = document.querySelector('.story-back-btn');
-    const nextButton = document.querySelector('.story-next-btn');
     
-    if (backButton) {
-        // First, remove all existing event listeners
-        const oldBackButton = backButton.cloneNode(true);
-        backButton.parentNode.replaceChild(oldBackButton, backButton);
+    // Function to handle next navigation
+    function handleNextNavigation() {
+        if (window.currentPage < window.totalPages) {
+            window.currentPage++;
+            loadStoryContent(currentStory);
+        } else {
+            // If we're on the last page, go to practice page
+            window.location.href = 'practice.html';
+        }
+    }
+    
+    // Function to load story content
+    function loadStoryContent(story) {
+        const storyTextContainer = document.querySelector('.story-text');
+        if (!storyTextContainer) {
+            console.error('Story text container not found!');
+            return;
+        }
         
+        // Get the current page content
+        const pageContent = story.pages[window.currentPage - 1];
+        if (!pageContent) {
+            console.error('Page content not found!');
+            return;
+        }
+        
+        console.log('Page content:', pageContent);
+        
+        // Get navigation buttons
+        const navButtons = document.querySelector('.story-nav-buttons');
+        
+        // Clear existing content while preserving navigation buttons
+        if (navButtons) {
+            storyTextContainer.innerHTML = '';
+            storyTextContainer.appendChild(navButtons);
+        } else {
+            console.error('Navigation buttons not found!');
+        }
+        
+        // Create content wrapper without animation
+        const contentWrapper = document.createElement('div');
+        contentWrapper.className = 'page';
+        
+        // Add title based on page number
         if (window.currentPage === 1) {
-            // On first page, back button takes user to journey map and says "Home"
-            oldBackButton.innerHTML = `
-                <svg class="story-back-arrow" width="35px" height="35px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                    <g id="Iconly/Bold/Arrow---Left-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                        <g id="Arrow---Left-2" transform="translate(7.000000, 6.000000)" fill="#ffffff" fill-rule="nonzero">
-                            <path d="M0.369215782,4.869 C0.425718461,4.811 0.639064783,4.563 0.837798344,4.359 C2.00292255,3.076 5.04237701,0.976 6.63321968,0.335 C6.87481734,0.232 7.48563078,0.014 7.81198246,0 C8.12469557,0 8.42279591,0.072 8.70725767,0.218 C9.06186069,0.422 9.34632245,0.743 9.50219191,1.122 C9.60253288,1.385 9.75840234,2.172 9.75840234,2.186 C9.9142718,3.047 10,4.446 10,5.992 C10,7.465 9.9142718,8.807 9.78665368,9.681 C9.77204092,9.695 9.61617146,10.673 9.44568924,11.008 C9.13297613,11.62 8.52216269,12 7.86848514,12 L7.81198246,12 C7.386264,11.985 6.4909888,11.605 6.4909888,11.591 C4.98587433,10.949 2.01656113,8.952 0.823185582,7.625 C0.823185582,7.625 0.48709206,7.284 0.340964442,7.071 C0.113005358,6.765 -8.8817842e-16,6.386 -8.8817842e-16,6.007 C-8.8817842e-16,5.584 0.12761812,5.19 0.369215782,4.869"></path>
-                        </g>
-                    </g>
-                </svg>
-                Home`;
-            oldBackButton.addEventListener('click', () => window.location.href = 'index.html');
+            const titleElement = document.createElement('h1');
+            titleElement.textContent = story.title;
+            contentWrapper.appendChild(titleElement);
         } else {
-            // On other pages, back button goes to previous page
-            oldBackButton.innerHTML = `
-                <svg class="story-back-arrow" width="35px" height="35px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                    <g id="Iconly/Bold/Arrow---Left-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                        <g id="Arrow---Left-2" transform="translate(7.000000, 6.000000)" fill="#ffffff" fill-rule="nonzero">
-                            <path d="M0.369215782,4.869 C0.425718461,4.811 0.639064783,4.563 0.837798344,4.359 C2.00292255,3.076 5.04237701,0.976 6.63321968,0.335 C6.87481734,0.232 7.48563078,0.014 7.81198246,0 C8.12469557,0 8.42279591,0.072 8.70725767,0.218 C9.06186069,0.422 9.34632245,0.743 9.50219191,1.122 C9.60253288,1.385 9.75840234,2.172 9.75840234,2.186 C9.9142718,3.047 10,4.446 10,5.992 C10,7.465 9.9142718,8.807 9.78665368,9.681 C9.77204092,9.695 9.61617146,10.673 9.44568924,11.008 C9.13297613,11.62 8.52216269,12 7.86848514,12 L7.81198246,12 C7.386264,11.985 6.4909888,11.605 6.4909888,11.591 C4.98587433,10.949 2.01656113,8.952 0.823185582,7.625 C0.823185582,7.625 0.48709206,7.284 0.340964442,7.071 C0.113005358,6.765 -8.8817842e-16,6.386 -8.8817842e-16,6.007 C-8.8817842e-16,5.584 0.12761812,5.19 0.369215782,4.869"></path>
-                        </g>
-                    </g>
-                </svg>
-                Go Back`;
-            oldBackButton.addEventListener('click', previousPage);
+            const titleElement = document.createElement('h4');
+            titleElement.textContent = story.title;
+            contentWrapper.appendChild(titleElement);
         }
-        oldBackButton.style.opacity = '1';
-        oldBackButton.style.pointerEvents = 'auto';
-    }
-    
-    if (nextButton) {
-        // First, remove all existing event listeners
-        const oldNextButton = nextButton.cloneNode(true);
-        nextButton.parentNode.replaceChild(oldNextButton, nextButton);
         
-        if (window.currentPage === window.totalPages) {
-            // On last page, transform next button into practice button
-            oldNextButton.textContent = 'Let\'s Practice Together!';
-            oldNextButton.style.backgroundColor = '#4CAF50'; // Green color for practice
-            oldNextButton.addEventListener('mouseover', () => {
-                oldNextButton.style.backgroundColor = '#3d8b40'; // Darker green on hover
-            });
-            oldNextButton.addEventListener('mouseout', () => {
-                oldNextButton.style.backgroundColor = '#4CAF50'; // Return to original green
-            });
-            oldNextButton.addEventListener('click', completeStory);
+        // Add story text
+        const textElement = document.createElement('p');
+        
+        // Extract the text content based on the page structure
+        let pageText = '';
+        if (typeof pageContent === 'string') {
+            pageText = pageContent;
+        } else if (pageContent && typeof pageContent === 'object') {
+            if (pageContent.text) {
+                pageText = pageContent.text;
+            } else {
+                console.error('Page content has no text property:', pageContent);
+                pageText = 'Story content unavailable.';
+            }
         } else {
-            // On other pages, keep as next button
-            oldNextButton.innerHTML = `Next Page
-                <svg class="story-next-arrow" width="35px" height="35px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                    <g id="Iconly/Bold/Arrow---Right-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                        <g id="Arrow---Right-2" transform="translate(7.000000, 6.000000)" fill="#ffffff" fill-rule="nonzero">
-                            <path d="M9.63078422,7.131 C9.57428154,7.189 9.36093522,7.437 9.16220166,7.641 C7.99707745,8.924 4.95762299,11.024 3.36678032,11.665 C3.12518266,11.768 2.51436922,11.986 2.18801754,12 C1.87530443,12 1.57720409,11.928 1.29274233,11.782 C0.938139308,11.578 0.653677545,11.257 0.497808086,10.878 C0.397467121,10.615 0.241597662,9.828 0.241597662,9.814 C0.0857282026,8.953 0,7.554 0,6.008 C0,4.535 0.0857282026,3.193 0.213346322,2.319 C0.227959084,2.305 0.383828544,1.327 0.554310765,0.992 C0.867023868,0.38 1.47783731,0 2.13151486,0 L2.18801754,0 C2.613736,0.015 3.5090112,0.395 3.5090112,0.409 C5.01412567,1.051 7.98343887,3.048 9.17681442,4.375 C9.17681442,4.375 9.51290794,4.716 9.65903556,4.929 C9.88699464,5.235 10,5.614 10,5.993 C10,6.416 9.87238188,6.81 9.63078422,7.131"></path>
-                        </g>
-                    </g>
-                </svg>`;
-            oldNextButton.style.backgroundColor = '#FFAE34'; // Reset to original color
-            oldNextButton.addEventListener('click', nextPage);
+            console.error('Unexpected page content format:', pageContent);
+            pageText = 'Story content unavailable.';
         }
-        oldNextButton.style.opacity = '1';
-        oldNextButton.style.pointerEvents = 'auto';
+        
+        // Personalize the text and add it to the element
+        textElement.innerHTML = personalizeStoryText(pageText);
+        contentWrapper.appendChild(textElement);
+        
+        // Insert content before navigation buttons
+        storyTextContainer.insertBefore(contentWrapper, navButtons);
+        
+        // Update navigation buttons
+        const backBtn = document.getElementById('storyBackBtn');
+        const nextBtn = document.getElementById('storyNextBtn');
+        
+        // Always show back button with full opacity since it now has a function on the first page
+        if (backBtn) {
+            backBtn.style.visibility = 'visible';
+            backBtn.style.opacity = '1';
+            // Remove the disabled attribute if it exists
+            backBtn.disabled = false;
+        }
+        
+        if (nextBtn) {
+            if (window.currentPage === window.totalPages) {
+                nextBtn.innerHTML = `
+                    <span>Practice</span>
+                    <svg class="story-next-arrow" width="45px" height="45px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="Iconly/Bold/Arrow---Right" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="Arrow---Right" transform="translate(3.000000, 6.000000)" fill="#fff" fill-rule="nonzero">
+                                <path d="M7.83655568,6.36070466 L7.8350323,6.00660914 C7.8350323,4.53497338 7.92121308,3.19331742 8.05102968,2.31870755 L8.16475558,1.77483018 C8.22802754,1.48678171 8.31120835,1.15880301 8.39793457,0.991371397 C8.71538527,0.378924178 9.33610502,0 10.0004606,0 L10.0582781,0 C10.4913637,0.0143198091 11.4011709,0.394345511 11.4011709,0.407563797 C12.8651531,1.02183092 15.6895424,2.87571834 16.9940026,4.19738844 L17.3730714,4.59418673 C17.4723361,4.70172939 17.5838596,4.82900679 17.6530951,4.92821737 C17.884365,5.23444098 18,5.61336516 18,5.99228933 C18,6.41527446 17.8701834,6.80851845 17.6247318,7.13016339 L17.2352725,7.55047018 L17.2352725,7.55047018 L17.1480103,7.6401689 C15.9643883,8.9234441 12.8738803,11.0218469 11.2571726,11.6640352 L11.0130847,11.7575787 C10.719361,11.8628603 10.3078205,11.988434 10.0582781,12 C9.74082738,12 9.43755833,11.9261979 9.14847093,11.7807968 C8.7873844,11.5770149 8.49938789,11.2553699 8.34011709,10.8764457 C8.23866377,10.6142831 8.07939298,9.82669359 8.07939298,9.81237378 C7.93338076,9.01825987 7.84871691,7.76518207 7.83655568,6.36070466 Z M1.77635684e-15,5.99955939 C1.77635684e-15,5.1612998 0.673082751,4.48165963 1.50325451,4.48165963 L5.20248239,4.80881219 C5.85374723,4.80881219 6.38174083,5.3419497 6.38174083,5.99955939 C6.38174083,6.65827061 5.85374723,7.19030659 5.20248239,7.19030659 L1.50325451,7.51745915 C0.673082751,7.51745915 1.77635684e-15,6.83781898 1.77635684e-15,5.99955939 Z"></path>
+                            </g>
+                        </g>
+                    </svg>
+                `;
+            } else {
+                nextBtn.innerHTML = `
+                    <svg class="story-next-arrow" width="45px" height="45px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="Iconly/Bold/Arrow---Right" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="Arrow---Right" transform="translate(3.000000, 6.000000)" fill="#fff" fill-rule="nonzero">
+                                <path d="M7.83655568,6.36070466 L7.8350323,6.00660914 C7.8350323,4.53497338 7.92121308,3.19331742 8.05102968,2.31870755 L8.16475558,1.77483018 C8.22802754,1.48678171 8.31120835,1.15880301 8.39793457,0.991371397 C8.71538527,0.378924178 9.33610502,0 10.0004606,0 L10.0582781,0 C10.4913637,0.0143198091 11.4011709,0.394345511 11.4011709,0.407563797 C12.8651531,1.02183092 15.6895424,2.87571834 16.9940026,4.19738844 L17.3730714,4.59418673 C17.4723361,4.70172939 17.5838596,4.82900679 17.6530951,4.92821737 C17.884365,5.23444098 18,5.61336516 18,5.99228933 C18,6.41527446 17.8701834,6.80851845 17.6247318,7.13016339 L17.2352725,7.55047018 L17.2352725,7.55047018 L17.1480103,7.6401689 C15.9643883,8.9234441 12.8738803,11.0218469 11.2571726,11.6640352 L11.0130847,11.7575787 C10.719361,11.8628603 10.3078205,11.988434 10.0582781,12 C9.74082738,12 9.43755833,11.9261979 9.14847093,11.7807968 C8.7873844,11.5770149 8.49938789,11.2553699 8.34011709,10.8764457 C8.23866377,10.6142831 8.07939298,9.82669359 8.07939298,9.81237378 C7.93338076,9.01825987 7.84871691,7.76518207 7.83655568,6.36070466 Z M1.77635684e-15,5.99955939 C1.77635684e-15,5.1612998 0.673082751,4.48165963 1.50325451,4.48165963 L5.20248239,4.80881219 C5.85374723,4.80881219 6.38174083,5.3419497 6.38174083,5.99955939 C6.38174083,6.65827061 5.85374723,7.19030659 5.20248239,7.19030659 L1.50325451,7.51745915 C0.673082751,7.51745915 1.77635684e-15,6.83781898 1.77635684e-15,5.99955939 Z"></path>
+                            </g>
+                        </g>
+                    </svg>
+                `;
+            }
+        }
+        
+        // Load story image
+        const storyImage = document.getElementById('storyImage');
+        if (storyImage) {
+            // Always use the correct path structure based on the actual files
+            const character = userManager.userData.progress.selectedCharacter;
+            const storyline = userManager.userData.progress.selectedStoryline;
+            const storyNumber = currentStoryId.replace('story', '');
+            
+            // Construct path following the exact structure found in the filesystem:
+            // assets/images/pip/chapter_1/umbrella_racing/story1/image_1.jpg
+            const imagePath = `assets/images/${character}/chapter_1/${storyline}/story${storyNumber}/image_${window.currentPage}.jpg`;
+            
+            console.log('Loading image from:', imagePath);
+            storyImage.src = imagePath;
+            storyImage.onerror = function() {
+                console.log(`Failed to load story image: ${this.src}`);
+                
+                // Log the actual URL that failed to load
+                const failedUrl = new URL(this.src, window.location.href);
+                console.log('Full failed URL:', failedUrl.href);
+                
+                // Use default placeholder
+                this.src = 'assets/images/default_placeholder.png';
+            };
+        }
     }
 }
 
@@ -1361,6 +1324,12 @@ function goToJourneyMap() {
 }
 
 function personalizeStoryText(text) {
+    // If text is not a string, return a default message
+    if (typeof text !== 'string') {
+        console.error('personalizeStoryText received non-string input:', text);
+        return 'Story content unavailable.';
+    }
+    
     const userData = userManager.userData;
     if (!userData) return text;
     
@@ -1372,12 +1341,17 @@ function personalizeStoryText(text) {
     };
     
     // Replace all placeholders
-    return text
-        .replace(/\[name\]/g, userData.name || '[name]')
-        .replace(/\[age\]/g, userData.age || '[age]')
-        .replace(/\[they\]/g, pronouns.they)
-        .replace(/\[their\]/g, pronouns.their)
-        .replace(/\[them\]/g, pronouns.them);
+    try {
+        return text
+            .replace(/\[name\]/g, userData.name || '[name]')
+            .replace(/\[age\]/g, userData.age || '[age]')
+            .replace(/\[they\]/g, pronouns.they)
+            .replace(/\[their\]/g, pronouns.their)
+            .replace(/\[them\]/g, pronouns.them);
+    } catch (error) {
+        console.error('Error personalizing text:', error);
+        return text; // Return original text if replacement fails
+    }
 }
 
 // Update startStory function to handle story data validation

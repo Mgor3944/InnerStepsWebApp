@@ -6,9 +6,9 @@
                 "description": "Learn to soar through the skies and face your fears",
                 "stories": {
                     "story1": {
-                        "title": "Pip's Hidden Discovery",
+                        "title": "The Hidden Racers",
                         "description": "A mysterious invitation arrives to join the Flying Umbrella Racing League.",
-                        "cover_image": "assets/images/[character]/chapter_1/umbrella_racing/story1_cover.jpg",
+                        "cover_image": "/assets/images/[character]/chapter_1/umbrella_racing/story1/cover.jpg",
                         "practice": {
                             "title": "Understanding Our Worries",
                             "type": "worry_meter",
@@ -41,7 +41,7 @@
                     "story2": {
                         "title": "How Pip Learned to Fly",
                         "description": "Learning to fly isn't easy, but that's okay.",
-                        "cover_image": "/images/[character]/chapter_1/umbrella_racing/story2_cover.jpg",
+                        "cover_image": "/assets/images/[character]/chapter_1/umbrella_racing/story2/cover.jpg",
                         "practice": {
                             "title": "Managing Our Worries",
                             "scenarios": [
@@ -59,7 +59,7 @@
                     "story3": {
                         "title": "Meeting Our Control Centre",
                         "description": "Sometimes the best support comes from unexpected places.",
-                        "cover_image": "/images/[character]/chapter_1/umbrella_racing/story3_cover.jpg",
+                        "cover_image": "/assets/images/[character]/chapter_1/umbrella_racing/story3/cover.jpg",
                         "practice": {
                             "title": "Working with Others",
                             "scenarios": [
@@ -77,7 +77,7 @@
                     "story4": {
                         "title": "The Golden Droplet Qualifiers",
                         "description": "It's not about winning, it's about believing in yourself.",
-                        "cover_image": "/images/[character]/chapter_1/umbrella_racing/story4_cover.jpg",
+                        "cover_image": "/assets/images/[character]/chapter_1/umbrella_racing/story4/cover.jpg",
                         "practice": {
                             "title": "Celebrating Progress",
                             "scenarios": [
@@ -101,7 +101,7 @@
                     "story1": {
                         "title": "Building Self-Confidence",
                         "description": "A story about finding inner strength",
-                        "cover_image": "/images/[character]/chapter_1/alt_storyline/story1_cover.jpg",
+                        "cover_image": "/assets/images/[character]/chapter_1/alt_storyline/story1/cover.jpg",
                         "practice": {
                             "title": "Understanding Our Worries",
                             "type": "worry_meter",

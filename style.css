@@ -755,120 +755,116 @@ label {
 
 /* === STORY PAGE STYLES === */
 body.story-page {
-    background: #332416;
-    padding: 20px;
+    background: #2B575A; /* Dark blue background */
 }
 
 .story-wrap {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    gap: 40px;
+    width: 100vw;
+    height: 100vh;
 }
 
 .story-container {
-    background-color: #69533f; /* Paper-like color */
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    width: 90%;
-    max-width: 1200px;
-    height: 80vh;
-    max-height: 750px;
     display: flex;
-    border: 10px solid #453423;
+    flex-direction: row;
+    background-color: #2B575A; /* Paper-like color */
+    width: 100%;
+    height: 100vh;
 }
 
 .story-text {
-    width: 32%;
-    padding: 40px;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 40%;
+    padding: 75px;
     position: relative;
-    /* Add paper texture */
-    background-image: linear-gradient(to right, 
-        rgba(0,0,0,0.02) 1px, 
-        transparent 1px
-    );
-    background-size: 35px 100%;
 }
 
 .story-image {
-    width: 68%;
-    background-color: #69533f;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 60%;
+    background-color: #2B575A;
     overflow: hidden;
-    padding: 20px;
-    border-radius: 15px;
+    position: relative;
 }
 
 .story-image img {
-    width: 95%;
-    height: 95%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     transition: transform 0.6s ease;
 }
 
 .story-text h1 {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Quicksand', cursive, sans-serif;
     text-align: left;
     color: #ffefe1;
-    font-size: 28px;
+    font-size: 40px;
     margin-bottom: 30px;
-    text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+    border-bottom: 2px solid rgb(255, 255, 255, 0.1);
+    padding-bottom: 30px;
+    width: 100%;
 }
 
 .story-text h4 {
-    color: #ffefe1;
+    color: rgb(255, 255, 255, 0.5);
     text-align: left;;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 500;
-    margin-bottom: 25px;
-    border-bottom: 1px solid rgb(255, 239, 22, 0.2);
-    padding-bottom: 8px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgb(255, 255, 255, 0.1);
+    padding-bottom: 20px;
 }
 
 .story-text p {
-    font-size: 18px;
-    line-height: 2.2;
-    margin-bottom: 25px;
-    color: #ffefe1;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 20px;
+    line-height: 2.5;
+    color: rgb(255, 255, 255, 0.9);
+    margin-bottom: 60px;
+    /* margin-bottom: auto; */
+    width: 100%;
 }
 
 /* Navigation buttons styling */
 .story-nav-buttons {
     display: flex;
     justify-content: space-between;
-    gap: 50px;
-    width: max-content;
+    gap: 20px;
+    /* margin-top: 40px; */
 }
 
 .story-next-btn, .story-back-btn {
     display: flex;
-    flex-direction: row;
-    gap: 10px;
+    justify-content: center;
+    align-items: center;
     width: max-content;
-    padding: 0 50px;
-    height: 60px;
+    gap: 10px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 999px;
+    background-color: rgb(255, 255, 255, 0.2);
+    color: white;
+    font-family: 'Quicksand', cursive, sans-serif;
     font-size: 18px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    background-color: #FFAE34;
-    color: white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    transition: transform 0.3s ease, background-color 0.3s, opacity 0.3s;
+    transition: all 0.3s ease;
 }
 
 .story-next-btn:hover, .story-back-btn:hover {
-    background-color: #f79809;
-    transform: scale(1.1);
+    transform: scale(1.02);
+    background-color: #6BC9B1;
+}
+
+.story-next-arrow, .story-back-arrow {
+    width: 32px;
+    height: 32px;
 }
 
 .page {
