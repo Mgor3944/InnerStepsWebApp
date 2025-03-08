@@ -5,11 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InnerSteps - Progress Insights</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Styles for verification inputs */
+        .verification-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .verification-inputs input {
+            width: 40px;
+            height: 50px;
+            text-align: center;
+            font-size: 24px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .verification-inputs input:focus {
+            border-color: #4a6da7;
+            outline: none;
+        }
+        /* Loading spinner */
+        .loading-spinner {
+            display: none;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4a6da7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Status message */
+        .status-message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .status-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        .status-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        /* Hidden form for Netlify */
+        .hidden-form {
+            display: none;
+        }
+    </style>
 </head>
 <body class="insights-page">
     <div class="insights-container">
         <h1>Receive Progress Insights</h1>
         <p>Enter your email address to receive updates and insights about your child's progress.</p>
+        
+        <!-- Hidden Netlify Form - This is what actually submits to Netlify -->
+        <form name="email-verification" method="POST" netlify netlify-honeypot="bot-field" class="hidden-form" id="netlifyForm">
+            <input type="hidden" name="form-name" value="email-verification">
+            <input type="hidden" name="bot-field">
+            <input type="hidden" name="email" id="hiddenEmail">
+            <input type="hidden" name="verification-code" id="hiddenCode">
+            <input type="hidden" name="subject" value="InnerSteps Verification Code">
+        </form>
         
         <div id="emailStep" class="insights-step active">
             <form id="emailForm">
@@ -17,12 +85,20 @@
                     <label for="parentEmail">Parent/Guardian Email:</label>
                     <input type="email" id="parentEmail" name="parentEmail" required>
                 </div>
-                <button type="submit" class="submit-btn">Send Verification Code</button>
+                <div id="emailStatusMessage" class="status-message"></div>
+                <div class="loading-spinner" id="emailSpinner"></div>
+                <button type="submit" class="submit-btn" id="sendCodeBtn">Send Verification Code</button>
             </form>
         </div>
         
         <div id="verificationStep" class="insights-step">
-            <p>We've sent a 4-digit verification code to your email.</p>
+            <p>We've sent a 4-digit verification code to your email. Please check your inbox (and spam folder) and enter the code below.</p>
+            
+            <!-- For demo purposes, show the code during development -->
+            <div id="demoCodeDisplay" style="margin: 15px 0; font-size: 12px; color: #666; display: none;">
+                <p>For testing purposes only: <span id="testVerificationCode"></span></p>
+            </div>
+            
             <form id="verificationForm">
                 <div class="form-group">
                     <label for="verificationCode">Enter Verification Code:</label>
@@ -33,6 +109,8 @@
                         <input type="number" maxlength="1" min="0" max="9" required>
                     </div>
                 </div>
+                <div id="verificationStatusMessage" class="status-message"></div>
+                <div class="loading-spinner" id="verificationSpinner"></div>
                 <button type="submit" class="submit-btn">Verify</button>
             </form>
         </div>
@@ -59,34 +137,127 @@
             const backToJourneyBtn = document.getElementById('backToJourneyBtn');
             const returnBtn = document.getElementById('returnBtn');
             const verificationInputs = verificationForm.querySelectorAll('input');
+            const emailSpinner = document.getElementById('emailSpinner');
+            const verificationSpinner = document.getElementById('verificationSpinner');
+            const emailStatusMessage = document.getElementById('emailStatusMessage');
+            const verificationStatusMessage = document.getElementById('verificationStatusMessage');
+            const sendCodeBtn = document.getElementById('sendCodeBtn');
+            const netlifyForm = document.getElementById('netlifyForm');
+            const hiddenEmail = document.getElementById('hiddenEmail');
+            const hiddenCode = document.getElementById('hiddenCode');
+            const testVerificationCode = document.getElementById('testVerificationCode');
+            const demoCodeDisplay = document.getElementById('demoCodeDisplay');
             
-            // For demo purposes, we'll use a fixed verification code
-            const DEMO_CODE = '1234';
+            // Check if we're in development mode (not on Netlify)
+            const isDevelopment = window.location.hostname === 'localhost' || 
+                                 window.location.hostname === '127.0.0.1' ||
+                                 window.location.hostname.includes('.netlify.app');
+            
+            if (isDevelopment) {
+                // Show the verification code in development mode for testing
+                demoCodeDisplay.style.display = 'block';
+            }
+            
+            // Generate a random 4-digit verification code
+            function generateVerificationCode() {
+                return Math.floor(1000 + Math.random() * 9000).toString();
+            }
+            
+            // Show status message
+            function showStatus(element, message, isError = false) {
+                element.textContent = message;
+                element.className = 'status-message ' + (isError ? 'error' : 'success');
+                setTimeout(() => {
+                    element.style.display = 'none';
+                    element.className = 'status-message';
+                }, 5000);
+            }
             
             // Handle email form submission
-            emailForm.addEventListener('submit', function(e) {
+            emailForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
+                
+                // Show loading spinner and disable button
+                emailSpinner.style.display = 'block';
+                sendCodeBtn.disabled = true;
+                
                 const email = document.getElementById('parentEmail').value;
                 
-                // Store email in localStorage
+                // Generate a new verification code
+                const verificationCode = generateVerificationCode();
+                
+                // Store email and verification code in localStorage
                 const userData = JSON.parse(localStorage.getItem('user_data')) || {};
                 userData.parentEmail = email;
+                userData.verificationCode = verificationCode;
                 localStorage.setItem('user_data', JSON.stringify(userData));
                 
-                // In a real app, you would send a verification code to this email
-                console.log('Verification code sent to:', email);
+                // Display the code for testing in development mode
+                if (isDevelopment) {
+                    testVerificationCode.textContent = verificationCode;
+                }
                 
-                // Show verification step
-                emailStep.classList.remove('active');
-                verificationStep.classList.add('active');
-                verificationInputs[0].focus();
+                try {
+                    // Set values in the hidden Netlify form
+                    hiddenEmail.value = email;
+                    hiddenCode.value = verificationCode;
+                    
+                    // Submit the form to Netlify
+                    const formData = new FormData(netlifyForm);
+                    
+                    const response = await fetch('/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams(formData).toString()
+                    });
+                    
+                    if (response.ok) {
+                        console.log('Form submitted successfully to Netlify');
+                        showStatus(emailStatusMessage, 'Verification code sent successfully!');
+                        
+                        // Show verification step
+                        emailStep.classList.remove('active');
+                        verificationStep.classList.add('active');
+                        verificationInputs[0].focus();
+                    } else {
+                        throw new Error('Network response was not ok');
+                    }
+                } catch (error) {
+                    console.error('Error submitting form:', error);
+                    
+                    if (isDevelopment) {
+                        // In development, still proceed to verification step for testing
+                        showStatus(emailStatusMessage, 'Development mode: Proceeding to verification step');
+                        emailStep.classList.remove('active');
+                        verificationStep.classList.add('active');
+                        verificationInputs[0].focus();
+                    } else {
+                        showStatus(emailStatusMessage, 'Failed to send verification code. Please try again.', true);
+                        sendCodeBtn.disabled = false;
+                    }
+                } finally {
+                    // Hide loading spinner
+                    emailSpinner.style.display = 'none';
+                }
             });
             
             // Auto-focus next input in verification code
             verificationInputs.forEach((input, index) => {
+                // Ensure only one digit per input
                 input.addEventListener('input', () => {
+                    if (input.value.length > 1) {
+                        input.value = input.value.slice(0, 1);
+                    }
+                    
                     if (input.value && index < verificationInputs.length - 1) {
                         verificationInputs[index + 1].focus();
+                    }
+                });
+                
+                // Allow backspace to go to previous input
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !input.value && index > 0) {
+                        verificationInputs[index - 1].focus();
                     }
                 });
             });
@@ -94,24 +265,38 @@
             // Handle verification form submission
             verificationForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const code = Array.from(verificationInputs).map(input => input.value).join('');
                 
-                // In a real app, you would validate this code against what was sent
-                if (code === DEMO_CODE) {
+                // Show loading spinner
+                verificationSpinner.style.display = 'block';
+                
+                const enteredCode = Array.from(verificationInputs).map(input => input.value).join('');
+                
+                // Get the stored verification code
+                const userData = JSON.parse(localStorage.getItem('user_data')) || {};
+                const storedCode = userData.verificationCode;
+                
+                if (enteredCode === storedCode) {
                     // Mark email as verified in localStorage
-                    const userData = JSON.parse(localStorage.getItem('user_data')) || {};
                     userData.emailVerified = true;
                     localStorage.setItem('user_data', JSON.stringify(userData));
                     
+                    // Show success message
+                    showStatus(verificationStatusMessage, 'Email verified successfully!');
+                    
                     // Show success step
-                    verificationStep.classList.remove('active');
-                    successStep.classList.add('active');
-                    backToJourneyBtn.style.display = 'none';
+                    setTimeout(() => {
+                        verificationStep.classList.remove('active');
+                        successStep.classList.add('active');
+                        backToJourneyBtn.style.display = 'none';
+                    }, 1000);
                 } else {
-                    alert('Invalid verification code. Please try again.');
+                    showStatus(verificationStatusMessage, 'Invalid verification code. Please try again.', true);
                     verificationForm.reset();
                     verificationInputs[0].focus();
                 }
+                
+                // Hide loading spinner
+                verificationSpinner.style.display = 'none';
             });
             
             // Return to journey map
