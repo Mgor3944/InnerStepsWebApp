@@ -25,7 +25,7 @@ async function initPracticePage() {
         if (!userManager.userData || !userManager.userData.progress || !userManager.userData.progress.current_story) {
             console.error('No current story found');
             alert('Please select a story from the journey map first.');
-            window.location.href = 'index.html';
+            window.location.href = './index.html';
             return;
         }
         
@@ -74,40 +74,101 @@ async function initPracticePage() {
             // Show summary section
             summarySection.classList.remove('hidden');
             
-            // Generate summary content
-            let summaryContent = `
-                <h2>Great job!</h2>
-                <p>You've completed all the practice scenarios for "${practice.title}".</p>
-            `;
-            
-            // Add worry ratings summary
+            // Store ratings in analytics without displaying them
             if (ratings.length > 0) {
-                summaryContent += `
-                    <div class="summary-stats">
-                        <p>Your average worry level: <strong>${calculateAverageWorry(ratings)}</strong> out of 10</p>
-                    </div>
-                `;
+                // Save the ratings to user analytics
+                if (!userManager.userData.analytics) {
+                    userManager.userData.analytics = { worry_ratings: [] };
+                } else if (!userManager.userData.analytics.worry_ratings) {
+                    userManager.userData.analytics.worry_ratings = [];
+                }
                 
-                // Add individual ratings
-                summaryContent += '<div class="scenario-ratings">';
-                practice.scenarios.forEach((scenario, index) => {
-                    const rating = ratings[index] || 'N/A';
-                    summaryContent += `
-                        <div class="scenario-rating">
-                            <p><strong>Scenario ${index + 1}:</strong> ${scenario.text}</p>
-                            <p>Your worry level: ${rating}/10</p>
-                        </div>
-                    `;
+                userManager.userData.analytics.worry_ratings.push({
+                    story_id: userManager.userData.progress.current_story,
+                    timestamp: new Date().toISOString(),
+                    ratings: ratings,
+                    average: calculateAverageWorry(ratings)
                 });
-                summaryContent += '</div>';
+                
+                // Save user data with updated analytics
+                userManager.saveUserData();
+                console.log('Worry ratings saved to analytics:', ratings);
             }
             
-            // Add finish button
-            summaryContent += `
-                <button class="finish-btn" onclick="window.location.href='journey.html'">Return to Journey Map</button>
+            // Get badge image and key message from structure data
+            const currentStoryId = userManager.userData.progress.current_story;
+            const storyline = userManager.userData.progress.selectedStoryline;
+            
+            let badgeImage = 'assets/images/default_placeholder.png';
+            let keyMessage = 'Great job completing this activity!';
+            
+            // Try to get the badge image and key message from the structure data
+            try {
+                const storyData = userManager.structureData.chapter_1.storylines[storyline].stories[currentStoryId];
+                if (storyData) {
+                    if (storyData.badge_image) {
+                        // Remove leading slash if present
+                        badgeImage = storyData.badge_image.startsWith('/') 
+                            ? storyData.badge_image.substring(1) 
+                            : storyData.badge_image;
+                    }
+                    
+                    if (storyData.key_message) {
+                        keyMessage = storyData.key_message;
+                    }
+                }
+            } catch (error) {
+                console.error('Error getting badge image or key message:', error);
+            }
+            
+            // Generate summary content with badge and key message
+            let summaryContent = `
+                <div class="completion-badge-container">
+                    <img src="${badgeImage}" alt="Completion Badge" onerror="this.src='assets/images/default_placeholder.png'">
+                </div>
+                <h2>Congrats!</h2>
+                <p>You've unlocked a new badge for completing <b>${practice.title}</b>.</p>
+                <div class="key-takeaway-container">   
+                    <p>${keyMessage}</p>
+                </div>
+                <button class="practice-finish-btn" onclick="completePractice()">Home Time</button>
             `;
             
             summarySection.innerHTML = summaryContent;
+        }
+
+        // Function to complete practice and unlock next story
+        function completePractice() {
+            try {
+                console.log('Completing practice and unlocking next story...');
+                const currentStoryId = userManager.userData.progress.current_story;
+                
+                // Mark current story as completed in user data
+                if (userManager.userData.stories[currentStoryId]) {
+                    userManager.userData.stories[currentStoryId].completed = true;
+                    userManager.userData.stories[currentStoryId].practice_completed = true;
+                    
+                    // Calculate progress
+                    const completedStories = Object.values(userManager.userData.stories)
+                        .filter(story => story.completed).length;
+                    const totalStories = Object.keys(userManager.userData.stories).length;
+                    const progressPercentage = (completedStories / totalStories) * 100;
+                    
+                    // Update progress in user data
+                    userManager.userData.progress.chapter1_progress = progressPercentage;
+                    
+                    // Save user data
+                    userManager.saveUserData();
+                    console.log('Story and practice marked as completed:', currentStoryId);
+                }
+                
+                // Navigate to journey map
+                window.location.href = './index.html';
+            } catch (error) {
+                console.error('Error completing practice:', error);
+                // Fallback to simple navigation if there's an error
+                window.location.href = './index.html';
+            }
         }
 
         // Calculate average worry rating
@@ -140,7 +201,6 @@ async function initPracticePage() {
             let overviewContent = `
                 <h2>${practice.title || 'Understanding Our Worries'}</h2>
                 <p>${practice.description || 'Let\'s explore how different situations make us feel.'}</p>
-                <p>${practice.instructions || 'Move the slider to show how worried you feel about each situation.'}</p>
                 <div class="thermometer-container-horizontal">
                     <div class="thermometer-horizontal">
                         <input type="range" min="1" max="10" value="1" class="worry-slider-horizontal">
@@ -159,7 +219,7 @@ async function initPracticePage() {
                         <span>10</span>
                     </div>
                 </div>
-                <button class="start-btn">I'm Ready to Begin!</button>
+                <button class="practice-start-btn">I'm Ready to Begin!</button>
             `;
             
             overviewSection.innerHTML = overviewContent;
@@ -175,7 +235,7 @@ async function initPracticePage() {
             }
             
             // Add event listener to start button
-            const startBtn = overviewSection.querySelector('.start-btn');
+            const startBtn = overviewSection.querySelector('.practice-start-btn');
             console.log('Start button:', startBtn);
             if (startBtn) {
                 startBtn.addEventListener('click', () => {
@@ -237,8 +297,12 @@ async function initPracticePage() {
             // Show scenario section
             scenarioSection.classList.remove('hidden');
             
-            // Set scenario text
-            if (scenarioText) scenarioText.textContent = scenario.text;
+            // Add a progress bar and scenario text
+            if (scenarioText) {
+                const progressHtml = `<div class="scenario-progress">Scenario ${index + 1} of ${practice.scenarios.length}</div>`;
+                const scenarioHtml = `<h2>${scenario.text}</h2>`;
+                scenarioText.innerHTML = progressHtml + scenarioHtml;
+            }
             
             // Clear activity container
             if (activityContainer) activityContainer.innerHTML = '';
@@ -285,9 +349,10 @@ async function initPracticePage() {
             console.log('Setting up navigation...');
             const backBtn = document.querySelector('.practice-back-btn');
             const nextBtn = document.querySelector('.practice-next-btn');
+            const practiceContainer = document.querySelector('.practice-container');
             
             console.log('Back button:', backBtn);
-            console.log('Continue button:', nextBtn);
+            console.log('Next button:', nextBtn);
             
             if (backBtn) {
                 backBtn.addEventListener('click', () => {
@@ -305,7 +370,7 @@ async function initPracticePage() {
 
             if (nextBtn) {
                 nextBtn.addEventListener('click', () => {
-                    console.log('Continue button clicked!');
+                    console.log('Next button clicked!');
                     // Save current rating
                     ratings[currentScenarioIndex] = getCurrentRating();
 
@@ -315,6 +380,14 @@ async function initPracticePage() {
                     } else {
                         showSummary();
                     }
+                });
+            }
+            
+            // Listen for completePractice event
+            if (practiceContainer) {
+                practiceContainer.addEventListener('completePractice', () => {
+                    console.log('completePractice event received');
+                    completePractice();
                 });
             }
         }
@@ -331,6 +404,19 @@ async function initPracticePage() {
 // Export the function for use in other files
 if (typeof window !== 'undefined') {
     window.initPracticePage = initPracticePage;
+    window.completePractice = function() {
+        // This is a wrapper function that will call the inner completePractice function
+        // We need to do this because the inner function is not directly accessible
+        const practiceContainer = document.querySelector('.practice-container');
+        if (practiceContainer) {
+            // Dispatch a custom event that our code will listen for
+            const event = new CustomEvent('completePractice');
+            practiceContainer.dispatchEvent(event);
+        } else {
+            console.error('Practice container not found');
+            window.location.href = './index.html';
+        }
+    };
 }
 
 // Auto-initialize when the DOM is loaded if we're on the practice page

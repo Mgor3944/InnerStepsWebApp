@@ -1264,7 +1264,7 @@ body.story-page {
 
 /* Practice Page Styles */
 .practice-page {
-    min-height: 100vh;
+    /* min-height: 100vh; */
     background-color: #f5f5f5;
     padding: 20px;
     display: flex;
@@ -1278,13 +1278,10 @@ body.story-page {
     align-items: center;
     justify-content: flex-start;
     width: 100%;
-    max-width: 700px;
-    min-height: 500px;
-    background: white;
+    max-width: 650px;
     padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 0 auto;
+    margin-bottom: 80px;
+    /* border: 1px solid red; */
 }
 
 .overview-section, .scenario-section, .summary-section {
@@ -1296,47 +1293,70 @@ body.story-page {
 }
 
 .overview-section h2, .summary-section h2 {
-    color: #333;
-    margin-bottom: 20px;
-    font-size: 28px;
+    color: #42535F;
+    font-size: 35px;
 }
 
 .overview-section p, .summary-section p {
-    color: #666;
-    margin-bottom: 25px;
+    color: #42535F;
     font-size: 18px;
-    line-height: 1.5;
+    line-height: 1.8;
 }
 
 .scenario-text {
-    font-size: 20px;
-    color: #333;
-    margin-bottom: 30px;
-    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
+}
+
+.scenario-text h2 {
+    font-size: 30px;
+    line-height: 1.5;
+    color: #42535F;
+}
+
+.scenario-progress {
+    font-size: 16px;
+    color: #6BC9B1;
+    background-color: rgb(107, 201, 177, 0.1);
+    margin-bottom: 10px;
+    font-weight: bold;
+    width: max-content;
+    padding: 8px 15px;
+    border-radius: 99px;
+}
+
+.scenario-text p {
+    font-size: 18px;
+    color: #333;
+    line-height: 1.5;
     font-weight: 500;
 }
 
 .activity-container {
     width: 100%;
-    margin: 20px 0;
+    margin: 15px 0 20px 0;
 }
 
 .practice-navigation-buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
     width: 100%;
-    margin-top: 30px;
 }
 
 .practice-back-btn, .practice-next-btn {
-    padding: 16px 25px;
+    padding: 16px 35px;
     border-radius: 12px;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    width: 150px;
+    width: 200px;
     transition: all 0.15s ease-in-out;
+    border: 1px solid red;
 }
 
 .practice-back-btn {
@@ -1369,33 +1389,28 @@ body.story-page {
     border-bottom: 3px solid #658624;
 }
 
-/* Keep the existing styles for backward compatibility */
-.navigation-buttons {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 30px;
-}
-
-.back-btn, .next-btn, .start-btn, .finish-btn {
-    padding: 12px 25px;
+.practice-finish-btn {
+    background-color: #8DBA36;
     border: none;
-    border-radius: 50px;
-    background-color: #4a90e2;
+    border-bottom: 7px solid #658624;
     color: white;
+    border-radius: 12px;
+    padding: 16px 25px;
+    cursor: pointer;
     font-size: 16px;
     font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    width: 200px;
+    margin: 30px auto;
+    display: block;
+    transition: all 0.15s ease-in-out;
 }
 
-.back-btn:hover, .next-btn:hover, .start-btn:hover, .finish-btn:hover {
-    background-color: #3a7bc8;
+.practice-finish-btn:hover {
+    background-color: #96c43a;
 }
 
-.start-btn, .finish-btn {
-    margin-top: 20px;
-    min-width: 180px;
+.practice-finish-btn:active {
+    border-bottom: 3px solid #658624;
 }
 
 .hidden {
@@ -1510,9 +1525,22 @@ body.story-page {
 }
 
 .summary-stats p {
-    margin: 10px 0;
     font-size: 18px;
-    color: #333;
+    margin: 10px 0;
+    color: #42535F;
+}
+
+.summary-image {
+    width: 100%;
+    max-width: 300px;
+    margin: 30px auto;
+    text-align: center;
+}
+
+.summary-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
 }
 
 /* === WELCOME ANIMATION STYLES === */
@@ -1862,4 +1890,34 @@ body.story-page {
 .header-container .return-visit.show {
     display: block;
     animation: fadeIn 0.5s ease-out;
+}
+
+.completion-badge-container {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+    text-align: center;
+    position: relative;
+}
+
+.completion-badge-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.key-takeaway-container {
+    background-color: rgba(141, 186, 54, 0.1);
+    border-left: 4px solid #8DBA36;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.key-takeaway-container p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #42535F;
+    font-style: italic;
+    margin: 0;
 }

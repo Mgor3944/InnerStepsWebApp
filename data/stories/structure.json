@@ -9,11 +9,12 @@
                         "title": "Pip's Big Discovery",
                         "description": "A mysterious invitation arrives to join the Flying Umbrella Racing League.",
                         "cover_image": "/assets/images/[character]/chapter_1/umbrella_racing/story1/cover.jpg",
+                        "badge_image": "/assets/images/badges/story1_badge.png",
+                        "key_message": "It's normal to feel worried about new things. Taking small steps can help us feel brave!",
                         "practice": {
                             "title": "Understanding Our Worries",
                             "type": "worry_meter",
-                            "description": "Let's explore how different situations make us feel.",
-                            "instructions": "Move the slider to show how worried you feel about each situation.",
+                            "description": "Let's explore how different situations make us feel by moving the slider to show how worried you feel about each situation.",
                             "scenarios": [
                                 {
                                     "text": "How worried do you feel about trying something new for the first time?",
@@ -42,6 +43,8 @@
                         "title": "How Pip Learned to Fly",
                         "description": "Learning to fly isn't easy, but that's okay.",
                         "cover_image": "/assets/images/[character]/chapter_1/umbrella_racing/story2/cover.jpg",
+                        "badge_image": "/assets/images/badges/story2_badge.png",
+                        "key_message": "Everyone makes mistakes when learning something new. What matters is that we keep trying!",
                         "practice": {
                             "title": "Managing Our Worries",
                             "scenarios": [
@@ -60,6 +63,8 @@
                         "title": "Meeting Our Control Centre",
                         "description": "Sometimes the best support comes from unexpected places.",
                         "cover_image": "/assets/images/[character]/chapter_1/umbrella_racing/story3/cover.jpg",
+                        "badge_image": "/assets/images/badges/story3_badge.png",
+                        "key_message": "Everyone needs help sometimes. Asking for help shows courage and helps us grow stronger!",
                         "practice": {
                             "title": "Working with Others",
                             "scenarios": [
@@ -78,6 +83,8 @@
                         "title": "The Golden Droplet Qualifiers",
                         "description": "It's not about winning, it's about believing in yourself.",
                         "cover_image": "/assets/images/[character]/chapter_1/umbrella_racing/story4/cover.jpg",
+                        "badge_image": "/assets/images/badges/story4_badge.png",
+                        "key_message": "Success isn't just about winning. It's about trying your best and learning from each experience!",
                         "practice": {
                             "title": "Celebrating Progress",
                             "scenarios": [
