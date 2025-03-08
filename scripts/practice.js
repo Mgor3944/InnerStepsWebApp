@@ -95,30 +95,55 @@ async function initPracticePage() {
                 console.log('Worry ratings saved to analytics:', ratings);
             }
             
-            // Get badge image and key message from structure data
+            // Get story data and personalization elements in one clean step
             const currentStoryId = userManager.userData.progress.current_story;
             const storyline = userManager.userData.progress.selectedStoryline;
             
+            // Default values
             let badgeImage = 'assets/images/default_placeholder.png';
             let keyMessage = 'Great job completing this activity!';
+            let characterName = '';
             
-            // Try to get the badge image and key message from the structure data
+            // Get all data from the story structure in one try-catch block
             try {
+                // First try to get character name from localStorage (where onboarding stores it)
+                try {
+                    const localUserData = JSON.parse(localStorage.getItem('user_data')) || {};
+                    if (localUserData.characterName) {
+                        characterName = localUserData.characterName;
+                        console.log('Found characterName in localStorage:', characterName);
+                    }
+                } catch (e) {
+                    console.log('Error reading from localStorage:', e);
+                }
+                
+                // If not found in localStorage, try userManager
+                if (!characterName && userManager.userData) {
+                    if (userManager.userData.characterName) {
+                        characterName = userManager.userData.characterName;
+                    } else if (userManager.userData.name) {
+                        characterName = userManager.userData.name;
+                    }
+                }
+                
+                // Get badge and key message from story data
                 const storyData = userManager.structureData.chapter_1.storylines[storyline].stories[currentStoryId];
                 if (storyData) {
+                    // Get badge image, removing leading slash if present
                     if (storyData.badge_image) {
-                        // Remove leading slash if present
                         badgeImage = storyData.badge_image.startsWith('/') 
                             ? storyData.badge_image.substring(1) 
                             : storyData.badge_image;
                     }
                     
+                    // Get key message
                     if (storyData.key_message) {
                         keyMessage = storyData.key_message;
                     }
                 }
             } catch (error) {
-                console.error('Error getting badge image or key message:', error);
+                console.error('Error retrieving personalization data:', error);
+                // Continue with default values if there's an error
             }
             
             // Generate summary content with badge and key message
@@ -126,7 +151,7 @@ async function initPracticePage() {
                 <div class="completion-badge-container">
                     <img src="${badgeImage}" alt="Completion Badge" onerror="this.src='assets/images/default_placeholder.png'">
                 </div>
-                <h2>Congrats!</h2>
+                <h2>Congrats${characterName ? ', ' + characterName : ''}!</h2>
                 <p>You've unlocked a new badge for completing <b>${practice.title}</b>.</p>
                 <div class="key-takeaway-container">   
                     <p>${keyMessage}</p>
@@ -200,7 +225,7 @@ async function initPracticePage() {
             // Generate overview content
             let overviewContent = `
                 <h2>${practice.title || 'Understanding Our Worries'}</h2>
-                <p>${practice.description || 'Let\'s explore how different situations make us feel.'}</p>
+                <p>${practice.description || 'Let\'s explore how different situations make us feel by moving the slider to show how worried you feel about each situation.'}</p>
                 <div class="thermometer-container-horizontal">
                     <div class="thermometer-horizontal">
                         <input type="range" min="1" max="10" value="1" class="worry-slider-horizontal">
