@@ -260,10 +260,60 @@ class UserManager {
 
     getCurrentStory() {
         if (!this.userData || !this.userData.progress || !this.userData.stories) {
+            console.error('Missing user data, progress, or stories');
             return null;
         }
+        
         const currentStoryId = this.userData.progress.current_story;
-        return this.userData.stories[currentStoryId];
+        console.log('Getting current story:', currentStoryId);
+        
+        // Get the story from user data
+        const userStory = this.userData.stories[currentStoryId];
+        
+        if (!userStory) {
+            console.error('Story not found in user data:', currentStoryId);
+            return null;
+        }
+        
+        // Get the story structure from the loaded structure
+        const character = this.userData.progress.selectedCharacter;
+        const storyline = this.userData.progress.selectedStoryline;
+        
+        try {
+            // Make sure structure data is loaded
+            if (!this.structureData) {
+                console.error('Structure data not loaded');
+                return userStory;
+            }
+            
+            console.log('Structure data:', this.structureData);
+            console.log('Looking for storyline:', storyline);
+            console.log('Looking for story:', currentStoryId);
+            
+            // Get the practice data from the structure
+            if (this.structureData.chapter_1 && 
+                this.structureData.chapter_1.storylines && 
+                this.structureData.chapter_1.storylines[storyline] && 
+                this.structureData.chapter_1.storylines[storyline].stories && 
+                this.structureData.chapter_1.storylines[storyline].stories[currentStoryId]) {
+                
+                const structureStory = this.structureData.chapter_1.storylines[storyline].stories[currentStoryId];
+                
+                if (structureStory && structureStory.practice) {
+                    // Merge the practice data into the user story
+                    userStory.practice = structureStory.practice;
+                    console.log('Added practice data to story:', structureStory.practice);
+                } else {
+                    console.error('Practice data not found in structure for story:', currentStoryId);
+                }
+            } else {
+                console.error('Story structure path not found:', `chapter_1.storylines.${storyline}.stories.${currentStoryId}`);
+            }
+        } catch (error) {
+            console.error('Error getting practice data:', error);
+        }
+        
+        return userStory;
     }
 
     updateUserProfile(profileData) {
@@ -982,190 +1032,6 @@ function initStoryPage() {
     }
 }
 
-// === PRACTICE PAGE HANDLING ===
-function initPracticePage() {
-    const currentStory = userManager.getCurrentStory();
-    if (!currentStory || !currentStory.practice) {
-        console.error('No practice data found for current story');
-        return;
-    }
-
-    const practice = currentStory.practice;
-    let currentScenarioIndex = -1; // Start at -1 for overview screen
-    let ratings = [];
-
-    // Initialize progress tracking
-    const progressFill = document.querySelector('.progress-fill');
-    const progressText = document.querySelector('.progress-text');
-    
-    function updateProgress() {
-        if (currentScenarioIndex === -1) return; // Don't show progress on overview
-        const progress = ((currentScenarioIndex) / practice.scenarios.length) * 100;
-        if (progressFill) progressFill.style.width = `${progress}%`;
-        if (progressText) progressText.textContent = `Question ${currentScenarioIndex + 1} of ${practice.scenarios.length}`;
-    }
-
-    // Add showSummary function
-    function showSummary() {
-        const scenarioSection = document.querySelector('.scenario-section');
-        if (scenarioSection) {
-            scenarioSection.innerHTML = `
-                <h2>Great job!</h2>
-                <p>You've completed all the practice scenarios.</p>
-                <div class="summary-stats">
-                    <p>Average worry level: ${calculateAverageWorry(ratings)}</p>
-                    <p>Highest worry: ${Math.max(...ratings)}</p>
-                    <p>Lowest worry: ${Math.min(...ratings)}</p>
-                </div>
-                <button class="finish-btn" onclick="goToJourneyMap()">Return to Journey Map</button>
-            `;
-        }
-        
-        // Save the ratings to user analytics
-        if (!userManager.userData.analytics) {
-            userManager.userData.analytics = { worry_ratings: [] };
-        }
-        userManager.userData.analytics.worry_ratings.push({
-            story_id: userManager.userData.progress.current_story,
-            timestamp: new Date().toISOString(),
-            ratings: ratings
-        });
-        userManager.saveUserData();
-    }
-
-    // Helper function to calculate average worry
-    function calculateAverageWorry(ratings) {
-        if (!ratings.length) return 0;
-        const sum = ratings.reduce((a, b) => a + b, 0);
-        return Math.round((sum / ratings.length) * 10) / 10;
-    }
-
-    // Initialize overview screen
-    function showOverview() {
-        const overviewSection = document.querySelector('.overview-section');
-        const scenarioSection = document.querySelector('.scenario-section');
-        
-        if (overviewSection && scenarioSection) {
-            overviewSection.style.display = 'block';
-            scenarioSection.style.display = 'none';
-            
-            // Initialize demo worry meter
-            const demoSlider = overviewSection.querySelector('.worry-slider');
-            const demoThermometer = overviewSection.querySelector('.thermometer-fill');
-            
-            if (demoSlider && demoThermometer) {
-                demoSlider.addEventListener('input', (e) => {
-                    const value = e.target.value;
-                    const fillWidth = (value / 9) * 100;
-                    demoThermometer.style.width = `${fillWidth}%`;
-                    
-                    // Update color based on value
-                    if (value <= 3) {
-                        demoThermometer.style.backgroundColor = '#4CAF50'; // Green
-                    } else if (value <= 5) {
-                        demoThermometer.style.backgroundColor = '#FFC107'; // Yellow
-                    } else if (value <= 7) {
-                        demoThermometer.style.backgroundColor = '#FF9800'; // Orange
-                    } else {
-                        demoThermometer.style.backgroundColor = '#f44336'; // Red
-                    }
-                });
-            }
-        }
-    }
-
-    // Show scenario
-    function showScenario(index) {
-        if (index === -1) {
-            showOverview();
-            return;
-        }
-
-        const scenario = practice.scenarios[index];
-        const scenarioText = document.querySelector('.scenario-text');
-        const overviewSection = document.querySelector('.overview-section');
-        const scenarioSection = document.querySelector('.scenario-section');
-        
-        if (overviewSection) overviewSection.style.display = 'none';
-        if (scenarioSection) scenarioSection.style.display = 'block';
-        if (scenarioText) scenarioText.textContent = scenario.text;
-        
-        // Reset slider to 0
-        const worrySlider = document.querySelector('.worry-slider');
-        if (worrySlider) {
-            worrySlider.value = 0;
-            updateThermometer(0);
-        }
-        
-        // Update progress
-        updateProgress();
-        
-        // Update navigation buttons
-        const backBtn = document.querySelector('.back-btn');
-        const nextBtn = document.querySelector('.next-btn');
-        
-        if (backBtn) backBtn.style.display = index === 0 ? 'none' : 'block';
-        if (nextBtn) nextBtn.textContent = index === practice.scenarios.length - 1 ? 'Finish' : 'Next';
-    }
-
-    // Handle navigation
-    const startBtn = document.querySelector('.start-btn');
-    if (startBtn) {
-        startBtn.addEventListener('click', () => {
-            currentScenarioIndex = 0;
-            showScenario(currentScenarioIndex);
-        });
-    }
-
-    const backBtn = document.querySelector('.back-btn');
-    if (backBtn) {
-        backBtn.addEventListener('click', () => {
-            if (currentScenarioIndex > 0) {
-                currentScenarioIndex--;
-                showScenario(currentScenarioIndex);
-            }
-        });
-    }
-
-    const nextBtn = document.querySelector('.next-btn');
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            const worrySlider = document.querySelector('.worry-slider');
-            if (worrySlider) {
-                ratings[currentScenarioIndex] = parseInt(worrySlider.value);
-            }
-
-            if (currentScenarioIndex < practice.scenarios.length - 1) {
-                currentScenarioIndex++;
-                showScenario(currentScenarioIndex);
-            } else {
-                showSummary();
-            }
-        });
-    }
-
-    // Initialize first view (overview)
-    showScenario(-1);
-}
-
-function personalizeText(text, userData) {
-    if (!text || !userData) return text;
-    
-    const placeholders = {
-        name: userData.name,
-        age: userData.age,
-        interests: userData.interests ? userData.interests.join(', ') : '',
-        first_interest: userData.interests && userData.interests.length > 0 ? userData.interests[0] : '',
-        second_interest: userData.interests && userData.interests.length > 1 ? userData.interests[1] : ''
-    };
-
-    // Replace placeholders with actual values
-    return text.replace(/\[(\w+)\]/g, (match, key) => {
-        // If the placeholder exists in our mapping, use it; otherwise keep the original placeholder
-        return placeholders[key] !== undefined ? placeholders[key] : match;
-    });
-}
-
 // === USER PROGRESS HANDLING ===
 function loadUserProgress() {
     // Keep only story progression logic
@@ -1377,8 +1243,6 @@ function initializeAppropriateView() {
     // Check which page we're on and initialize accordingly
     if (document.querySelector('.story-page')) {
         initStoryPage();
-    } else if (document.querySelector('.practice-page')) {
-        initPracticePage();
     } else if (document.querySelector('.journey-page')) {
         initJourneyMap();
     }
@@ -1471,3 +1335,25 @@ document.addEventListener('DOMContentLoaded', function() {
         updatePronouns(userData.gender);
     }
 });
+
+// === PRACTICE PAGE HANDLING ===
+// Practice page functionality has been moved to scripts/practice.js
+
+// === TEXT PERSONALIZATION ===
+function personalizeText(text, userData) {
+    if (!text || !userData) return text;
+    
+    const placeholders = {
+        name: userData.name,
+        age: userData.age,
+        interests: userData.interests ? userData.interests.join(', ') : '',
+        first_interest: userData.interests && userData.interests.length > 0 ? userData.interests[0] : '',
+        second_interest: userData.interests && userData.interests.length > 1 ? userData.interests[1] : ''
+    };
+
+    // Replace placeholders with actual values
+    return text.replace(/\[(\w+)\]/g, (match, key) => {
+        // If the placeholder exists in our mapping, use it; otherwise keep the original placeholder
+        return placeholders[key] !== undefined ? placeholders[key] : match;
+    });
+}
