@@ -1734,7 +1734,7 @@ body.story-page {
 }
 
 .j-header-progress-bar {
-    width: 30px; /* Will be replaced by the actual progress percentage in my scripts */
+    width: 10px; /* Will be replaced by the actual progress percentage in my scripts */
     height: 100%;
     background-color: #68BDE2;
     transition: width 0.3s ease;
@@ -1753,9 +1753,14 @@ body.story-page {
     color: #68BDE2;
     font-weight: bold;
 
-    transition: width 0.3s ease;
+    transition: width 0.3s ease, color 0.3s ease;
 
     font-family: 'Quicksand', sans-serif;
+}
+
+/* Add a class for when the progress bar overlaps the stage name */
+.j-header-stage-name.overlapped {
+    color: #fff;
 }
 
 /* ================================================== */

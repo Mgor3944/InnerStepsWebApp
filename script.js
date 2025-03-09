@@ -1155,8 +1155,25 @@ async function initJourneyMap() {
     
     // Update progress bar in header
     const progressBar = document.querySelector('.j-header-progress-bar');
-    if (progressBar) {
+    const stageName = document.querySelector('.j-header-stage-name');
+    
+    if (progressBar && stageName) {
+        // Set up transition monitoring for the progress bar
+        setupProgressBarTransitionMonitoring();
+        
+        // Set the progress bar width which will trigger the transition
         progressBar.style.width = `${progressPercentage}%`;
+        
+        // Initial update of the text color
+        updateStageNameColor();
+        
+        // Add a resize observer to handle window resizing
+        if (!window.stageNameResizeObserver) {
+            window.stageNameResizeObserver = new ResizeObserver(() => {
+                updateStageNameColor();
+            });
+            window.stageNameResizeObserver.observe(document.querySelector('.j-header-progress-container'));
+        }
     }
     
     // Get the container for journey stage nodes
@@ -1202,6 +1219,35 @@ async function initJourneyMap() {
             window.location.href = 'insights.html';
         });
     }
+}
+
+// Set up monitoring of the progress bar transition to update text color
+function setupProgressBarTransitionMonitoring() {
+    const progressBar = document.querySelector('.j-header-progress-bar');
+    if (!progressBar) return;
+    
+    // Remove any existing transition listeners
+    if (window.progressBarTransitionInterval) {
+        clearInterval(window.progressBarTransitionInterval);
+    }
+    
+    // Add a listener for when the transition starts
+    progressBar.addEventListener('transitionstart', () => {
+        // Check every 30ms during the transition
+        window.progressBarTransitionInterval = setInterval(() => {
+            updateStageNameColor();
+        }, 30);
+    });
+    
+    // Add a listener for when the transition ends
+    progressBar.addEventListener('transitionend', () => {
+        if (window.progressBarTransitionInterval) {
+            clearInterval(window.progressBarTransitionInterval);
+            window.progressBarTransitionInterval = null;
+        }
+        // Final update after transition
+        updateStageNameColor();
+    });
 }
 
 // Helper function to update character name in header
@@ -1386,6 +1432,14 @@ function completeStory() {
     if (nextStoryToUnlock) {
         // Store the ID of the story that should have the unlocking animation
         localStorage.setItem('story_to_animate', nextStoryToUnlock);
+    }
+    
+    // Update progress bar if we're on the journey page
+    const progressBar = document.querySelector('.j-header-progress-bar');
+    if (progressBar) {
+        progressBar.style.width = `${progressPercentage}%`;
+        // Update the stage name color
+        updateStageNameColor();
     }
     
     // Redirect to practice page
@@ -1594,4 +1648,40 @@ function personalizeText(text, userData) {
         // If the placeholder exists in our mapping, use it; otherwise keep the original placeholder
         return placeholders[key] !== undefined ? placeholders[key] : match;
     });
+}
+
+// Helper function to update stage name color based on progress bar overlap
+function updateStageNameColor() {
+    const progressBar = document.querySelector('.j-header-progress-bar');
+    const stageName = document.querySelector('.j-header-stage-name');
+    const container = document.querySelector('.j-header-progress-container');
+    
+    if (!progressBar || !stageName || !container) return;
+    
+    // Get the center point of the stage name
+    const containerRect = container.getBoundingClientRect();
+    const stageNameCenter = containerRect.width / 2;
+    
+    // Get the right edge of the progress bar
+    // First try to get the computed width if the transition is in progress
+    const computedStyle = window.getComputedStyle(progressBar);
+    const computedWidth = parseFloat(computedStyle.width);
+    
+    // If we can get the computed width, use it, otherwise calculate from the style percentage
+    let progressBarRight;
+    if (!isNaN(computedWidth)) {
+        progressBarRight = computedWidth;
+    } else {
+        // Fall back to calculating from the style percentage
+        const widthPercentage = parseFloat(progressBar.style.width) || 0;
+        progressBarRight = (widthPercentage / 100) * containerRect.width;
+    }
+    
+    // Check if the progress bar has passed the center of the container
+    // We add a small buffer (10px) to ensure the text changes color slightly before the bar reaches it
+    if (progressBarRight >= stageNameCenter - 10) {
+        stageName.classList.add('overlapped');
+    } else {
+        stageName.classList.remove('overlapped');
+    }
 }
