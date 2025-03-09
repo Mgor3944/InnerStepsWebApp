@@ -1802,6 +1802,8 @@ body.story-page {
     justify-content: center;
     text-align: center;
 
+    cursor: pointer;
+
     gap: 35px;
 
     background-color: #68BDE2;

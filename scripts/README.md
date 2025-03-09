@@ -18,7 +18,7 @@ Example:
 
 ```html
 <!-- Load main script first for core functionality -->
-<script src="script.js"></script>
+<script src="scripts/script.js"></script>
 <!-- Load feature-specific scripts -->
 <script src="scripts/practice.js"></script>
 ```

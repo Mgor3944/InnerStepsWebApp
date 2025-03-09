@@ -50,12 +50,28 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Check if user has completed onboarding
+            const userData = localStorage.getItem('user_data');
+            if (!userData) {
+                // No user data, redirect to login
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Parse user data and check for required onboarding fields
+            const parsedData = JSON.parse(userData);
+            if (!parsedData.characterName) {
+                console.log('User has not completed onboarding');
+                window.location.href = 'login.html';
+                return;
+            }
+            
             // Set up insights button
             document.getElementById('insightsBtn').addEventListener('click', function() {
                 window.location.href = 'insights.html';
             });
         });
     </script>
-    <script src="script.js"></script>
+    <script src="scripts/script.js"></script>
 </body>
 </html>

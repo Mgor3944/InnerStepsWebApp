@@ -44,6 +44,29 @@
     </div>
 
     <!-- Link to an external JavaScript file  -->
-    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user has completed onboarding
+            const userData = localStorage.getItem('user_data');
+            if (!userData) {
+                // No user data, redirect to login
+                console.log('No user data found, redirecting to login');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Parse user data and check for required onboarding fields
+            const parsedData = JSON.parse(userData);
+            if (!parsedData.characterName) {
+                console.log('User has not completed onboarding');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            console.log('User data found, continuing to story page');
+        });
+    </script>
+    <script src="scripts/script.js"></script>
+    <script src="scripts/story.js"></script>
 </body>
 </html>
