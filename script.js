@@ -1144,17 +1144,8 @@ async function initJourneyMap() {
         return;
     }
 
-    // Show appropriate welcome message
-    const firstVisit = document.querySelector('.first-visit');
-    const returnVisit = document.querySelector('.return-visit');
-    const hasVisitedBefore = localStorage.getItem('has_visited_journey');
-
-    if (!hasVisitedBefore) {
-        firstVisit.classList.add('show');
-        localStorage.setItem('has_visited_journey', 'true');
-    } else {
-        returnVisit.classList.add('show');
-    }
+    // Update character name in header
+    updateCharacterNameInHeader();
 
     // Calculate chapter progress based on userData
     const completedStories = Object.values(userManager.userData.stories)
@@ -1162,86 +1153,188 @@ async function initJourneyMap() {
     const totalStories = Object.keys(userManager.userData.stories).length;
     const progressPercentage = (completedStories / totalStories) * 100;
     
-    // Update progress bar
-    const progressBar = document.querySelector('.chapter-progress-bar');
+    // Update progress bar in header
+    const progressBar = document.querySelector('.j-header-progress-bar');
     if (progressBar) {
-        progressBar.style.width = `${Math.max(5, progressPercentage)}%`;
+        progressBar.style.width = `${progressPercentage}%`;
     }
     
-    // Get the container for story nodes
-    const storyNodesContainer = document.querySelector('.story-nodes-container');
-    if (!storyNodesContainer) return;
+    // Get the container for journey stage nodes
+    const journeyMapContainer = document.querySelector('.journey-map-container');
+    if (!journeyMapContainer) return;
 
-    // Clear existing story nodes
-    storyNodesContainer.innerHTML = '';
+    // Clear existing content
+    journeyMapContainer.innerHTML = '';
     
     // Get current character and storyline
     const character = userManager.userData.progress.selectedCharacter;
     const storyline = userManager.userData.progress.selectedStoryline;
+    
+    // Get structure stories
     const structureStories = userManager.structureData.chapter_1.storylines[storyline].stories;
     
-    // Create story nodes
-    let foundNextToComplete = false;
+    // Create journey stage nodes
+    let storyIndex = 1;
     Object.entries(structureStories).forEach(([storyId, storyData]) => {
-        const story = userManager.userData.stories[storyId];
-        const isCompleted = story?.completed || false;
+        const userStory = userManager.userData.stories[storyId] || { completed: false };
         
-        // Determine node status
-        let status;
-        if (isCompleted) {
-            status = 'completed';
-        } else if (!foundNextToComplete) {
-            status = 'next-to-complete';
-            foundNextToComplete = true;
-        } else {
-            status = 'locked';
+        // Create the node
+        const node = createJourneyStageNode(storyId, storyData, userStory, storyIndex, character);
+        journeyMapContainer.appendChild(node);
+        storyIndex++;
+    });
+}
+
+// Helper function to update character name in header
+function updateCharacterNameInHeader() {
+    const characterNameElements = document.querySelectorAll('.character-name-placeholder');
+    if (userManager.userData && userManager.userData.characterName) {
+        characterNameElements.forEach(element => {
+            if (element.dataset.possessive === 'true') {
+                element.textContent = `${userManager.userData.characterName}'s`;
+            } else {
+                element.textContent = userManager.userData.characterName;
+            }
+        });
+    }
+}
+
+// Helper function to create a journey stage node
+function createJourneyStageNode(storyId, storyData, userStoryData, storyIndex, character) {
+    // Create the main node container
+    const nodeWrapper = document.createElement('div');
+    nodeWrapper.className = 'journey-stage-node';
+
+    // Create the node container
+    const nodeContainer = document.createElement('div');
+    nodeContainer.className = 'node-container';
+    nodeContainer.id = `STAGE-1-${storyIndex}`;
+
+    // Determine completion status
+    let completionStatus = 'locked';
+    if (userStoryData.completed) {
+        completionStatus = 'completed';
+    } else if (isStoryUnlocked(storyId)) {
+        completionStatus = 'unlocked';
+        
+        // Check if this is the next story to complete
+        if (isNextStoryToComplete(storyId)) {
+            nodeContainer.classList.add('next-to-complete');
         }
+    }
 
-        // Create story node
-        const storyNode = document.createElement('div');
-        storyNode.className = 'story-node';
-        storyNode.id = storyId;
-        storyNode.setAttribute('data-status', status);
+    // Create completion status icon
+    const statusIcon = document.createElement('div');
+    statusIcon.className = 'completion-status-icon';
+    statusIcon.innerHTML = `
+        <svg class="locked-lock-icon" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: ${completionStatus === 'locked' ? 'block' : 'none'}">
+            <g id="Iconly/Bold/Lock" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <g id="Lock" transform="translate(3.500000, 2.000000)" fill="#42535F" fill-rule="nonzero">
+                    <path d="M8.48475792,0 C11.5534967,0 14.0227137,2.41478684 14.0227137,5.39600517 L14.0227137,5.39600517 L14.0227137,6.92934513 C15.7450687,7.46695816 17,9.02613535 17,10.8884031 L17,10.8884031 L17,15.8253006 C17,18.1307761 15.0886432,20 12.7322176,20 L12.7322176,20 L4.26879857,20 C1.91135684,20 0,18.1307761 0,15.8253006 L0,15.8253006 L0,10.8884031 C0,9.02613535 1.2559474,7.46695816 2.97728631,6.92934513 L2.97728631,6.92934513 L2.97728631,5.39600517 C2.9874477,2.41478684 5.45666467,0 8.48475792,0 Z M8.49491931,11.384279 C8.00717274,11.384279 7.61087866,11.7718374 7.61087866,12.2488324 L7.61087866,12.2488324 L7.61087866,14.4549339 C7.61087866,14.9418662 8.00717274,15.3294246 8.49491931,15.3294246 C8.99282726,15.3294246 9.38912134,14.9418662 9.38912134,14.4549339 L9.38912134,14.4549339 L9.38912134,12.2488324 C9.38912134,11.7718374 8.99282726,11.384279 8.49491931,11.384279 Z M8.50508069,1.73904402 C6.44231919,1.73904402 4.76569038,3.36877671 4.75552899,5.37613038 L4.75552899,5.37613038 L4.75552899,6.71370367 L12.244471,6.71370367 L12.244471,5.39600517 C12.244471,3.3787141 10.5678422,1.73904402 8.50508069,1.73904402 Z"></path>
+                </g>
+            </g>
+        </svg>
 
-        // Create cover image container
-        const coverContainer = document.createElement('div');
-        coverContainer.className = 'story-cover';
-        
-        // Create and set up image
+        <svg class="unlocked-lock-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: ${completionStatus === 'unlocked' ? 'block' : 'none'}">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M19.9331 7.41602H19.9221L18.5521 7.43602C18.1381 7.44102 17.8071 7.78202 17.8131 8.19602C17.8191 8.60602 18.1531 8.93602 18.5631 8.93602H18.5741L19.9441 8.91602C20.3581 8.91002 20.6891 8.56902 20.6831 8.15502C20.6771 7.74502 20.3431 7.41602 19.9331 7.41602Z" fill="#42535F"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M17.7577 6.20598C17.9527 6.20598 18.1477 6.13098 18.2947 5.97898L19.2507 4.99998C19.5397 4.70398 19.5337 4.22898 19.2377 3.93898C18.9417 3.65198 18.4667 3.65498 18.1767 3.95298L17.2207 4.93298C16.9317 5.22798 16.9377 5.70298 17.2337 5.99298C17.3797 6.13498 17.5687 6.20598 17.7577 6.20598Z" fill="#42535F"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M11.9769 14.2715V16.4315C11.9769 16.8515 11.6369 17.1815 11.2269 17.1815C10.8169 17.1815 10.4769 16.8515 10.4769 16.4315V14.2715C10.4769 13.8615 10.8169 13.5215 11.2269 13.5215C11.6369 13.5215 11.9769 13.8615 11.9769 14.2715ZM17.1469 9.43147C16.4269 9.09147 15.5869 9.09147 13.9169 9.09147H8.52689C8.15689 9.09147 7.82689 9.09147 7.52689 9.10147V7.49847C7.56089 5.48147 9.16589 3.88047 11.1799 3.85547C12.4939 3.81947 13.7639 4.55047 14.4329 5.70947C14.6399 6.06847 15.0989 6.19247 15.4579 5.98547C15.8159 5.77947 15.9399 5.32047 15.7329 4.96147C14.8039 3.34947 13.0799 2.35547 11.2229 2.35547H11.1619C8.33089 2.39147 6.07489 4.63947 6.02689 7.48647V9.20147C5.75689 9.25147 5.52689 9.33147 5.30689 9.43147C4.57689 9.79147 4.00689 10.3615 3.66689 11.0815C3.31689 11.7915 3.31689 12.6315 3.31689 14.3015V16.4315C3.31689 18.1015 3.31689 18.9415 3.66689 19.6615C4.01689 20.3815 4.59689 20.9615 5.30689 21.2915C6.01689 21.6415 6.85689 21.6415 8.52689 21.6415H13.9169C15.5969 21.6415 16.4269 21.6415 17.1469 21.3015C17.8569 20.9615 18.4369 20.3815 18.7869 19.6615C19.1269 18.9415 19.1269 18.1015 19.1269 16.4315V14.3015C19.1269 12.6315 19.1269 11.7915 18.7869 11.0815C18.4469 10.3615 17.8769 9.79147 17.1469 9.43147Z" fill="#42535F"/>
+        </svg>
+
+        <svg class="completed-medal-icon" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: ${completionStatus === 'completed' ? 'block' : 'none'}">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12.5647 8.45312C8.96775 8.45312 6.04175 11.3791 6.04175 14.9751C6.04175 18.5721 8.96775 21.4991 12.5647 21.4991C16.1627 21.4991 19.0887 18.5721 19.0887 14.9751C19.0887 11.3791 16.1627 8.45312 12.5647 8.45312Z" fill="#42535F"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0552 6.96965C12.2834 6.95506 12.4282 6.70766 12.3171 6.5077L10.3978 3.05341C10.2128 2.71941 9.85977 2.51141 9.47777 2.51141H6.89277C6.51377 2.51141 6.17377 2.70641 5.98277 3.03441C5.79277 3.36041 5.78977 3.75241 5.97677 4.08241L8.1448 7.91915C8.22914 8.06841 8.42093 8.11628 8.5693 8.03041C9.60824 7.4291 10.7913 7.05042 12.0552 6.96965Z" fill="#42535F"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M19.0491 4.032C19.2141 3.703 19.1971 3.321 19.0051 3.008C18.8121 2.695 18.4781 2.508 18.1111 2.507L15.6831 2.5H15.6801C15.2801 2.5 14.9201 2.722 14.7391 3.081L13.0016 6.54355C12.9031 6.73983 13.0421 6.97286 13.2609 6.99162C14.4894 7.09696 15.6385 7.47854 16.647 8.07667C16.8009 8.168 17.0024 8.11384 17.0826 7.9538L19.0491 4.032Z" fill="#42535F"/>
+        </svg>
+    `;
+    nodeContainer.appendChild(statusIcon);
+
+    // Create title
+    const title = document.createElement('h1');
+    title.className = 'stage-title';
+    title.textContent = storyData.title || `Story ${storyIndex}`;
+    nodeContainer.appendChild(title);
+
+    // Create stage number container
+    const stageNumberContainer = document.createElement('div');
+    stageNumberContainer.className = 'stage-number-container';
+    stageNumberContainer.innerHTML = `STAGE <span class="stage-number">1</span> - <span class="story-number">${storyIndex}</span>`;
+    nodeContainer.appendChild(stageNumberContainer);
+
+    // Create story book container
+    const storyBookContainer = document.createElement('div');
+    storyBookContainer.className = 'story-book-container';
+    
+    // Add book aesthetic line
+    const bookLine = document.createElement('div');
+    bookLine.className = 'book-aesthetic-line';
+    storyBookContainer.appendChild(bookLine);
+    
+    // Add cover image if available
+    if (storyData.cover_image) {
         const coverImage = document.createElement('img');
+        // Replace [character] with the actual character
         const imagePath = storyData.cover_image.replace('[character]', character);
         coverImage.src = imagePath;
-        coverImage.alt = storyData.title;
-        
-        // Add error handling for cover image
+        coverImage.alt = `${storyData.title} Cover`;
+        coverImage.className = 'story-book-cover-image';
         coverImage.onerror = function() {
             console.log(`Failed to load cover image: ${this.src}`);
             this.src = 'assets/images/default_placeholder.png';
         };
-        
-        // Create title and button
-        const title = document.createElement('h3');
-        title.textContent = storyData.title;
-        
-        const button = document.createElement('button');
-        if (status === 'locked') {
-            button.textContent = 'Locked';
-            button.disabled = true;
-            button.style.pointerEvents = 'none';
-        } else {
-            button.textContent = status === 'completed' ? 'Read Again' : 'Begin Adventure';
-            button.onclick = () => startStory(storyId);
-        }
+        storyBookContainer.appendChild(coverImage);
+    }
+    
+    nodeContainer.appendChild(storyBookContainer);
 
-        // Assemble the node
-        coverContainer.appendChild(coverImage);
-        storyNode.appendChild(coverContainer);
-        storyNode.appendChild(title);
-        storyNode.appendChild(button);
-        
-        // Add to container
-        storyNodesContainer.appendChild(storyNode);
-    });
+    // Add click event if the story is unlocked or completed
+    if (completionStatus !== 'locked') {
+        nodeContainer.classList.add('clickable');
+        nodeContainer.addEventListener('click', () => startStory(storyId));
+    }
+
+    // Add node shadow
+    const nodeShadow = document.createElement('div');
+    nodeShadow.className = 'node-shadow';
+    
+    // Append everything to the wrapper
+    nodeWrapper.appendChild(nodeContainer);
+    nodeWrapper.appendChild(nodeShadow);
+    
+    return nodeWrapper;
+}
+
+// Helper function to check if a story is unlocked
+function isStoryUnlocked(storyId) {
+    // Story 1 is always unlocked
+    if (storyId === 'story1') return true;
+    
+    // Get the story number from the ID
+    const storyNumber = parseInt(storyId.replace('story', ''));
+    
+    // Previous story must be completed to unlock the next one
+    const previousStoryId = `story${storyNumber - 1}`;
+    return userManager.userData.stories[previousStoryId]?.completed === true;
+}
+
+// Helper function to check if a story is the next one to complete
+function isNextStoryToComplete(storyId) {
+    // If the story is already completed, it's not the next to complete
+    if (userManager.userData.stories[storyId]?.completed) {
+        return false;
+    }
+    
+    // Get all story IDs
+    const storyIds = Object.keys(userManager.userData.stories).sort();
+    
+    // Find the first incomplete story
+    for (const id of storyIds) {
+        if (!userManager.userData.stories[id].completed) {
+            return id === storyId;
+        }
+    }
+    
+    return false;
 }
 
 function completeStory() {
