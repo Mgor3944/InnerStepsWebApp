@@ -7,18 +7,165 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="journey-page">
-    <!-- Fixed header -->
-    <div class="header-container">
-        <h1 class="first-visit">Welcome To <span class="character-name-placeholder" data-possessive="true">Your</span> Adventures</h1>
-        <h1 class="return-visit">Welcome Back To <span class="character-name-placeholder" data-possessive="true">Your</span> Adventures</h1>
-        <div class="header-actions">
-            <button id="insightsBtn" class="insights-btn">Receive Progress Insights</button>
+
+    <div class="journey-header-container">
+
+        <div class="j-header-actions">
+            <button id="insightsBtn" class="insights-btn">Parents/Guardians</button>
         </div>
+
+        <h1><span class="character-name-placeholder" data-possessive="true">userName</span> Adventures</h1>
+
+        <!-- Will display the progress of each chapter in the header instead -->
+        <div class="j-header-progress-container">
+            <div class="j-header-progress-bar"></div>
+            <div class="j-header-stage-name">STAGE 1</div>
+        </div>
+
     </div>
 
-    <div class="journey-container">
+    <div class="journey-map-container">
+
+        <!-- Will display each stage node dynamically here-->
+         <div class="journey-stage-node">
+
+            <!-- Node Container ID is associated with the word stage followed by the current stage number (chapter number) and the story number (which is the story number within the chapter) -->
+            <div class="node-container" id="STAGE-1-1">
+
+                <!-- Dynamically display either a tick, unlocked lock or a locked lock depending on the completion status of the stage -->
+                <div class="completion-status-icon"> 
+
+                    <svg class="locked-lock-icon" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="Iconly/Bold/Lock" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="Lock" transform="translate(3.500000, 2.000000)" fill="#42535F" fill-rule="nonzero">
+                                <path d="M8.48475792,0 C11.5534967,0 14.0227137,2.41478684 14.0227137,5.39600517 L14.0227137,5.39600517 L14.0227137,6.92934513 C15.7450687,7.46695816 17,9.02613535 17,10.8884031 L17,10.8884031 L17,15.8253006 C17,18.1307761 15.0886432,20 12.7322176,20 L12.7322176,20 L4.26879857,20 C1.91135684,20 0,18.1307761 0,15.8253006 L0,15.8253006 L0,10.8884031 C0,9.02613535 1.2559474,7.46695816 2.97728631,6.92934513 L2.97728631,6.92934513 L2.97728631,5.39600517 C2.9874477,2.41478684 5.45666467,0 8.48475792,0 Z M8.49491931,11.384279 C8.00717274,11.384279 7.61087866,11.7718374 7.61087866,12.2488324 L7.61087866,12.2488324 L7.61087866,14.4549339 C7.61087866,14.9418662 8.00717274,15.3294246 8.49491931,15.3294246 C8.99282726,15.3294246 9.38912134,14.9418662 9.38912134,14.4549339 L9.38912134,14.4549339 L9.38912134,12.2488324 C9.38912134,11.7718374 8.99282726,11.384279 8.49491931,11.384279 Z M8.50508069,1.73904402 C6.44231919,1.73904402 4.76569038,3.36877671 4.75552899,5.37613038 L4.75552899,5.37613038 L4.75552899,6.71370367 L12.244471,6.71370367 L12.244471,5.39600517 C12.244471,3.3787141 10.5678422,1.73904402 8.50508069,1.73904402 Z"></path>
+                            </g>
+                        </g>
+                    </svg>
+
+                    <img class="unlocked-lock" src="/assets/images/unlocked_lock.png" alt="Unlocked Lock">
+                    <img class="completed-medal" src="/assets/images/tick.png" alt="Completed Medal">
+                </div>
+                
+                <h1 class="stage-title">Billy's Huge Discovery</h1> <!-- dyanmically update to match the title of the story in our json files-->
+                <div class="stage-number-container">STAGE <span class="stage-number">1</span> - <span class="story-number">1</span></div> <!-- Will dynamically update to display the current stage (which is the chapter number) and the current story number -> for example: STAGE 1-1, STAGE 1-2... STAGE: 2-1 -->
+                <div class="story-book-container">
+                    <div class="book-aesthetic-line"></div>
+                    <!-- <img src="/assets/images/default_placeholder.png" alt="Story Book Cover"> Will dynamically display the current story cover image here using our json files -->
+                </div>
+            </div>
+
+            <!-- Node Bottom Shadow -->
+            <div class="node-shadow"></div>
+
+         </div>
+
+         <!-- Example of the Stage 1-2 Node -->
+         <div class="journey-stage-node">
+
+            <!-- Node Container -->
+            <div class="node-container" id="STAGE-1-2">
+
+                <!-- Dynamically display either a tick, unlocked lock or a locked lock depending on the completion status of the stage -->
+                <div class="completion-status-icon"> 
+
+                    <svg class="locked-lock-icon" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="Iconly/Bold/Lock" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="Lock" transform="translate(3.500000, 2.000000)" fill="#42535F" fill-rule="nonzero">
+                                <path d="M8.48475792,0 C11.5534967,0 14.0227137,2.41478684 14.0227137,5.39600517 L14.0227137,5.39600517 L14.0227137,6.92934513 C15.7450687,7.46695816 17,9.02613535 17,10.8884031 L17,10.8884031 L17,15.8253006 C17,18.1307761 15.0886432,20 12.7322176,20 L12.7322176,20 L4.26879857,20 C1.91135684,20 0,18.1307761 0,15.8253006 L0,15.8253006 L0,10.8884031 C0,9.02613535 1.2559474,7.46695816 2.97728631,6.92934513 L2.97728631,6.92934513 L2.97728631,5.39600517 C2.9874477,2.41478684 5.45666467,0 8.48475792,0 Z M8.49491931,11.384279 C8.00717274,11.384279 7.61087866,11.7718374 7.61087866,12.2488324 L7.61087866,12.2488324 L7.61087866,14.4549339 C7.61087866,14.9418662 8.00717274,15.3294246 8.49491931,15.3294246 C8.99282726,15.3294246 9.38912134,14.9418662 9.38912134,14.4549339 L9.38912134,14.4549339 L9.38912134,12.2488324 C9.38912134,11.7718374 8.99282726,11.384279 8.49491931,11.384279 Z M8.50508069,1.73904402 C6.44231919,1.73904402 4.76569038,3.36877671 4.75552899,5.37613038 L4.75552899,5.37613038 L4.75552899,6.71370367 L12.244471,6.71370367 L12.244471,5.39600517 C12.244471,3.3787141 10.5678422,1.73904402 8.50508069,1.73904402 Z"></path>
+                            </g>
+                        </g>
+                    </svg>
+
+                    <img class="unlocked-lock" src="/assets/images/unlocked_lock.png" alt="Unlocked Lock">
+                    <img class="completed-medal" src="/assets/images/tick.png" alt="Completed Medal">
+                </div>
+                
+                <h1 class="stage-title">How Billy Learn To Fly</h1>
+                <div class="stage-number-container">STAGE <span class="stage-number">1</span> - <span class="story-number">2</span></div> <!-- Will dynamically update to display the current stage (which is the chapter number) and the current story number -> for example: STAGE 1-1, STAGE 1-2... STAGE: 2-1 -->
+                <div class="story-book-container">
+                    <div class="book-aesthetic-line"></div>
+                    <!-- <img src="/assets/images/default_placeholder.png" alt="Story Book Cover"> Will dynamically display the current story cover image here -->
+                </div>
+
+            </div>
+
+            <!-- Node Bottom Shadow -->
+            <div class="node-shadow"></div>
+        </div>
+
+        <!-- Example of the Stage 1-3 Node -->
+        <div class="journey-stage-node">
+
+            <!-- Node Container -->
+            <div class="node-container" id="STAGE-1-3">
+
+                <!-- Dynamically display either a tick, unlocked lock or a locked lock depending on the completion status of the stage -->
+                <div class="completion-status-icon"> 
+
+                    <svg class="locked-lock-icon" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="Iconly/Bold/Lock" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="Lock" transform="translate(3.500000, 2.000000)" fill="#42535F" fill-rule="nonzero">
+                                <path d="M8.48475792,0 C11.5534967,0 14.0227137,2.41478684 14.0227137,5.39600517 L14.0227137,5.39600517 L14.0227137,6.92934513 C15.7450687,7.46695816 17,9.02613535 17,10.8884031 L17,10.8884031 L17,15.8253006 C17,18.1307761 15.0886432,20 12.7322176,20 L12.7322176,20 L4.26879857,20 C1.91135684,20 0,18.1307761 0,15.8253006 L0,15.8253006 L0,10.8884031 C0,9.02613535 1.2559474,7.46695816 2.97728631,6.92934513 L2.97728631,6.92934513 L2.97728631,5.39600517 C2.9874477,2.41478684 5.45666467,0 8.48475792,0 Z M8.49491931,11.384279 C8.00717274,11.384279 7.61087866,11.7718374 7.61087866,12.2488324 L7.61087866,12.2488324 L7.61087866,14.4549339 C7.61087866,14.9418662 8.00717274,15.3294246 8.49491931,15.3294246 C8.99282726,15.3294246 9.38912134,14.9418662 9.38912134,14.4549339 L9.38912134,14.4549339 L9.38912134,12.2488324 C9.38912134,11.7718374 8.99282726,11.384279 8.49491931,11.384279 Z M8.50508069,1.73904402 C6.44231919,1.73904402 4.76569038,3.36877671 4.75552899,5.37613038 L4.75552899,5.37613038 L4.75552899,6.71370367 L12.244471,6.71370367 L12.244471,5.39600517 C12.244471,3.3787141 10.5678422,1.73904402 8.50508069,1.73904402 Z"></path>
+                            </g>
+                        </g>
+                    </svg>
+
+                    <img class="unlocked-lock" src="/assets/images/unlocked_lock.png" alt="Unlocked Lock">
+                    <img class="completed-medal" src="/assets/images/tick.png" alt="Completed Medal">
+                </div>
+                
+                <h1 class="stage-title">Meeting Our Control Centre</h1>
+                <div class="stage-number-container">STAGE <span class="stage-number">1</span> - <span class="story-number">3</span></div> <!-- Will dynamically update to display the current stage (which is the chapter number) and the current story number -> for example: STAGE 1-1, STAGE 1-2... STAGE: 2-1 -->
+                <div class="story-book-container">
+                    <div class="book-aesthetic-line"></div>
+                    <!-- <img src="/assets/images/default_placeholder.png" alt="Story Book Cover"> Will dynamically display the current story cover image here -->
+                </div>
+
+            </div>
+
+            <!-- Node Bottom Shadow -->
+            <div class="node-shadow"></div>
+         </div>
+
+         <!-- Example of the Stage 1-4 Node -->
+        <div class="journey-stage-node">
+
+            <!-- Node Container -->
+            <div class="node-container" id="STAGE-1-4">
+
+                <!-- Dynamically display either a tick, unlocked lock or a locked lock depending on the completion status of the stage -->
+                <div class="completion-status-icon"> 
+
+                    <svg class="locked-lock-icon" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="Iconly/Bold/Lock" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="Lock" transform="translate(3.500000, 2.000000)" fill="#42535F" fill-rule="nonzero">
+                                <path d="M8.48475792,0 C11.5534967,0 14.0227137,2.41478684 14.0227137,5.39600517 L14.0227137,5.39600517 L14.0227137,6.92934513 C15.7450687,7.46695816 17,9.02613535 17,10.8884031 L17,10.8884031 L17,15.8253006 C17,18.1307761 15.0886432,20 12.7322176,20 L12.7322176,20 L4.26879857,20 C1.91135684,20 0,18.1307761 0,15.8253006 L0,15.8253006 L0,10.8884031 C0,9.02613535 1.2559474,7.46695816 2.97728631,6.92934513 L2.97728631,6.92934513 L2.97728631,5.39600517 C2.9874477,2.41478684 5.45666467,0 8.48475792,0 Z M8.49491931,11.384279 C8.00717274,11.384279 7.61087866,11.7718374 7.61087866,12.2488324 L7.61087866,12.2488324 L7.61087866,14.4549339 C7.61087866,14.9418662 8.00717274,15.3294246 8.49491931,15.3294246 C8.99282726,15.3294246 9.38912134,14.9418662 9.38912134,14.4549339 L9.38912134,14.4549339 L9.38912134,12.2488324 C9.38912134,11.7718374 8.99282726,11.384279 8.49491931,11.384279 Z M8.50508069,1.73904402 C6.44231919,1.73904402 4.76569038,3.36877671 4.75552899,5.37613038 L4.75552899,5.37613038 L4.75552899,6.71370367 L12.244471,6.71370367 L12.244471,5.39600517 C12.244471,3.3787141 10.5678422,1.73904402 8.50508069,1.73904402 Z"></path>
+                            </g>
+                        </g>
+                    </svg>
+
+                    <img class="unlocked-lock" src="/assets/images/unlocked_lock.png" alt="Unlocked Lock">
+                    <img class="completed-medal" src="/assets/images/tick.png" alt="Completed Medal">
+                </div>
+                
+                <h1 class="stage-title">The Golden Race Qualifier</h1>
+                <div class="stage-number-container">STAGE <span class="stage-number">1</span> - <span class="story-number">4</span></div> <!-- Will dynamically update to display the current stage (which is the chapter number) and the current story number -> for example: STAGE 1-1, STAGE 1-2... STAGE: 2-1 -->
+                <div class="story-book-container">
+                    <div class="book-aesthetic-line"></div>
+                    <!-- <img src="/assets/images/default_placeholder.png" alt="Story Book Cover"> Will dynamically display the current story cover image here -->
+                </div>
+
+            </div>
+
+            <!-- Node Bottom Shadow -->
+            <div class="node-shadow"></div>
+         </div>
+
+    </div>
+
+    <!-- <div class="journey-container">
         <div class="journey-map">
-            <!-- Chapter 1 Indicator -->
             <div class="chapter-indicator">
                 <h2>Chapter 1</h2>
                 <div class="chapter-progress-wrapper">
@@ -27,10 +174,8 @@
             </div> 
 
             <div class="story-nodes-container">
-                <!-- Story nodes will be dynamically inserted here -->
             </div>
 
-            <!-- Chapter Complete Trophy -->
             <div class="chapter-complete">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M20.2,4H17.6V2.8c0-0.4-0.3-0.8-0.8-0.8H7.2C6.8,2,6.4,2.3,6.4,2.8V4H3.8C3.4,4,3,4.3,3,4.8V8c0,2.4,1.7,4.4,4,4.9v2.9c0,0.4,0.3,0.8,0.8,0.8h8.4c0.4,0,0.8-0.3,0.8-0.8v-2.9c2.3-0.4,4-2.4,4-4.9V4.8C21,4.3,20.7,4,20.2,4z"/>
@@ -41,7 +186,7 @@
                 <h3>Chapter Complete!</h3>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <script src="script.js"></script>
     <script>
