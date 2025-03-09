@@ -1161,7 +1161,10 @@ async function initJourneyMap() {
     
     // Get the container for journey stage nodes
     const journeyMapContainer = document.querySelector('.journey-map-container');
-    if (!journeyMapContainer) return;
+    if (!journeyMapContainer) {
+        console.error('Journey map container not found');
+        return;
+    }
 
     // Clear existing content
     journeyMapContainer.innerHTML = '';
@@ -1171,6 +1174,14 @@ async function initJourneyMap() {
     const storyline = userManager.userData.progress.selectedStoryline;
     
     // Get structure stories
+    if (!userManager.structureData || 
+        !userManager.structureData.chapter_1 || 
+        !userManager.structureData.chapter_1.storylines || 
+        !userManager.structureData.chapter_1.storylines[storyline]) {
+        console.error('Missing storyline data:', storyline);
+        return;
+    }
+    
     const structureStories = userManager.structureData.chapter_1.storylines[storyline].stories;
     
     // Create journey stage nodes
@@ -1183,6 +1194,14 @@ async function initJourneyMap() {
         journeyMapContainer.appendChild(node);
         storyIndex++;
     });
+    
+    // Set up event listeners for the insights button
+    const insightsBtn = document.getElementById('insightsBtn');
+    if (insightsBtn) {
+        insightsBtn.addEventListener('click', function() {
+            window.location.href = 'insights.html';
+        });
+    }
 }
 
 // Helper function to update character name in header
