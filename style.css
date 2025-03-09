@@ -1996,7 +1996,7 @@ body.story-page {
 
     gap: 60px;
 
-    margin-top: 30px;
+    margin-top: 50px;
 
     /* border: 1px solid red; */
 }
@@ -2044,11 +2044,14 @@ body.story-page {
     padding: 10px;
 }
 
-.unlocked-lock, .completed-medal {
-    display: none;
+.locked-lock-icon {
+    width: 85%;
+    height: 85%;
 }
 
-.locked-lock-icon {
+.unlocked-lock-icon, .completed-medal-icon {
+    display: none;
+
     width: 85%;
     height: 85%;
 }
