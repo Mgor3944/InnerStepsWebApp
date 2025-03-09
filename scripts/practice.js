@@ -141,7 +141,7 @@ async function initPracticePage() {
                 <div class="key-takeaway-container">   
                     <p>${keyMessage}</p>
                 </div>
-                <button class="practice-finish-btn" onclick="completePractice()">Home Time</button>
+                <button class="practice-finish-btn" onclick="window.completePractice()">Home Time</button>
             `;
             
             summarySection.innerHTML = summaryContent;
@@ -152,11 +152,16 @@ async function initPracticePage() {
             try {
                 console.log('Completing practice and unlocking next story...');
                 const currentStoryId = userManager.userData.progress.current_story;
+                console.log('Current story ID:', currentStoryId);
                 
                 // Mark current story as completed in user data
                 if (userManager.userData.stories[currentStoryId]) {
+                    console.log('Before update - Story completion status:', userManager.userData.stories[currentStoryId].completed);
+                    
                     userManager.userData.stories[currentStoryId].completed = true;
                     userManager.userData.stories[currentStoryId].practice_completed = true;
+                    
+                    console.log('After update - Story completion status:', userManager.userData.stories[currentStoryId].completed);
                     
                     // Calculate progress
                     const completedStories = Object.values(userManager.userData.stories)
@@ -164,18 +169,36 @@ async function initPracticePage() {
                     const totalStories = Object.keys(userManager.userData.stories).length;
                     const progressPercentage = (completedStories / totalStories) * 100;
                     
+                    console.log(`Progress calculation: ${completedStories}/${totalStories} stories completed (${progressPercentage}%)`);
+                    
                     // Update progress in user data
                     userManager.userData.progress.chapter1_progress = progressPercentage;
                     
+                    // Store the current story ID for animation
+                    console.log('Setting story_to_animate in localStorage:', currentStoryId);
+                    localStorage.setItem('story_to_animate', currentStoryId);
+                    
                     // Save user data
+                    console.log('About to save user data...');
                     userManager.saveUserData();
+                    console.log('User data saved');
+                    
+                    // Verify the data was saved correctly
+                    const savedData = localStorage.getItem('user_data');
+                    const parsedData = JSON.parse(savedData);
+                    console.log('Data retrieved from localStorage:', parsedData);
+                    console.log('Stories in localStorage:', parsedData.stories);
+                    console.log('Completion status in localStorage:', parsedData.stories[currentStoryId].completed);
+                    
                     console.log('Story and practice marked as completed:', currentStoryId);
                 }
                 
                 // Navigate to journey map
+                console.log('Navigating to journey map...');
                 window.location.href = './index.html';
             } catch (error) {
                 console.error('Error completing practice:', error);
+                console.error('Error stack:', error.stack);
                 // Fallback to simple navigation if there's an error
                 window.location.href = './index.html';
             }
@@ -415,15 +438,93 @@ async function initPracticePage() {
 if (typeof window !== 'undefined') {
     window.initPracticePage = initPracticePage;
     window.completePractice = function() {
-        // This is a wrapper function that will call the inner completePractice function
-        // We need to do this because the inner function is not directly accessible
-        const practiceContainer = document.querySelector('.practice-container');
-        if (practiceContainer) {
-            // Dispatch a custom event that our code will listen for
-            const event = new CustomEvent('completePractice');
-            practiceContainer.dispatchEvent(event);
-        } else {
-            console.error('Practice container not found');
+        console.log('Global completePractice function called');
+        try {
+            // Check if userManager exists
+            if (!userManager) {
+                console.error('userManager is not defined');
+                window.location.href = './index.html';
+                return;
+            }
+            
+            // Check if userData exists
+            if (!userManager.userData) {
+                console.error('userManager.userData is not defined');
+                window.location.href = './index.html';
+                return;
+            }
+            
+            // Check if progress exists
+            if (!userManager.userData.progress) {
+                console.error('userManager.userData.progress is not defined');
+                window.location.href = './index.html';
+                return;
+            }
+            
+            // Get the current story ID
+            const currentStoryId = userManager.userData.progress.current_story;
+            console.log('Current story ID:', currentStoryId);
+            
+            // Check if stories object exists
+            if (!userManager.userData.stories) {
+                console.error('userManager.userData.stories is not defined');
+                window.location.href = './index.html';
+                return;
+            }
+            
+            // Check if current story exists in stories object
+            if (!userManager.userData.stories[currentStoryId]) {
+                console.error('Current story not found in user data:', currentStoryId);
+                console.log('Available stories:', Object.keys(userManager.userData.stories));
+                window.location.href = './index.html';
+                return;
+            }
+            
+            console.log('Before update - Story completion status:', userManager.userData.stories[currentStoryId].completed);
+            
+            // Mark current story as completed in user data
+            userManager.userData.stories[currentStoryId].completed = true;
+            userManager.userData.stories[currentStoryId].practice_completed = true;
+            
+            console.log('After update - Story completion status:', userManager.userData.stories[currentStoryId].completed);
+            
+            // Calculate progress
+            const completedStories = Object.values(userManager.userData.stories)
+                .filter(story => story.completed).length;
+            const totalStories = Object.keys(userManager.userData.stories).length;
+            const progressPercentage = (completedStories / totalStories) * 100;
+            
+            console.log(`Progress calculation: ${completedStories}/${totalStories} stories completed (${progressPercentage}%)`);
+            
+            // Update progress in user data
+            userManager.userData.progress.chapter1_progress = progressPercentage;
+            
+            // Save user data
+            console.log('About to save user data...');
+            userManager.saveUserData();
+            console.log('User data saved');
+            
+            // Verify the data was saved correctly
+            const savedData = localStorage.getItem('user_data');
+            const parsedData = JSON.parse(savedData);
+            console.log('Data retrieved from localStorage:', parsedData);
+            console.log('Stories in localStorage:', parsedData.stories);
+            console.log('Completion status in localStorage:', parsedData.stories[currentStoryId].completed);
+            
+            console.log('Story and practice marked as completed:', currentStoryId);
+            console.log('Updated user data:', userManager.userData);
+            
+            // Store the current story ID for animation
+            console.log('Setting story_to_animate in localStorage:', currentStoryId);
+            localStorage.setItem('story_to_animate', currentStoryId);
+            
+            // Navigate to journey map
+            console.log('Navigating to journey map...');
+            window.location.href = './index.html';
+        } catch (error) {
+            console.error('Error in global completePractice function:', error);
+            console.error('Error stack:', error.stack);
+            // Fallback to simple navigation if there's an error
             window.location.href = './index.html';
         }
     };

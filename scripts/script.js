@@ -42,6 +42,8 @@ class UserManager {
 
     async loadUserData() {
         try {
+            console.log('Loading user data from localStorage...');
+            
             // Initialize minimal default values for new users
             const defaultProfile = {
                 progress: {
@@ -56,7 +58,76 @@ class UserManager {
             
             // Use a single consistent key for user data
             const storedData = localStorage.getItem('user_data');
-            this.userData = storedData ? JSON.parse(storedData) : defaultProfile;
+            
+            if (storedData) {
+                console.log('Found user data in localStorage');
+                
+                // Parse the stored data
+                const parsedData = JSON.parse(storedData);
+                console.log('Parsed user data:', parsedData);
+                
+                // Check if we already have userData loaded
+                if (this.userData) {
+                    console.log('Merging with existing userData');
+                    
+                    // Save the current completion status
+                    const currentStories = this.userData.stories || {};
+                    
+                    // Merge the data
+                    this.userData = {
+                        ...this.userData,
+                        ...parsedData
+                    };
+                    
+                    // Ensure progress object exists
+                    if (!this.userData.progress) {
+                        this.userData.progress = parsedData.progress || defaultProfile.progress;
+                    } else {
+                        this.userData.progress = {
+                            ...this.userData.progress,
+                            ...parsedData.progress
+                        };
+                    }
+                    
+                    // Ensure stories object exists
+                    if (!this.userData.stories) {
+                        this.userData.stories = parsedData.stories || {};
+                    } else {
+                        // Merge stories, preserving completion status
+                        Object.keys(parsedData.stories || {}).forEach(storyId => {
+                            if (!this.userData.stories[storyId]) {
+                                this.userData.stories[storyId] = parsedData.stories[storyId];
+                            } else {
+                                // Preserve the completion status from localStorage
+                                this.userData.stories[storyId].completed = parsedData.stories[storyId].completed || this.userData.stories[storyId].completed || false;
+                                this.userData.stories[storyId].practice_completed = parsedData.stories[storyId].practice_completed || this.userData.stories[storyId].practice_completed || false;
+                            }
+                        });
+                    }
+                } else {
+                    // Just use the parsed data
+                    this.userData = parsedData;
+                }
+                
+                // Ensure required objects exist
+                if (!this.userData.stories) {
+                    this.userData.stories = {};
+                }
+                
+                if (!this.userData.progress) {
+                    this.userData.progress = defaultProfile.progress;
+                }
+                
+                if (!this.userData.analytics) {
+                    this.userData.analytics = defaultProfile.analytics;
+                }
+                
+                console.log('User data loaded:', this.userData);
+                console.log('Stories:', this.userData.stories);
+            } else {
+                console.log('No user data found in localStorage, using default profile');
+                this.userData = defaultProfile;
+            }
             
             // If character and storyline are selected (meaning user completed onboarding),
             // load the appropriate stories
@@ -73,140 +144,178 @@ class UserManager {
 
     async loadStoriesForSelection() {
         try {
-            const character = this.userData.progress.selectedCharacter;
-            const storyline = this.userData.progress.selectedStoryline;
+            console.log('Loading stories for character:', this.userData.progress.selectedCharacter, 'storyline:', this.userData.progress.selectedStoryline);
             
-            console.log(`Loading stories for character: ${character}, storyline: ${storyline}`);
-            
-            // Load structure data if not already loaded
+            // Make sure structure data is loaded
             if (!this.structureData) {
                 console.log('Structure data not loaded, loading now');
                 await this.loadStoryStructure();
+                console.log('Structure data loaded:', this.structureData ? 'Yes' : 'No');
             }
             
-            // Debug log the structure data
-            console.log('Structure data loaded:', this.structureData ? 'Yes' : 'No');
+            // Get the character and storyline from user data
+            const character = this.userData.progress.selectedCharacter;
+            const storyline = this.userData.progress.selectedStoryline;
             
-            // Validate storyline exists in structure
-            if (!this.structureData?.chapter_1?.storylines?.[storyline]?.stories) {
-                console.error(`Storyline "${storyline}" or its stories not found in structure data`);
-                return { error: "This storyline is coming soon! Please select a different option." };
+            // Validate character and storyline
+            if (!this.isValidCharacter(character) || !this.isValidStoryline(storyline)) {
+                console.error('Invalid character or storyline:', character, storyline);
+                return { error: "Invalid character or storyline selection." };
             }
             
-            console.log('Storyline found in structure data');
-            
-            // Try to load the stories data
             try {
-                const storiesUrl = `data/stories/${character}_${storyline}.json`;
-                console.log('Fetching stories from:', storiesUrl);
-                
-                // Check if the file exists using fetch with HEAD method
-                try {
-                    const checkResponse = await fetch(storiesUrl, { method: 'HEAD' });
-                    if (!checkResponse.ok) {
-                        console.error(`File not found: ${storiesUrl}`);
-                        console.error('Response status:', checkResponse.status);
-                        return { error: `Stories file not found: ${storiesUrl}` };
-                    }
-                    console.log('File exists:', storiesUrl);
-                } catch (error) {
-                    console.error('Error checking file existence:', error);
-                }
-                
-                const storiesResponse = await fetch(storiesUrl);
-                if (!storiesResponse.ok) {
-                    console.warn(`No story content found for ${character} with storyline ${storyline}`);
-                    console.warn('Response status:', storiesResponse.status);
-                    return { error: "Stories for this character and storyline are coming soon! Please select a different option." };
-                }
-                
-                console.log('Stories response OK, parsing JSON');
-                const storiesData = await storiesResponse.json();
-                
-                if (!storiesData || !storiesData.stories) {
-                    console.error('Invalid story data format');
-                    console.error('Stories data:', storiesData);
-                    return { error: "There was a problem loading the story content. Please try a different option." };
-                }
-                
-                // Debug log the stories data
-                console.log('Stories data loaded successfully');
-                console.log('Number of stories:', Object.keys(storiesData.stories).length);
-                
-                // Get structure stories and validate
-                const structureStories = this.structureData.chapter_1.storylines[storyline].stories;
-                if (!structureStories || typeof structureStories !== 'object') {
-                    console.error('Invalid structure stories format');
-                    return { error: "There was a problem with the story structure. Please try a different option." };
-                }
-                
-                console.log('Structure stories loaded successfully');
-                console.log('Number of structure stories:', Object.keys(structureStories).length);
-                
-                // Merge story content with structure data
-                const mergedStories = {};
-                
-                // First, validate that we have matching stories
-                const storyIds = Object.keys(storiesData.stories);
-                console.log('Story IDs to process:', storyIds);
-                
-                storyIds.forEach(storyId => {
-                    const structureStory = structureStories[storyId];
-                    const contentStory = storiesData.stories[storyId];
+                // Check if the storyline exists in the structure data
+                if (this.structureData.chapter_1.storylines[storyline]) {
+                    console.log('Storyline found in structure data');
                     
-                    if (!structureStory) {
-                        console.log(`Story ${storyId} not found in structure data, skipping`);
-                        return;
+                    // Get the stories for this character and storyline
+                    const storiesPath = `data/stories/${character}_${storyline}.json`;
+                    console.log('Fetching stories from:', storiesPath);
+                    
+                    // Check if the file exists
+                    const fileCheckResponse = await fetch(storiesPath, { method: 'HEAD' });
+                    console.log('File exists:', storiesPath, fileCheckResponse.ok);
+                    
+                    if (!fileCheckResponse.ok) {
+                        console.error('Stories file not found:', storiesPath);
+                        return { error: "Stories not found for this character and storyline." };
                     }
                     
-                    if (!contentStory) {
-                        console.log(`Story ${storyId} not found in content data, skipping`);
-                        return;
+                    // Fetch the stories
+                    const response = await fetch(storiesPath);
+                    console.log('Stories response OK:', response.ok);
+                    
+                    if (!response.ok) {
+                        console.error('Failed to load stories:', response.status);
+                        return { error: "Failed to load stories. Please try again." };
                     }
                     
-                    console.log(`Merging story ${storyId}`);
-                    mergedStories[storyId] = {
-                        ...contentStory,
-                        title: structureStory.title || '',
-                        description: structureStory.description || '',
-                        cover_image: structureStory.cover_image || '',
-                        practice: structureStory.practice || null,
-                        completed: false
-                    };
-                });
-                
-                if (Object.keys(mergedStories).length === 0) {
-                    console.error('No stories were successfully merged');
-                    return { error: "No stories are available for this selection. Please try a different option." };
-                }
-                
-                console.log('Stories merged successfully');
-                console.log('Number of merged stories:', Object.keys(mergedStories).length);
-                
-                // Update the stories in userData
-                this.userData.stories = mergedStories;
-                console.log('Updated userData.stories:', this.userData.stories);
-                
-                // Save the updated user data to ensure it's persisted
-                this.saveUserData();
-                console.log('Saved user data with stories');
-                
-                // Ensure story progress is maintained if there's local data
-                const storedData = localStorage.getItem('user_data');
-                const localData = storedData ? JSON.parse(storedData) : null;
-                
-                if (localData && localData.stories) {
-                    console.log('Found existing stories in localStorage');
-                    Object.keys(localData.stories).forEach(storyId => {
-                        if (this.userData.stories[storyId]) {
-                            console.log(`Preserving completion status for story ${storyId}`);
-                            this.userData.stories[storyId].completed = localData.stories[storyId].completed || false;
+                    // Parse the JSON
+                    const storiesData = await response.json();
+                    console.log('Stories data loaded successfully');
+                    console.log('Number of stories:', Object.keys(storiesData).length);
+                    
+                    // Get the structure stories
+                    const structureStories = this.structureData.chapter_1.storylines[storyline].stories;
+                    console.log('Structure stories loaded successfully');
+                    console.log('Number of structure stories:', Object.keys(structureStories).length);
+                    
+                    // Merge the stories with the structure data
+                    const storyIds = Object.keys(structureStories);
+                    console.log('Story IDs to process:', storyIds);
+                    
+                    // Save the current completion status before merging
+                    const currentCompletionStatus = {};
+                    if (this.userData.stories) {
+                        Object.keys(this.userData.stories).forEach(storyId => {
+                            if (this.userData.stories[storyId]) {
+                                currentCompletionStatus[storyId] = {
+                                    completed: this.userData.stories[storyId].completed || false,
+                                    practice_completed: this.userData.stories[storyId].practice_completed || false
+                                };
+                            }
+                        });
+                    }
+                    console.log('Current completion status before merging:', currentCompletionStatus);
+                    
+                    // Initialize stories object if it doesn't exist
+                    if (!this.userData.stories) {
+                        this.userData.stories = {};
+                    }
+                    
+                    // Merge each story
+                    storyIds.forEach(storyId => {
+                        console.log('Merging story', storyId);
+                        
+                        // Get the story content from the stories file
+                        // The structure is different than expected - stories are nested under a "stories" property
+                        const storyContent = storiesData.stories ? storiesData.stories[storyId] : storiesData[storyId];
+                        
+                        if (!storyContent) {
+                            console.error(`Story content not found for ${storyId}`);
+                            return;
+                        }
+                        
+                        console.log(`Story content for ${storyId}:`, storyContent);
+                        
+                        // Get the story structure
+                        const storyStructure = structureStories[storyId];
+                        
+                        if (!storyStructure) {
+                            console.error(`Story structure not found for ${storyId}`);
+                            return;
+                        }
+                        
+                        console.log(`Story structure for ${storyId}:`, storyStructure);
+                        
+                        // Check if the story has pages
+                        if (!storyContent.pages || storyContent.pages.length === 0) {
+                            console.warn(`No pages found for story ${storyId}`);
+                        } else {
+                            console.log(`Found ${storyContent.pages.length} pages for story ${storyId}`);
+                        }
+                        
+                        // Merge them, being careful to preserve the pages property
+                        this.userData.stories[storyId] = {
+                            // Start with any existing data
+                            ...(this.userData.stories[storyId] || {}),
+                            // Add story content (including pages)
+                            ...storyContent,
+                            // Add structure data (but don't overwrite pages)
+                            ...storyStructure,
+                            // Make sure pages is preserved
+                            pages: storyContent.pages || [],
+                            // Preserve completion status if it exists
+                            completed: currentCompletionStatus[storyId]?.completed || false,
+                            practice_completed: currentCompletionStatus[storyId]?.practice_completed || false
+                        };
+                        
+                        // Double-check that pages were preserved
+                        if (!this.userData.stories[storyId].pages || this.userData.stories[storyId].pages.length === 0) {
+                            console.error(`Pages were lost during merge for story ${storyId}`);
+                        } else {
+                            console.log(`Successfully preserved ${this.userData.stories[storyId].pages.length} pages for story ${storyId}`);
                         }
                     });
+                    
+                    console.log('Stories merged successfully');
+                    console.log('Number of merged stories:', Object.keys(this.userData.stories).length);
+                    
+                    // Log the updated stories
+                    console.log('Updated userData.stories:', this.userData.stories);
+                    
+                    // Save the updated user data
+                    this.saveUserData();
+                    console.log('Saved user data with stories');
+                    
+                    // Ensure story progress is maintained if there's local data
+                    const storedData = localStorage.getItem('user_data');
+                    const localData = storedData ? JSON.parse(storedData) : null;
+                    
+                    if (localData && localData.stories) {
+                        console.log('Found existing stories in localStorage');
+                        Object.keys(localData.stories).forEach(storyId => {
+                            if (this.userData.stories[storyId]) {
+                                console.log(`Preserving completion status for story ${storyId}`);
+                                console.log(`Before: ${this.userData.stories[storyId].completed}, localStorage: ${localData.stories[storyId].completed}`);
+                                this.userData.stories[storyId].completed = localData.stories[storyId].completed || false;
+                                this.userData.stories[storyId].practice_completed = localData.stories[storyId].practice_completed || false;
+                                console.log(`After: ${this.userData.stories[storyId].completed}`);
+                            }
+                        });
+                    }
+                    
+                    console.log('Final stories in userData:', this.userData.stories);
+                    
+                    // Save again after preserving completion status
+                    this.saveUserData();
+                    console.log('Saved user data after preserving completion status');
+                    
+                    return true;
+                } else {
+                    console.error('Storyline not found in structure data:', storyline);
+                    return { error: "Storyline not found in structure data." };
                 }
-                
-                console.log('Final stories in userData:', this.userData.stories);
-                return true;
             } catch (error) {
                 console.error('Error loading story data:', error);
                 return { error: "There was a problem loading the story content. Please try a different option." };
@@ -296,14 +405,18 @@ class UserManager {
 
     saveUserData() {
         if (this.userData) {
+            console.log('Saving user data to localStorage...');
+            
             // Ensure required objects exist
             if (!this.userData.stories) {
+                console.log('No stories object found, creating default');
                 this.userData.stories = {
                     story1: { completed: false }
                 };
             }
             
             if (!this.userData.progress) {
+                console.log('No progress object found, creating default');
                 this.userData.progress = {
                     current_story: 'story1',
                     chapter1_progress: 0,
@@ -313,11 +426,18 @@ class UserManager {
             }
             
             if (!this.userData.analytics) {
+                console.log('No analytics object found, creating default');
                 this.userData.analytics = { 
                     worry_ratings: [],
                     last_session: new Date().toISOString()
                 };
             }
+            
+            // Log the completion status of all stories before saving
+            console.log('Story completion status before saving:');
+            Object.keys(this.userData.stories).forEach(storyId => {
+                console.log(`${storyId}: ${this.userData.stories[storyId].completed}`);
+            });
             
             // Create a deep copy of userData to avoid reference issues
             const dataToSave = JSON.parse(JSON.stringify(this.userData));
@@ -326,6 +446,7 @@ class UserManager {
             if (dataToSave.stories) {
                 Object.keys(dataToSave.stories || {}).forEach(storyId => {
                     if (!dataToSave.stories[storyId].hasOwnProperty('completed')) {
+                        console.log(`Adding missing completed property to ${storyId}`);
                         dataToSave.stories[storyId].completed = false;
                     }
                 });
@@ -353,6 +474,18 @@ class UserManager {
             // Save all user data to localStorage
             localStorage.setItem('user_data', JSON.stringify(dataToSave));
             console.log('Saved user data to localStorage:', dataToSave);
+            
+            // Verify the data was saved correctly
+            const savedData = localStorage.getItem('user_data');
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                console.log('Story completion status after saving:');
+                Object.keys(parsedData.stories).forEach(storyId => {
+                    console.log(`${storyId}: ${parsedData.stories[storyId].completed}`);
+                });
+            }
+        } else {
+            console.error('Cannot save user data: userData is not defined');
         }
     }
 
@@ -388,6 +521,26 @@ class UserManager {
         
         console.log('Found story in user data:', userStory);
         
+        // Check if the story has pages
+        if (!userStory.pages || userStory.pages.length === 0) {
+            console.warn(`No pages found for current story ${currentStoryId}`);
+            
+            // Try to load pages from the story file
+            const character = this.userData.progress.selectedCharacter;
+            const storyline = this.userData.progress.selectedStoryline;
+            
+            // We'll try to load the story data from the file
+            console.log(`Attempting to load pages for ${currentStoryId} from story file...`);
+            
+            // This is an async function, but we're in a sync context, so we'll return the story as is
+            // and let the calling code handle the missing pages
+            this.loadStoriesForSelection().then(() => {
+                console.log('Stories reloaded, check if pages are now available');
+            });
+        } else {
+            console.log(`Story has ${userStory.pages.length} pages`);
+        }
+        
         // Get the story structure from the loaded structure
         const character = this.userData.progress.selectedCharacter;
         const storyline = this.userData.progress.selectedStoryline;
@@ -400,33 +553,36 @@ class UserManager {
             }
             
             console.log('Structure data available');
-            console.log('Looking for storyline:', storyline);
-            console.log('Looking for story:', currentStoryId);
             
-            // Get the practice data from the structure
+            // Get the structure for this story
             if (this.structureData.chapter_1 && 
                 this.structureData.chapter_1.storylines && 
-                this.structureData.chapter_1.storylines[storyline] && 
-                this.structureData.chapter_1.storylines[storyline].stories && 
-                this.structureData.chapter_1.storylines[storyline].stories[currentStoryId]) {
+                this.structureData.chapter_1.storylines[storyline] &&
+                this.structureData.chapter_1.storylines[storyline].stories) {
                 
-                const structureStory = this.structureData.chapter_1.storylines[storyline].stories[currentStoryId];
+                const storyStructure = this.structureData.chapter_1.storylines[storyline].stories[currentStoryId];
                 
-                if (structureStory && structureStory.practice) {
-                    // Merge the practice data into the user story
-                    userStory.practice = structureStory.practice;
-                    console.log('Added practice data to story:', structureStory.practice);
-                } else {
-                    console.error('Practice data not found in structure for story:', currentStoryId);
+                if (storyStructure) {
+                    console.log('Found story structure:', storyStructure);
+                    
+                    // Merge the structure with the user story, being careful not to overwrite pages
+                    const mergedStory = {
+                        ...userStory,
+                        ...storyStructure,
+                        // Ensure pages are preserved
+                        pages: userStory.pages || []
+                    };
+                    
+                    return mergedStory;
                 }
-            } else {
-                console.error('Story structure path not found:', `chapter_1.storylines.${storyline}.stories.${currentStoryId}`);
             }
+            
+            // If we couldn't find the structure, just return the user story
+            return userStory;
         } catch (error) {
-            console.error('Error getting practice data:', error);
+            console.error('Error getting story structure:', error);
+            return userStory;
         }
-        
-        return userStory;
     }
 
     updateUserProfile(profileData) {
@@ -552,8 +708,11 @@ function updateUserProgress() {
 async function initJourneyMap() {
     if (!document.querySelector('.journey-page')) return;
     
+    console.log('Initializing journey map...');
+    
     // Ensure user data is loaded
     if (!userManager.userData) {
+        console.log('User data not loaded, loading now...');
         await userManager.loadUserData();
     }
     
@@ -565,6 +724,9 @@ async function initJourneyMap() {
         return;
     }
 
+    console.log('User data loaded:', userManager.userData);
+    console.log('Stories:', userManager.userData.stories);
+    
     // Check if user has completed onboarding by looking for required fields
     if (!userManager.userData.characterName) {
         console.log('User has not completed onboarding');
@@ -581,6 +743,8 @@ async function initJourneyMap() {
     const totalStories = Object.keys(userManager.userData.stories).length;
     const progressPercentage = (completedStories / totalStories) * 100;
     
+    console.log(`Progress: ${completedStories}/${totalStories} stories completed (${progressPercentage}%)`);
+    
     // Update progress bar in header
     const progressBar = document.querySelector('.j-header-progress-bar');
     const stageName = document.querySelector('.j-header-stage-name');
@@ -591,6 +755,7 @@ async function initJourneyMap() {
         
         // Set the progress bar width which will trigger the transition
         progressBar.style.width = `${progressPercentage}%`;
+        console.log('Updated progress bar width to:', progressPercentage + '%');
         
         // Initial update of the text color
         updateStageNameColor();
@@ -618,6 +783,15 @@ async function initJourneyMap() {
     const character = userManager.userData.progress.selectedCharacter;
     const storyline = userManager.userData.progress.selectedStoryline;
     
+    console.log('Selected character:', character);
+    console.log('Selected storyline:', storyline);
+    
+    // Ensure story structure is loaded
+    if (!userManager.structureData) {
+        console.log('Story structure not loaded, loading now...');
+        await userManager.loadStoryStructure();
+    }
+    
     // Get structure stories
     if (!userManager.structureData || 
         !userManager.structureData.chapter_1 || 
@@ -628,6 +802,7 @@ async function initJourneyMap() {
     }
     
     const structureStories = userManager.structureData.chapter_1.storylines[storyline].stories;
+    console.log('Structure stories:', structureStories);
     
     // Create journey stage nodes
     let storyIndex = 1;
@@ -694,6 +869,8 @@ function updateCharacterNameInHeader() {
 
 // Helper function to create a journey stage node
 function createJourneyStageNode(storyId, storyData, userStoryData, storyIndex, character) {
+    console.log(`Creating journey stage node for story ${storyId}:`, userStoryData);
+    
     // Create the main node container
     const nodeWrapper = document.createElement('div');
     nodeWrapper.className = 'journey-stage-node';
@@ -706,6 +883,7 @@ function createJourneyStageNode(storyId, storyData, userStoryData, storyIndex, c
     // Check if this node should have the unlocking animation
     const storyToAnimate = localStorage.getItem('story_to_animate');
     if (storyToAnimate === storyId) {
+        console.log(`Applying unlocking animation to story ${storyId}`);
         nodeContainer.setAttribute('data-animation', 'unlocking');
         // Clear the animation flag after applying it
         localStorage.removeItem('story_to_animate');
@@ -715,14 +893,22 @@ function createJourneyStageNode(storyId, storyData, userStoryData, storyIndex, c
     let completionStatus = 'locked';
     if (userStoryData.completed) {
         completionStatus = 'completed';
+        console.log(`Story ${storyId} is completed`);
     } else if (isStoryUnlocked(storyId)) {
         completionStatus = 'unlocked';
+        console.log(`Story ${storyId} is unlocked`);
         
         // Check if this is the next story to complete
         if (isNextStoryToComplete(storyId)) {
+            console.log(`Story ${storyId} is the next to complete`);
             nodeContainer.classList.add('next-to-complete');
         }
+    } else {
+        console.log(`Story ${storyId} is locked`);
     }
+
+    // Add completion status as a data attribute for easier debugging
+    nodeContainer.setAttribute('data-status', completionStatus);
 
     // Create completion status icon
     const statusIcon = document.createElement('div');
@@ -807,15 +993,25 @@ function createJourneyStageNode(storyId, storyData, userStoryData, storyIndex, c
 
 // Helper function to check if a story is unlocked
 function isStoryUnlocked(storyId) {
+    console.log(`Checking if story ${storyId} is unlocked...`);
+    
     // Story 1 is always unlocked
-    if (storyId === 'story1') return true;
+    if (storyId === 'story1') {
+        console.log('Story1 is always unlocked');
+        return true;
+    }
     
     // Get the story number from the ID
     const storyNumber = parseInt(storyId.replace('story', ''));
     
     // Previous story must be completed to unlock the next one
     const previousStoryId = `story${storyNumber - 1}`;
-    return userManager.userData.stories[previousStoryId]?.completed === true;
+    const isUnlocked = userManager.userData.stories[previousStoryId]?.completed === true;
+    
+    console.log(`Previous story ${previousStoryId} completed: ${userManager.userData.stories[previousStoryId]?.completed}`);
+    console.log(`Story ${storyId} unlocked: ${isUnlocked}`);
+    
+    return isUnlocked;
 }
 
 // Helper function to check if a story is the next one to complete

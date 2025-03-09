@@ -48,58 +48,20 @@ function initStoryPage() {
     console.log('Current story data:', currentStory);
     
     // Check if stories exist in userData
-    if (!userManager.userData.stories || Object.keys(userManager.userData.stories).length === 0) {
-        console.error('No stories found in userData');
-        console.log('Attempting to load stories for selection');
-        
-        // Try to load stories
-        userManager.loadStoriesForSelection().then(result => {
-            console.log('Result from loadStoriesForSelection:', result);
-            
-            if (result && result.error) {
-                console.error('Error loading stories:', result.error);
-                alert('There was a problem loading your story: ' + result.error + '. Redirecting to the journey map.');
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            if (!userManager.userData.stories || Object.keys(userManager.userData.stories).length === 0) {
-                console.error('Still no stories after loading');
-                alert('There was a problem loading your story. Redirecting to the journey map.');
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            // Now that we have stories, try to initialize again
-            console.log('Stories loaded, reinitializing story page');
-            initStoryPage();
-            return;
-        }).catch(error => {
-            console.error('Error loading stories:', error);
-            alert('There was a problem loading your story. Redirecting to the journey map.');
-            window.location.href = 'index.html';
-            return;
-        });
-        
-        return;
+    if (!userManager.userData.stories) {
+        console.error('No stories found in user data');
+        userManager.userData.stories = {};
+        userManager.saveUserData();
     }
     
-    // Check if the current story exists in userData.stories
-    if (!userManager.userData.stories[currentStoryId]) {
-        console.error('Current story not found in userData.stories');
-        console.log('Available stories:', Object.keys(userManager.userData.stories));
-        alert('The selected story could not be found. Redirecting to the journey map.');
-        window.location.href = 'index.html';
-        return;
-    }
-    
+    // Check if current story exists
     if (!currentStory) {
-        console.error('No story data found');
+        console.error('Current story not found, creating default');
         
         // Create a default story
-        console.log('Creating default story');
         const defaultStory = {
             title: "Your First Adventure",
+            description: "Begin your journey with this introductory story.",
             pages: [
                 {
                     text: "Welcome to your adventure! This is a placeholder story until we can load your real stories.",
@@ -110,11 +72,6 @@ function initStoryPage() {
         };
         
         // Add the default story to userData
-        if (!userManager.userData.stories) {
-            userManager.userData.stories = {};
-        }
-        
-        const currentStoryId = userManager.userData.progress.current_story || 'story1';
         userManager.userData.stories[currentStoryId] = defaultStory;
         userManager.saveUserData();
         
@@ -124,10 +81,50 @@ function initStoryPage() {
         currentStory = defaultStory;
     }
     
-    if (!currentStory.pages) {
+    // Check if the story has pages
+    if (!currentStory.pages || currentStory.pages.length === 0) {
         console.error('No pages found in story data');
         
-        // Add default pages
+        // Try to reload the stories from the file
+        console.log('Attempting to reload stories from file...');
+        
+        // We'll try to reload the stories and then check again
+        userManager.loadStoriesForSelection().then(() => {
+            console.log('Stories reloaded, checking for pages again...');
+            
+            // Get the story again after reloading
+            currentStory = userManager.getCurrentStory();
+            
+            // Check if pages are now available
+            if (currentStory && currentStory.pages && currentStory.pages.length > 0) {
+                console.log('Pages found after reload:', currentStory.pages);
+                // Reinitialize the story page with the new data
+                loadStoryContent(currentStory);
+                return;
+            }
+            
+            // If still no pages, add default pages
+            console.log('Still no pages found, adding default pages');
+            
+            // Add default pages
+            currentStory.pages = [
+                {
+                    text: "Welcome to your adventure! This is a placeholder story until we can load your real stories.",
+                    image: "assets/images/default_placeholder.png"
+                }
+            ];
+            
+            // Update the story in userData
+            userManager.userData.stories[currentStoryId] = currentStory;
+            userManager.saveUserData();
+            
+            console.log('Default pages added to story:', currentStory);
+            
+            // Load the story content with the default pages
+            loadStoryContent(currentStory);
+        });
+        
+        // Add default pages for now
         currentStory.pages = [
             {
                 text: "Welcome to your adventure! This is a placeholder story until we can load your real stories.",
@@ -136,30 +133,10 @@ function initStoryPage() {
         ];
         
         // Update the story in userData
-        const currentStoryId = userManager.userData.progress.current_story || 'story1';
         userManager.userData.stories[currentStoryId] = currentStory;
         userManager.saveUserData();
         
         console.log('Default pages added to story:', currentStory);
-    }
-    
-    if (currentStory.pages.length === 0) {
-        console.error('Story has no pages');
-        
-        // Add default pages
-        currentStory.pages = [
-            {
-                text: "Welcome to your adventure! This is a placeholder story until we can load your real stories.",
-                image: "assets/images/default_placeholder.png"
-            }
-        ];
-        
-        // Update the story in userData
-        const currentStoryId = userManager.userData.progress.current_story || 'story1';
-        userManager.userData.stories[currentStoryId] = currentStory;
-        userManager.saveUserData();
-        
-        console.log('Default pages added to empty story:', currentStory);
     }
     
     // Set up story variables
