@@ -1229,6 +1229,14 @@ function createJourneyStageNode(storyId, storyData, userStoryData, storyIndex, c
     nodeContainer.className = 'node-container';
     nodeContainer.id = `STAGE-1-${storyIndex}`;
 
+    // Check if this node should have the unlocking animation
+    const storyToAnimate = localStorage.getItem('story_to_animate');
+    if (storyToAnimate === storyId) {
+        nodeContainer.setAttribute('data-animation', 'unlocking');
+        // Clear the animation flag after applying it
+        localStorage.removeItem('story_to_animate');
+    }
+
     // Determine completion status
     let completionStatus = 'locked';
     if (userStoryData.completed) {
@@ -1373,8 +1381,45 @@ function completeStory() {
     userManager.userData.progress.chapter1_progress = progressPercentage;
     userManager.saveUserData();
     
+    // Find the next story to unlock and mark it for animation when the journey map loads next
+    const nextStoryToUnlock = findNextStoryToUnlock();
+    if (nextStoryToUnlock) {
+        // Store the ID of the story that should have the unlocking animation
+        localStorage.setItem('story_to_animate', nextStoryToUnlock);
+    }
+    
     // Redirect to practice page
     window.location.href = 'practice.html';
+}
+
+// Helper function to find the next story that should be unlocked
+function findNextStoryToUnlock() {
+    // Get current character and storyline
+    const character = userManager.userData.progress.selectedCharacter;
+    const storyline = userManager.userData.progress.selectedStoryline;
+    
+    // Get structure stories
+    if (!userManager.structureData || 
+        !userManager.structureData.chapter_1 || 
+        !userManager.structureData.chapter_1.storylines || 
+        !userManager.structureData.chapter_1.storylines[storyline]) {
+        console.error('Missing storyline data:', storyline);
+        return null;
+    }
+    
+    const structureStories = userManager.structureData.chapter_1.storylines[storyline].stories;
+    
+    // Get all story IDs in order
+    const storyIds = Object.keys(structureStories);
+    
+    // Find the first incomplete story
+    for (const storyId of storyIds) {
+        if (!userManager.userData.stories[storyId].completed) {
+            return storyId;
+        }
+    }
+    
+    return null;
 }
 
 function goToJourneyMap() {
