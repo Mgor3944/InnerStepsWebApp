@@ -1815,11 +1815,16 @@ body.story-page {
     height: 85%;
 }
 
-.unlocked-lock-icon, .completed-medal-icon {
+.unlocked-lock-icon, .completed-tick-icon {
     display: none;
 
     width: 85%;
     height: 85%;
+}
+
+.completed-tick-icon {
+    width: 90%;
+    height: 90%;
 }
 
 .stage-title {
@@ -1865,10 +1870,10 @@ body.story-page {
 .story-book-container .book-aesthetic-line {
     position: relative;
     top: 0px;
-    left: 10px;
-    background-color: rgb(000, 000, 000, 0.3);
+    left: 8px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.4));
 
-    width: 5px;
+    width: 7px;
     height: 100%;
     z-index: 2;
 }
