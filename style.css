@@ -782,6 +782,8 @@ body.story-page {
     width: 40%;
     padding: 75px;
     position: relative;
+
+    border: 1px solid red;
 }
 
 .story-image {
