@@ -13,6 +13,53 @@ function initOnboardingForm() {
     if (characterNameInput) {
         characterNameInput.addEventListener('input', capitalizeFirstLetter);
     }
+
+    // Initialize welcome animation if we're on step 1
+    if (document.getElementById('step1').classList.contains('active')) {
+        initWelcomeAnimation();
+    }
+}
+
+// === WELCOME ANIMATION HANDLING ===
+function initWelcomeAnimation() {
+    const welcomeBoxes = document.querySelectorAll('.welcome-box');
+    const welcomeButton = document.querySelector('.welcome-button');
+    let currentBox = 0;
+
+    function showNextBox() {
+        if (currentBox < welcomeBoxes.length) {
+            const box = welcomeBoxes[currentBox];
+            const dots = box.querySelector('.typing-dots');
+            const text = box.querySelector('p');
+
+            // Show the box first
+            box.classList.add('show');
+            
+            // Show typing dots
+            dots.classList.add('show');
+
+            // After a delay, hide dots and show text
+            setTimeout(() => {
+                dots.classList.remove('show');
+                text.classList.add('show');
+                
+                currentBox++;
+                
+                // If there are more boxes, show the next one after a delay
+                if (currentBox < welcomeBoxes.length) {
+                    setTimeout(showNextBox, 1000);
+                } else {
+                    // If all boxes are shown, show the button
+                    setTimeout(() => {
+                        welcomeButton.classList.add('show');
+                    }, 500);
+                }
+            }, 2000); // Show typing dots for 2 seconds
+        }
+    }
+
+    // Start the animation sequence
+    showNextBox();
 }
 
 // Function to capitalize the first letter of the character name input
