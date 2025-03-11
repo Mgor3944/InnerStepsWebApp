@@ -14,7 +14,7 @@ function initWelcomePage() {
     getStartedContainer.style.display = 'none';
     getStartedContainer.style.opacity = '0';
 
-    // Start loading sequence
+    // Start loading sequence after logo animation completes
     setTimeout(() => {
         introAnimation.classList.add('loading');
         
@@ -22,7 +22,7 @@ function initWelcomePage() {
         let progress = 0;
         const interval = setInterval(() => {
             progress += 1;
-            loadingPercentage.textContent = `${progress}%`;
+            loadingPercentage.textContent = `Loading... ${progress}%`;
             
             if (progress >= 100) {
                 clearInterval(interval);
@@ -56,11 +56,11 @@ function initWelcomePage() {
                             }, 500); // Wait for welcome content fade out to complete
                             
                         }, 3000);
-                    }, 1200);
+                    }, 1200); // Adjust timing for circle expansion completion
                 }, 500);
             }
         }, 40); // Updates every 40ms for 4-second duration (4000ms / 100 steps = 40ms per step)
-    }, 1000);
+    }, 1200); // Wait for logo animation to complete (1s animation + 200ms buffer)
 
     // Add click handler for the start journey button
     const startButton = document.getElementById('startJourneyButton');

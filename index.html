@@ -55,8 +55,8 @@
             // Check if user has completed onboarding
             const userData = localStorage.getItem('user_data');
             if (!userData) {
-                // No user data, redirect to login
-                window.location.href = 'login.html';
+                // No user data, redirect to welcome page
+                window.location.href = 'welcome.html';
                 return;
             }
             
@@ -64,7 +64,7 @@
             const parsedData = JSON.parse(userData);
             if (!parsedData.characterName) {
                 console.log('User has not completed onboarding');
-                window.location.href = 'login.html';
+                window.location.href = 'welcome.html';
                 return;
             }
             

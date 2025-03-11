@@ -83,12 +83,6 @@ body.welcome-page {
     min-height: 100vh;
 }
 
-body.login-page {
-    background: url('assets/images/bg3.png') no-repeat center center fixed;
-    background-size: cover;
-    min-height: 100vh;
-}
-
 body.journey-page {
     background: url('assets/images/bg4.png') no-repeat center center fixed;
     background-size: cover;
@@ -97,60 +91,28 @@ body.journey-page {
 
 /* === LOGIN SCREEN STYLES === */
 .login-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    width: 90%;
-    max-width: 550px;
-    padding: 40px;
-    gap: 30px;
-    margin-bottom: 80px;
+    /* ... existing code ... */
 }
 
 #pinForm {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 50px;
+    /* ... existing code ... */
 }
 
 .pin-inputs {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
+    /* ... existing code ... */
 }
 
 .pin-inputs input {
-    font-family: 'Quicksand', cursive, sans-serif;
-    border-radius: 12px;
-    width: 80px;
-    height: 80px;
-    text-align: center;
-    font-size: 25px !important;
-    font-weight: bold;
-    color: #42535F;
-    background-color: #f0f7f4;
-    border: 3px solid #bfd5c9;
-    transition: all 0.2s ease-in-out;
-    -moz-appearance: textfield; /* Firefox */
+    /* ... existing code ... */
 }
 
 .pin-inputs input:focus {
-    background-color: rgb(141, 186, 54, 0.06);
-    border-color: #8DBA36;
-    outline: none;
+    /* ... existing code ... */
 }
 
-/* Remove number input arrows for Chrome, Safari, Edge, Opera */
 .pin-inputs input::-webkit-outer-spin-button,
 .pin-inputs input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+    /* ... existing code ... */
 }
 
 /* === WELCOME SCREEN STYLES === */
@@ -247,20 +209,6 @@ body.journey-page {
     }
 }
 
-@keyframes circleExpand {
-    0% {
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(50);
-        opacity: 0;
-    }
-}
-
 /* === INTRO ANIMATION STYLES === */
 .intro-animation {
     position: fixed;
@@ -273,22 +221,34 @@ body.journey-page {
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden; /* Important to contain the expanding circle */
 }
 
 .intro-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px;
+    gap: 50px;
 }
 
 .intro-logo {
-    width: 180px;
-    height: 180px;
+    width: 75px;
+    height: 72px;
     object-fit: contain;
     opacity: 0;
     transform: translateY(20px);
-    animation: fadeInUp 0.6s ease forwards;
+    animation: logoFadeIn 1s ease forwards;
+}
+
+@keyframes logoFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .loading-bar-container {
@@ -297,14 +257,14 @@ body.journey-page {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
 }
 
 .loading-bar {
     width: 100%;
-    height: 4px;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 2px;
+    height: 15px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
     overflow: hidden;
 }
 
@@ -318,9 +278,10 @@ body.journey-page {
 }
 
 .loading-percentage {
+    font-family: 'Quicksand', cursive, sans-serif;
     color: #fff;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 15px;
+    font-weight: bold;
 }
 
 .expanding-circle {
@@ -328,28 +289,13 @@ body.journey-page {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0);
-    width: 50px;
-    height: 50px;
+    width: 100px;
+    height: 100px;
+    background-color: white;
     border-radius: 50%;
-    opacity: 1;
+    opacity: 0;
     visibility: hidden;
-    z-index: 11;
-    background-color: transparent; /* Clear background */
-    
-    /* This will be used to cut a hole in the overlay */
-    -webkit-mask-image: radial-gradient(circle, black 0%, transparent 100%);
-    mask-image: radial-gradient(circle, black 0%, transparent 100%);
-    mix-blend-mode: destination-out; /* This makes the circle cut through the overlay */
-}
-
-/* Updated animation */
-@keyframes circleExpand {
-    0% {
-        transform: translate(-50%, -50%) scale(0);
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(40);
-    }
+    z-index: 1001;
 }
 
 /* Animation states */
@@ -365,8 +311,23 @@ body.journey-page {
     animation: fadeOut 0.6s ease forwards;
 }
 
+.intro-animation.circle-expand .expanding-circle {
+    visibility: visible;
+    opacity: 1;
+    animation: expandCircle 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
 .intro-animation.complete {
     display: none;
+}
+
+@keyframes expandCircle {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(20);
+    }
 }
 
 /* === ONBOARDING CONTAINER STYLES === */
@@ -686,55 +647,6 @@ input[type="text"].error {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-/* === LOGIN SCREEN STYLES === */
-.login-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    width: 90%;
-    max-width: 550px;
-    padding: 40px;
-    gap: 30px;
-    margin-bottom: 80px;
-}
-
-#pinForm {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 50px;
-}
-
-.pin-inputs {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-}
-
-.pin-inputs input {
-    height: 80px;
-    text-align: center;
-    font-size: 25px !important;
-    font-weight: bold;
-    color: #42535F;
-    background-color: #f0f7f4;
-    border: 3px solid #bfd5c9;
-    transition: all 0.2s ease-in-out;
-    -moz-appearance: textfield; /* Firefox */
-}
-
-/* Remove number input arrows for Chrome, Safari, Edge, Opera */
-.pin-inputs input::-webkit-outer-spin-button,
-.pin-inputs input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
 }
 
 /* === ONBOARDING FORM STYLES === */

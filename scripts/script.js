@@ -679,10 +679,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     await userManager.initialize();
 
     // Handle different pages
-    if (document.querySelector('.login-page')) {
-        initLoginPage();
-    } else if (document.querySelector('.welcome-page')) {
-        // Welcome page now uses onboarding.js
+    if (document.querySelector('.welcome-page')) {
+        // Welcome page now uses welcome.js
         console.log('Welcome page loaded');
     } else if (document.getElementById('onboardingForm')) {
         // Onboarding now uses onboarding.js
@@ -693,11 +691,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         initializeAppropriateView();
     }
 });
-
-function initLoginPage() {
-    // Login page now has inline script for simplicity
-    console.log('Login page loaded');
-}
 
 // === PAGE DETECTION AND INITIALIZATION ===
 // Onboarding-related functions have been moved to scripts/onboarding.js
@@ -725,8 +718,8 @@ async function initJourneyMap() {
     // Check user data again after loading
     if (!userManager.userData || !userManager.userData.stories) {
         console.error('No user data or stories found');
-        // Redirect to login if no valid user data
-        window.location.href = 'login.html';
+        // Redirect to welcome page if no valid user data
+        window.location.href = 'welcome.html';
         return;
     }
 
@@ -736,7 +729,7 @@ async function initJourneyMap() {
     // Check if user has completed onboarding by looking for required fields
     if (!userManager.userData.characterName) {
         console.log('User has not completed onboarding');
-        window.location.href = 'login.html';
+        window.location.href = 'welcome.html';
         return;
     }
 

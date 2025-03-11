@@ -11,25 +11,25 @@ function initStoryPage() {
     // Ensure user data and story selection are available
     if (!userManager.userData) {
         console.error('No user data available');
-        window.location.href = 'login.html';
+        window.location.href = 'welcome.html';
         return;
     }
     
     if (!userManager.userData.progress) {
         console.error('No progress data available');
-        window.location.href = 'login.html';
+        window.location.href = 'welcome.html';
         return;
     }
     
     if (!userManager.userData.progress.selectedCharacter) {
         console.error('No character selected');
-        window.location.href = 'login.html';
+        window.location.href = 'welcome.html';
         return;
     }
     
     if (!userManager.userData.progress.selectedStoryline) {
         console.error('No storyline selected');
-        window.location.href = 'login.html';
+        window.location.href = 'welcome.html';
         return;
     }
     
@@ -502,7 +502,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         } else {
             console.error('No stories available in user data');
             // Redirect to login if no stories are available
-            window.location.href = 'login.html';
+            window.location.href = 'welcome.html';
         }
     }
-}); 
+});
+
+// In the clearUserData function (if it exists)
+function clearUserData() {
+    localStorage.removeItem('user_data');
+    localStorage.removeItem('story_progress');
+    window.location.href = 'welcome.html';
+} 
