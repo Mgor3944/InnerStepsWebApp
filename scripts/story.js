@@ -408,12 +408,23 @@ function personalizeStoryText(text) {
     const userData = userManager.userData;
     if (!userData) return text;
     
-    // Get pronouns based on selected character
-    const pronouns = {
+    // Get pronouns based on user data
+    let pronouns = {
         they: 'they',
         their: 'their',
         them: 'them'
     };
+    
+    // Use the pronouns from user data if available
+    if (userData.pronouns) {
+        pronouns = {
+            they: userData.pronouns.subject || 'they',
+            their: userData.pronouns.possessive || 'their',
+            them: userData.pronouns.object || 'them'
+        };
+    }
+    
+    console.log('Using pronouns:', pronouns);
     
     // Replace placeholders with actual values
     let personalizedText = text

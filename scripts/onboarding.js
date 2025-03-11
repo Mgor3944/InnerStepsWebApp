@@ -8,9 +8,30 @@ function initOnboardingForm() {
     // Add event listener to the form submission
     document.getElementById('onboardingForm').addEventListener('submit', handleFormSubmit);
     
+    // Add event listener to the character name input field
+    const characterNameInput = document.getElementById('characterName');
+    if (characterNameInput) {
+        characterNameInput.addEventListener('input', capitalizeFirstLetter);
+    }
+    
     // Initialize welcome animation if we're on step 1
     if (document.querySelector('.step.active').id === 'step1') {
         initWelcomeAnimation();
+    }
+}
+
+// Function to capitalize the first letter of the character name input
+function capitalizeFirstLetter(e) {
+    const input = e.target;
+    const value = input.value;
+    
+    if (value.length > 0) {
+        // Use the UserManager utility function if available, otherwise use the inline method
+        if (typeof UserManager !== 'undefined' && UserManager.capitalizeFirstLetter) {
+            input.value = UserManager.capitalizeFirstLetter(value);
+        } else {
+            input.value = value.charAt(0).toUpperCase() + value.slice(1);
+        }
     }
 }
 
@@ -143,13 +164,22 @@ function updateNamePlaceholders() {
     const userData = JSON.parse(localStorage.getItem('user_data'));
     if (!userData || !userData.characterName) return;
 
+    // Ensure the character name is capitalized
+    let characterName = userData.characterName;
+    // Use the UserManager utility function if available, otherwise use the inline method
+    if (typeof UserManager !== 'undefined' && UserManager.capitalizeFirstLetter) {
+        characterName = UserManager.capitalizeFirstLetter(characterName);
+    } else if (characterName.length > 0) {
+        characterName = characterName.charAt(0).toUpperCase() + characterName.slice(1);
+    }
+
     // Update all character name placeholders
     document.querySelectorAll('.character-name-placeholder').forEach(element => {
         // Check if we need to add possessive 's
         if (element.dataset.possessive === 'true') {
-            element.textContent = `${userData.characterName}'s`;
+            element.textContent = `${characterName}'s`;
         } else {
-            element.textContent = userData.characterName;
+            element.textContent = characterName;
         }
     });
 }
@@ -209,7 +239,14 @@ function nextStep(current, next) {
             case 4:
                 const characterName = document.getElementById('characterName').value;
                 if (characterName) {
-                    updateUserData('characterName', characterName);
+                    // Capitalize the first letter of the character name
+                    let capitalizedName;
+                    if (typeof UserManager !== 'undefined' && UserManager.capitalizeFirstLetter) {
+                        capitalizedName = UserManager.capitalizeFirstLetter(characterName);
+                    } else {
+                        capitalizedName = characterName.charAt(0).toUpperCase() + characterName.slice(1);
+                    }
+                    updateUserData('characterName', capitalizedName);
                     // Name placeholders will be updated by updateUserData
                 }
                 break;

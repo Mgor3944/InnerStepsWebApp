@@ -1790,6 +1790,7 @@ body.story-page {
     padding: 40px 25px; 
     width: 250px;
     height: 400px; /* Will be replaced or removed once the rest of the design has been completed*/
+
 }
 
 .completion-status-icon {
@@ -1864,7 +1865,15 @@ body.story-page {
 
     overflow: hidden;
 
+    filter: brightness(1.05);
+
+    transition: filter 0.2s ease-in-out;
+
     /* border: 1px solid red; */
+}
+
+.story-book-container:hover {
+    filter: brightness(1.15);
 }
 
 .story-book-container .book-aesthetic-line {
@@ -1902,19 +1911,19 @@ body.story-page {
 }
 
 #STAGE-1-2 {
-    background-color: #9EDC1B;
+    background-color: #7FBF62;
 }
 
 #STAGE-1-2 .stage-number-container {
-    color: #9EDC1B;
+    color: #7FBF62;
 }
 
 #STAGE-1-3 {
-    background-color: #FA4E66;
+    background-color: #FFAB28;
 }
 
 #STAGE-1-3 .stage-number-container {
-    color: #FA4E66;
+    color: #FFAB28;
 }
 #STAGE-1-4 {
     background-color: #7A4EC8;

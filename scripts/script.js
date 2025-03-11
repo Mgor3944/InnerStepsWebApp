@@ -14,6 +14,12 @@ class UserManager {
         ALT_STORYLINE: 'alt_storyline'
     };
 
+    // Utility function to capitalize the first letter of a string
+    static capitalizeFirstLetter(string) {
+        if (!string) return string;
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     constructor() {
         this.currentPin = null;
         this.userData = null;
@@ -857,11 +863,14 @@ function setupProgressBarTransitionMonitoring() {
 function updateCharacterNameInHeader() {
     const characterNameElements = document.querySelectorAll('.character-name-placeholder');
     if (userManager.userData && userManager.userData.characterName) {
+        // Ensure the character name is capitalized using the utility function
+        const characterName = UserManager.capitalizeFirstLetter(userManager.userData.characterName);
+        
         characterNameElements.forEach(element => {
             if (element.dataset.possessive === 'true') {
-                element.textContent = `${userManager.userData.characterName}'s`;
+                element.textContent = `${characterName}'s`;
             } else {
-                element.textContent = userManager.userData.characterName;
+                element.textContent = characterName;
             }
         });
     }
