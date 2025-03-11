@@ -226,27 +226,47 @@ function initStoryPage() {
         }
         
         // Add story text
-        const textElement = document.createElement('p');
+        const textContainer = document.createElement('div');
+        textContainer.className = 'story-paragraphs';
         
         // Extract the text content based on the page structure
         let pageText = '';
         if (typeof pageContent === 'string') {
+            // Handle legacy string format
             pageText = pageContent;
+            const textElement = document.createElement('p');
+            textElement.innerHTML = personalizeStoryText(pageText);
+            textContainer.appendChild(textElement);
         } else if (pageContent && typeof pageContent === 'object') {
             if (pageContent.text) {
-                pageText = pageContent.text;
+                if (Array.isArray(pageContent.text)) {
+                    // Handle array of paragraphs
+                    pageContent.text.forEach(paragraph => {
+                        const textElement = document.createElement('p');
+                        textElement.innerHTML = personalizeStoryText(paragraph);
+                        textContainer.appendChild(textElement);
+                    });
+                } else {
+                    // Handle single text string
+                    pageText = pageContent.text;
+                    const textElement = document.createElement('p');
+                    textElement.innerHTML = personalizeStoryText(pageText);
+                    textContainer.appendChild(textElement);
+                }
             } else {
                 console.error('Page content has no text property:', pageContent);
-                pageText = 'Story content unavailable.';
+                const textElement = document.createElement('p');
+                textElement.innerHTML = 'Story content unavailable.';
+                textContainer.appendChild(textElement);
             }
         } else {
             console.error('Unexpected page content format:', pageContent);
-            pageText = 'Story content unavailable.';
+            const textElement = document.createElement('p');
+            textElement.innerHTML = 'Story content unavailable.';
+            textContainer.appendChild(textElement);
         }
         
-        // Personalize the text and add it to the element
-        textElement.innerHTML = personalizeStoryText(pageText);
-        contentWrapper.appendChild(textElement);
+        contentWrapper.appendChild(textContainer);
         
         // Insert content before navigation buttons
         storyTextContainer.insertBefore(contentWrapper, navButtons);
@@ -297,8 +317,8 @@ function initStoryPage() {
             const storyNumber = currentStoryId.replace('story', '');
             
             // Construct path following the exact structure found in the filesystem:
-            // assets/images/pip/chapter_1/umbrella_racing/story1/image_1.jpg
-            const imagePath = `assets/images/${character}/chapter_1/${storyline}/story${storyNumber}/image_${window.currentPage}.jpg`;
+            // assets/images/pip/chapter_1/umbrella_racing/story1/page_1.jpg
+            const imagePath = `assets/images/${character}/chapter_1/${storyline}/story${storyNumber}/page_${window.currentPage}.jpg`;
             
             console.log('Loading image from:', imagePath);
             storyImage.src = imagePath;

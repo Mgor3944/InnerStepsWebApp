@@ -6,7 +6,7 @@
                 "description": "Learn to soar through the skies and face your fears",
                 "stories": {
                     "story1": {
-                        "title": "Pip's Big Discovery",
+                        "title": "The Big Discovery",
                         "description": "A mysterious invitation arrives to join the Flying Umbrella Racing League.",
                         "cover_image": "/assets/images/[character]/chapter_1/umbrella_racing/story1/cover.jpg",
                         "badge_image": "/assets/images/badges/story1_badge.png",
@@ -40,7 +40,7 @@
                         }
                     },
                     "story2": {
-                        "title": "How Pip Learned to Fly",
+                        "title": "How [name] Learned to Fly",
                         "description": "Learning to fly isn't easy, but that's okay.",
                         "cover_image": "/assets/images/[character]/chapter_1/umbrella_racing/story2/cover.jpg",
                         "badge_image": "/assets/images/badges/story2_badge.png",

@@ -5,48 +5,77 @@
         "story1": {
             "pages": [
                 {
-                    "text": "[name] stared at the golden envelope in [their] hands, heart fluttering with excitement and nerves. Inside was an invitation to join the Flying Umbrella Racing League! [They] had always dreamed of soaring through the clouds, but now that the chance was here...",
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/image_1.jpg"
+                    "text": [
+                        "[name] stared at the golden envelope in [their] hands, heart fluttering with excitement and nerves.",
+                        "Inside was an invitation to join the Flying Umbrella Racing League!",
+                        "[They] had always dreamed of soaring through the clouds, but now that the chance was here..."
+                    ],
+                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_1.jpg"
                 },
                 {
-                    "text": "The magical [favorite_color] umbrella sparkled in the sunlight. 'You can do this,' [name] whispered, holding it tight. Even if it felt scary, [they] knew that sometimes the most wonderful adventures start with a single brave choice.",
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/image_2.jpg"
+                    "text": [
+                        "The magical [favorite_color] umbrella sparkled in the sunlight.",
+                        "'You can do this,' [name] whispered, holding it tight.",
+                        "Even if it felt scary, [they] knew that sometimes the most wonderful adventures start with a single brave choice."
+                    ],
+                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_2.jpg"
                 }
             ]
         },
         "story2": {
             "pages": [
                 {
-                    "text": "[name] gripped the umbrella handle tightly, toes curling over the edge of the practice platform. The other young racers made it look so easy! But [their] umbrella wobbled at every gust of wind...",
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story2/image_1.jpg"
+                    "text": [
+                        "[name] gripped the umbrella handle tightly, toes curling over the edge of the practice platform.",
+                        "The other young racers made it look so easy!",
+                        "But [their] umbrella wobbled at every gust of wind..."
+                    ],
+                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story2/page_1.jpg"
                 },
                 {
-                    "text": "'Remember,' Coach Breeze called out, '[their] umbrella can feel your worries. Trust yourself, and it will trust you too!' [name] took a deep breath, thought happy thoughts, and suddenly - [they] were floating!",
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story2/image_2.jpg"
+                    "text": [
+                        "'Remember,' Coach Breeze called out, '[their] umbrella can feel your worries. Trust yourself, and it will trust you too!'",
+                        "[name] took a deep breath, thought happy thoughts, and suddenly - [they] were floating!"
+                    ],
+                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story2/page_2.jpg"
                 }
             ]
         },
         "story3": {
             "pages": [
                 {
-                    "text": "During team practice, [name] noticed another racer struggling with their landings. Without thinking, [they] floated over to share the tips Coach Breeze had taught [them]. Sometimes helping others made [their] own worries feel lighter.",
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story3/image_1.jpg"
+                    "text": [
+                        "During team practice, [name] noticed another racer struggling with their landings.",
+                        "Without thinking, [they] floated over to share the tips Coach Breeze had taught [them].",
+                        "Sometimes helping others made [their] own worries feel lighter."
+                    ],
+                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story3/page_1.jpg"
                 },
                 {
-                    "text": "Soon, [name] wasn't just learning to fly - [they] were making friends! Together, they practiced loop-de-loops and wind surfing, turning their worries into giggles as they zoomed through the clouds.",
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story3/image_2.jpg"
+                    "text": [
+                        "Soon, [name] wasn't just learning to fly - [they] were making friends!",
+                        "Together, they practiced loop-de-loops and wind surfing, turning their worries into giggles as they zoomed through the clouds."
+                    ],
+                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story3/page_2.jpg"
                 }
             ]
         },
         "story4": {
             "pages": [
                 {
-                    "text": "The day of the big race arrived! [name] looked at [their] teammates and smiled, remembering how far they'd all come. Win or lose, [they] was proud of facing [their] fears and finding the courage to fly.",
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story4/image_1.jpg"
+                    "text": [
+                        "The day of the big race arrived!",
+                        "[name] looked at [their] teammates and smiled, remembering how far they'd all come.",
+                        "Win or lose, [they] was proud of facing [their] fears and finding the courage to fly."
+                    ],
+                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story4/page_1.jpg"
                 },
                 {
-                    "text": "As [name] soared across the finish line, [their] [favorite_color] umbrella sparkling in the sunlight, [they] realized something amazing: the biggest victory wasn't about the race at all - it was about believing in [themselves].",
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story4/image_2.jpg"
+                    "text": [
+                        "As [name] soared across the finish line, [their] [favorite_color] umbrella sparkling in the sunlight, [they] realized something amazing:",
+                        "The biggest victory wasn't about the race at all - it was about believing in [themselves]."
+                    ],
+                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story4/page_2.jpg"
                 }
             ]
         }
