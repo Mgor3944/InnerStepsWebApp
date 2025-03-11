@@ -13,11 +13,6 @@ function initOnboardingForm() {
     if (characterNameInput) {
         characterNameInput.addEventListener('input', capitalizeFirstLetter);
     }
-    
-    // Initialize welcome animation if we're on step 1
-    if (document.querySelector('.step.active').id === 'step1') {
-        initWelcomeAnimation();
-    }
 }
 
 // Function to capitalize the first letter of the character name input
@@ -558,69 +553,6 @@ async function handleFormSubmit(e) {
     }, 3000);
 }
 
-// === WELCOME ANIMATION HANDLING ===
-function initWelcomeAnimation() {
-    const welcomeBoxes = document.querySelectorAll('.welcome-box');
-    const welcomeButton = document.querySelector('.welcome-button');
-    const typingDots = document.querySelectorAll('.typing-dots');
-
-    // Hide all welcome boxes and button initially
-    welcomeBoxes.forEach(box => {
-        box.style.display = 'none';
-    });
-    welcomeButton.style.display = 'none';
-
-    // Function to animate each welcome box
-    function animateWelcomeBox(index) {
-        const box = welcomeBoxes[index];
-        const dots = typingDots[index];
-        const text = box.querySelector('p');
-
-        // Show the box and typing dots
-        box.style.display = 'block';
-        dots.style.display = 'flex';
-        box.classList.add('show');
-
-        // After 1.5 seconds, hide dots and show text
-        setTimeout(() => {
-            dots.style.display = 'none';
-            text.classList.add('show');
-        }, 1500);
-    }
-
-    // Animate each box in sequence
-    setTimeout(() => animateWelcomeBox(0), 0);      // First box at 0s
-    setTimeout(() => animateWelcomeBox(1), 3000);   // Second box at 3s
-    setTimeout(() => animateWelcomeBox(2), 6000);   // Third box at 6s
-
-    // Show welcome button after the third text has been displayed (7.5s)
-    setTimeout(() => {
-        welcomeButton.style.display = 'block';
-        welcomeButton.classList.add('show');
-    }, 7500);
-}
-
-function initWelcomePage() {
-    // Add fade-in animation to text elements
-    const h1 = document.querySelector('.welcome-page h1');
-    const h3 = document.querySelector('.welcome-page h3');
-    
-    if (h1) {
-        h1.style.opacity = '0';
-        h1.style.animation = 'fadeIn 0.6s ease-in forwards';
-    }
-    
-    if (h3) {
-        h3.style.opacity = '0';
-        h3.style.animation = 'fadeIn 0.6s ease-in forwards 1s';
-    }
-
-    // After 4 seconds, redirect to onboarding
-    setTimeout(() => {
-        window.location.href = 'onboarding.html';
-    }, 4000);
-}
-
 // === EVENT LISTENERS ===
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize onboarding form if we're on the onboarding page
@@ -661,10 +593,5 @@ document.addEventListener('DOMContentLoaded', function() {
         if (userData && userData.gender) {
             updatePronouns(userData.gender);
         }
-    }
-    
-    // Initialize welcome page if we're on the welcome page
-    if (document.querySelector('.welcome-page')) {
-        initWelcomePage();
     }
 }); 

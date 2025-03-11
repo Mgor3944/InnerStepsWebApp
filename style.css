@@ -162,10 +162,12 @@ body.journey-page {
     text-align: center;
     width: 90%;
     max-width: 550px;
-    padding: 40px;
+    padding: 30px;
     gap: 30px;
     margin-bottom: 250px;
     animation: fadeIn 1s ease-in;
+
+    /* border: 1px solid red; */
 }
 
 .welcome-content {
@@ -185,6 +187,186 @@ body.journey-page {
     color: #42535F;
     font-weight: 400;
     margin-bottom: 20px;
+}
+
+/* Welcome content animations */
+.welcome-content {
+    opacity: 0;
+}
+
+.welcome-content.show {
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+.get-started-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.get-started-container h1 {
+    margin-bottom: 0px;
+}
+
+.get-started-container p {
+    margin-bottom: 30px;
+}
+
+.get-started-container.show {
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+/* Animation keyframes */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes circleExpand {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(50);
+        opacity: 0;
+    }
+}
+
+/* === INTRO ANIMATION STYLES === */
+.intro-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #68BDE2;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.intro-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.intro-logo {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.loading-bar-container {
+    width: 300px;
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.loading-bar {
+    width: 100%;
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.loading-bar::after {
+    content: '';
+    display: block;
+    width: 0%;
+    height: 100%;
+    background-color: #fff;
+    transition: width 4s ease-in-out; /* Determines the time it takes for the loading bar to fill up */
+}
+
+.loading-percentage {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.expanding-circle {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    opacity: 1;
+    visibility: hidden;
+    z-index: 11;
+    background-color: transparent; /* Clear background */
+    
+    /* This will be used to cut a hole in the overlay */
+    -webkit-mask-image: radial-gradient(circle, black 0%, transparent 100%);
+    mask-image: radial-gradient(circle, black 0%, transparent 100%);
+    mix-blend-mode: destination-out; /* This makes the circle cut through the overlay */
+}
+
+/* Updated animation */
+@keyframes circleExpand {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(40);
+    }
+}
+
+/* Animation states */
+.intro-animation.loading .loading-bar-container {
+    animation: fadeIn 0.6s ease forwards 1s;
+}
+
+.intro-animation.loading .loading-bar::after {
+    width: 100%;
+}
+
+.intro-animation.circle-expand .intro-content {
+    animation: fadeOut 0.6s ease forwards;
+}
+
+.intro-animation.complete {
+    display: none;
 }
 
 /* === ONBOARDING CONTAINER STYLES === */
