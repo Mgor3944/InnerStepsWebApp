@@ -6,20 +6,86 @@
             "pages": [
                 {
                     "text": [
-                        "[name] stared at the golden envelope in [their] hands, heart fluttering with excitement and nerves.",
-                        "Inside was an invitation to join the Flying Umbrella Racing League!",
-                        "[They] had always dreamed of soaring through the clouds, but now that the chance was here..."
+                        "Rain drummed against Pip's bedroom window as morning light filtered through the clouds. It was the third rainy day in a row in Greenleaf, and Pip was tired of trudging to school with soggy socks.",
+                        "'Come on, sweetheart! You'll be late!' Pip's mum called from downstairs.",
+                        "With a sigh, Pip grabbed the plain black umbrella from beside the window.",
+                        "Just another ordinary rainy day in Greenleaf — or so Pip thought..."
                     ],
                     "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_1.jpg"
                 },
                 {
                     "text": [
-                        "The magical [favorite_color] umbrella sparkled in the sunlight.",
-                        "'You can do this,' [name] whispered, holding it tight.",
-                        "Even if it felt scary, [they] knew that sometimes the most wonderful adventures start with a single brave choice."
+                        "As Pip splashed down the garden path, something extraordinary caught his eye.",
+                        "High above the rooftops, colorful shapes darted through the rain clouds.",
+                        "Pip squinted through the downpour. Those weren't birds—they were children! Children riding umbrellas through the sky!"
                     ],
                     "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_2.jpg"
+                },
+                {
+                    "text": [
+                        "'Did you see that?' Pip gasped, turning to a nearby grown-up.",
+                        "But the woman just hurried past, pulling her coat tighter",
+                        "Pip watched in amazement as the flying children swooped and soared, their umbrellas gliding on air currents.",
+                        "One boy with a red-striped umbrella performed a perfect loop-de-loop before zooming toward the school."
+                    ],
+                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_3.jpg"
+                },
+                {
+                    "text": [
+                        "All day, Pip couldn't stop thinking about the flying umbrellas.",
+                        "When the final bell rang, Pip dashed straight home to the attic where Grandma kept her old things",
+                        "Behind an old wardrobe, Pip spotted something unusual—a faded umbrella with racing stripes.",
+                        "The handle was worn smooth, and one of the spokes was slightly bent, but Pip felt drawn to it immediately."
+                    ],
+                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_4.jpg"
+                },
+                {
+                    "text": [
+                        "'Hello there!'",
+                        "Pip jumped and spun around. Perched on the window ledge was a beatiful blue bird, its feathers glowing light blue.",
+                        "'Did... did you just talk?' Pip whispered.",
+                        "The bird tilted its head.",
+                        "'I'm Blu, and you've found quite the treasure! That's a racing umbrella - your grandparent's, I'd guess...'"
+                    ],
+                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_5.jpg"
+                },
+                {
+                    "text": [
+                        "'Racing umbrella?!' Pip examined the worn fabric.",
+                        "'You mean like those children I saw flying?'",
+                        "Blu fluttered down beside Pip.",
+                        "'Precisely! You've discovered the Flying Umbrella Racing League—the secret sport that only children can see.'"
+                    ],
+                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_6.jpg"
+                },
+                {
+                    "text": [
+                        "'Could I learn to fly this?' Pip asked, tracing the racing stripes with his finger.",
+                        "'Of course! The Annual Golden Droplet Race is happening next week. It's the biggest race of the year!'",
+                        "Pip's stomach filled with butterflies, feeling nervous.",
+                        "'But what if I can't fly it? What if I crash? What if everyone laughs at me?'"
+                    ],
+                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_7.jpg"
+                },
+                {
+                    "text": [
+                        "'Blu's eyes twinkled.",
+                        "'Everyone worries sometimes, and that's totally normal. Look at this.'",
+                        "Blu tapped the umbrella handle, and a small dial appeared with numbers from one to ten.",
+                        "'This is your worry meter. When you're feeling a little nervous, it might show a three. When you're really scared, it might go up to nine. Right now, you're at about a five.'"
+                    ],
+                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_8.jpg"
+                },
+                {
+                    "text": [
+                        "'Do the other racers feel worried too?",
+                        "'Oh my, yes!' Blu chuckled.",
+                        "'Everyone worries, even the champions! Let me introduce you to some of them.'",
+                        "That afternoon, Blu took Pip to the park where children were practicing with their umbrellas."
+                    ],
+                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_9.jpg"
                 }
+                
             ]
         },
         "story2": {

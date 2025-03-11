@@ -307,7 +307,7 @@ input[type="text"].error {
     right: 40px;
     width: 200px;
     height: 28px;
-    background-color: #DAF5E6;
+    background-color: rgb(104, 189, 226, 0.15);
     border: 3px solid #fff;
     border-radius: 100px;
     overflow: hidden;
@@ -315,7 +315,7 @@ input[type="text"].error {
 
 .onboarding-progress-bar {
     height: 100%;
-    background-color: #6BC9B1;
+    background-color: rgb(104, 189, 226, 1);
     transition: width 0.3s ease;
 }
 
@@ -822,14 +822,31 @@ body.story-page {
     padding-bottom: 20px;
 }
 
-.story-text p {
+/* .story-text p {
     font-family: 'Comic Sans MS', cursive, sans-serif;
     font-size: 20px;
     line-height: 2.5;
     color: rgb(255, 255, 255, 0.9);
     margin-bottom: 60px;
-    /* margin-bottom: auto; */
     width: 100%;
+} */
+
+/* Story paragraphs styling */
+.story-paragraphs {
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+.story-paragraphs p {
+    font-family: 'Quicksand', cursive, sans-serif;
+    font-size: 1.3em;
+    line-height: 2;
+
+    color: rgb(255, 255, 255, 0.9);
+}
+
+.story-paragraphs p:last-child {
+    margin-bottom: 0;
 }
 
 /* Navigation buttons styling */
@@ -1532,20 +1549,23 @@ body.story-page {
     box-shadow: 0 0 15px rgba(141, 186, 54, 0.5);
 }
 
-.character-title {
+/* .character-title {
     position: absolute;
-    top: -45px;
+    top: -24px;
     left: 50%;
     transform: translateX(-50%);
+
+    width: 70%;
+
+    background-color: white;
+    padding: 8px 10px;
     color: orange;
 
     font-size: 1.3em;
     font-weight: bold;
 
-    /* background-color: white; */
-    /* padding: 8px 40px; */
     border-radius: 12px;
-}
+} */
 
 /* Character specific styles */
 #character1_cover { /* PIP CHARACTER IMAGE */
@@ -2199,19 +2219,4 @@ body.story-page {
 
 .back-to-journey-btn:hover {
     background-color: rgba(66, 83, 95, 0.15);
-}
-
-/* Story paragraphs styling */
-.story-paragraphs {
-    margin-bottom: 20px;
-}
-
-.story-paragraphs p {
-    margin-bottom: 15px;
-    line-height: 1.6;
-    font-size: 1.1em;
-}
-
-.story-paragraphs p:last-child {
-    margin-bottom: 0;
 }
