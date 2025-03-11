@@ -40,7 +40,7 @@
                         }
                     },
                     "story2": {
-                        "title": "How [name] Learned to Fly",
+                        "title": "Special Flying Technique's",
                         "description": "Learning to fly isn't easy, but that's okay.",
                         "cover_image": "/assets/images/[character]/chapter_1/umbrella_racing/story2/cover.jpg",
                         "badge_image": "/assets/images/badges/story2_badge.png",

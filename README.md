@@ -28,4 +28,4 @@ Current Stack:
 - HTML
 - CSS
 - JavaScript
-- Formspree
+- Formspree / Form.js / Netlify email submissions

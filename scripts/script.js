@@ -945,7 +945,7 @@ function createJourneyStageNode(storyId, storyData, userStoryData, storyIndex, c
     // Create stage number container
     const stageNumberContainer = document.createElement('div');
     stageNumberContainer.className = 'stage-number-container';
-    stageNumberContainer.innerHTML = `STAGE <span class="stage-number">1</span> - <span class="story-number">${storyIndex}</span>`;
+    stageNumberContainer.innerHTML = `STORY <span class="stage-number">1</span> • <span class="story-number">${storyIndex}</span>`;
     nodeContainer.appendChild(stageNumberContainer);
 
     // Create story book container
