@@ -89,32 +89,6 @@ body.journey-page {
     min-height: 100vh;
 }
 
-/* === LOGIN SCREEN STYLES === */
-.login-container {
-    /* ... existing code ... */
-}
-
-#pinForm {
-    /* ... existing code ... */
-}
-
-.pin-inputs {
-    /* ... existing code ... */
-}
-
-.pin-inputs input {
-    /* ... existing code ... */
-}
-
-.pin-inputs input:focus {
-    /* ... existing code ... */
-}
-
-.pin-inputs input::-webkit-outer-spin-button,
-.pin-inputs input::-webkit-inner-spin-button {
-    /* ... existing code ... */
-}
-
 /* === WELCOME SCREEN STYLES === */
 .welcome-container {
     display: flex;
@@ -123,13 +97,11 @@ body.journey-page {
     justify-content: center;
     text-align: center;
     width: 90%;
-    max-width: 550px;
+    max-width: 700px;
     padding: 30px;
     gap: 30px;
     margin-bottom: 250px;
     animation: fadeIn 1s ease-in;
-
-    /* border: 1px solid red; */
 }
 
 .welcome-content {
@@ -140,13 +112,11 @@ body.journey-page {
 
 .welcome-content h1 {
     font-size: 50px;
-    color: #42535F;
     margin-bottom: 8px;
 }
 
 .welcome-content h3 {
-    font-size: 22px;
-    color: #42535F;
+    font-size: 20px;
     font-weight: 400;
     margin-bottom: 20px;
 }
@@ -168,10 +138,12 @@ body.journey-page {
 }
 
 .get-started-container h1 {
+    font-size: 50px;
     margin-bottom: 0px;
 }
 
 .get-started-container p {
+    font-size: 18px;
     margin-bottom: 30px;
 }
 
@@ -1349,7 +1321,7 @@ body.story-page {
     border-radius: 12px;
 }
 
-/* === WELCOME ANIMATION STYLES === */
+/* === WELCOME ANIMATION STYLES ONBOARDING === */
 .welcome-animation-container {
     display: flex;
     flex-direction: column;
@@ -1726,8 +1698,8 @@ body.story-page {
 /* ================================================== */
 
 .character-pronoun {
-    font-style: italic;
-    color: #8DBA36;
+    /* font-style: italic; */
+    /* color: #8DBA36; */
 }
 /* ================================================== */
 /* === JOURNEY MAP HEADER STYLES === */

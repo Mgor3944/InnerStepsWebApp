@@ -219,7 +219,7 @@ function updateNamePlaceholders() {
     document.querySelectorAll('.character-name-placeholder').forEach(element => {
         // Check if we need to add possessive 's
         if (element.dataset.possessive === 'true') {
-            element.textContent = `${characterName}'s`;
+            element.textContent = `${characterName}`;
         } else {
             element.textContent = characterName;
         }
