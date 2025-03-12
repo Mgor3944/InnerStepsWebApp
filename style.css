@@ -1,3 +1,7 @@
+/* === IMPORT GOOGLE FONTS === */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+
 /* === COMMON STYLES === */
 body {
     font-family: 'Quicksand', cursive, sans-serif;
@@ -873,7 +877,7 @@ body.story-page {
 }
 
 .story-text h1 {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Comic Neue', cursive, sans-serif;
     text-align: left;
     color: #FFEFE1;
     font-size: 40px;
@@ -884,7 +888,7 @@ body.story-page {
 }
 
 .story-text h4 {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Comic Neue', cursive, sans-serif;
     color: rgb(255, 239, 225, 0.8);
     text-align: left;;
     font-size: 18px;
@@ -903,7 +907,7 @@ body.story-page {
 }
 
 .story-paragraphs p {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Comic Neue', cursive, sans-serif;
     font-size: 1.4em;
     line-height: 1.8;
     color: #FFEFE1;
