@@ -1756,12 +1756,11 @@ body.story-page {
 }
 
 .insights-btn:hover {
-    background-color: #8DBA36;
-    border-bottom: 6px solid #658624;
+    background-color: #4f6371;
 }
 
 .insights-btn:active {
-    border-bottom: 2px solid #658624;
+    border-bottom: 2px solid #2a363f;
 }
 
 .j-header-progress-container {
@@ -1835,6 +1834,7 @@ body.story-page {
     align-items: center;
     justify-content: center;
 
+    /* border: 1px solid blue; */
 }
 
 .node-container {
@@ -1846,7 +1846,7 @@ body.story-page {
 
     cursor: pointer;
 
-    gap: 35px;
+    gap: 25px;
 
     background-color: #68BDE2;
     border: 6px solid #fff;
@@ -1855,7 +1855,7 @@ body.story-page {
 
     padding: 40px 25px; 
     width: 250px;
-    height: 400px; /* Will be replaced or removed once the rest of the design has been completed*/
+    /* height: 400px; Will be replaced or removed once the rest of the design has been completed */
 
 }
 
@@ -2047,6 +2047,37 @@ body.story-page {
     }
     100% {
         transform: translateY(0);
+    }
+}
+
+/* RESIZE STORY NODES FOR SMALLER SCREENS */
+@media screen and (max-width: 1500px) {
+    .journey-map-container {
+        justify-content: flex-start;
+        overflow-x: scroll;
+
+        padding: 4% 5%;
+
+        border: 1px solid red;
+
+        /* max-width: 85%; */
+    }
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .journey-map-container::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+/* RESIZE STORY NODES FOR SMALLER SCREENS */
+@media screen and (max-width: 1050px) {
+    .node-container {
+        gap: 15px;
+        padding: 40px 10px; 
+    }
+
+    .stage-title {
+        font-size: 30px;
     }
 }
 
