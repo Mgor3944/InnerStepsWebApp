@@ -1,8 +1,0 @@
-{
-  "name": "innersteps-netlify-functions",
-  "version": "1.0.0",
-  "description": "Netlify functions for InnerSteps web app",
-  "dependencies": {
-    "nodemailer": "^6.9.7"
-  }
-} 
