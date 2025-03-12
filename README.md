@@ -1,5 +1,8 @@
 # InnerStepsWebApp
-Our AI-powered, anxiety support program provides families with a series of interactive picture/audio story adventures breaking down therapy into bite-sized lessons that help children build practical coping strategies, and confidence that suit their unique needs and reading level
+Our AI-powered, anxiety support program provides families with a series of interactive picture/audio story adventures breaking down therapy into bite-sized lessons that help children build practical coping strategies, and confidence that suit their unique needs and reading level.
+
+## Note: Mobile Under Construction Page
+Added an under-construction page that redirects users on devices with screen width below 1000px. This page informs users that the app is optimized for tablets and desktops. Remove this redirection once mobile layouts are ready.
 
 MVP Build:
 
