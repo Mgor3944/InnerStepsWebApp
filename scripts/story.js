@@ -6,7 +6,14 @@
 // === STORY PAGE INITIALIZATION ===
 function initStoryPage() {
     console.log('Initializing story page...');
-    console.log('User data:', userManager.userData);
+    
+    // Verify user data is available
+    const storedData = localStorage.getItem('user_data');
+    if (!storedData) {
+        console.error('No user_data found in localStorage');
+        window.location.href = 'welcome.html';
+        return;
+    }
     
     // Ensure user data and story selection are available
     if (!userManager.userData) {
@@ -45,7 +52,6 @@ function initStoryPage() {
     }
     
     let currentStory = userManager.getCurrentStory();
-    console.log('Current story data:', currentStory);
     
     // Check if stories exist in userData
     if (!userManager.userData.stories) {
@@ -75,8 +81,6 @@ function initStoryPage() {
         userManager.userData.stories[currentStoryId] = defaultStory;
         userManager.saveUserData();
         
-        console.log('Default story created:', defaultStory);
-        
         // Use the default story
         currentStory = defaultStory;
     }
@@ -86,26 +90,18 @@ function initStoryPage() {
         console.error('No pages found in story data');
         
         // Try to reload the stories from the file
-        console.log('Attempting to reload stories from file...');
-        
-        // We'll try to reload the stories and then check again
         userManager.loadStoriesForSelection().then(() => {
-            console.log('Stories reloaded, checking for pages again...');
-            
             // Get the story again after reloading
             currentStory = userManager.getCurrentStory();
             
             // Check if pages are now available
             if (currentStory && currentStory.pages && currentStory.pages.length > 0) {
-                console.log('Pages found after reload:', currentStory.pages);
                 // Reinitialize the story page with the new data
                 loadStoryContent(currentStory);
                 return;
             }
             
             // If still no pages, add default pages
-            console.log('Still no pages found, adding default pages');
-            
             // Add default pages
             currentStory.pages = [
                 {
@@ -117,8 +113,6 @@ function initStoryPage() {
             // Update the story in userData
             userManager.userData.stories[currentStoryId] = currentStory;
             userManager.saveUserData();
-            
-            console.log('Default pages added to story:', currentStory);
             
             // Load the story content with the default pages
             loadStoryContent(currentStory);
@@ -135,8 +129,6 @@ function initStoryPage() {
         // Update the story in userData
         userManager.userData.stories[currentStoryId] = currentStory;
         userManager.saveUserData();
-        
-        console.log('Default pages added to story:', currentStory);
     }
     
     // Set up story variables
@@ -225,8 +217,6 @@ function initStoryPage() {
             console.error('Page content not found!');
             return;
         }
-        
-        console.log('Page content:', pageContent);
         
         // Get navigation buttons
         const navButtons = document.querySelector('.story-nav-buttons');
@@ -381,16 +371,9 @@ function initStoryPage() {
             // assets/images/pip/chapter_1/umbrella_racing/story1/page_1.jpg
             const imagePath = `assets/images/${character}/chapter_1/${storyline}/story${storyNumber}/page_${window.currentPage}.jpg`;
             
-            console.log('Loading image from:', imagePath);
             storyImage.src = imagePath;
             storyImage.onerror = function() {
-                console.log(`Failed to load story image: ${this.src}`);
-                
-                // Log the actual URL that failed to load
-                const failedUrl = new URL(this.src, window.location.href);
-                console.log('Full failed URL:', failedUrl.href);
-                
-                // Use default placeholder
+                console.error(`Failed to load story image, using default placeholder`);
                 this.src = 'assets/images/default_placeholder.png';
             };
         }
@@ -401,107 +384,149 @@ function initStoryPage() {
 function personalizeStoryText(text) {
     // If text is not a string, return a default message
     if (typeof text !== 'string') {
-        console.error('personalizeStoryText received non-string input:', text);
+        console.error('Error: personalizeStoryText received non-string input');
         return 'Story content unavailable.';
     }
     
     const userData = userManager.userData;
-    if (!userData) return text;
+    
+    if (!userData) {
+        console.error('Error: userData is null or undefined');
+        return text;
+    }
+    
+    // Get the character name, ensuring first letter is capitalized
+    const characterName = userData.characterName ? 
+        UserManager.capitalizeFirstLetter(userData.characterName) : 'Character';
+    
+    // Check if pronouns exist in userData and set defaults if needed
+    if (!userData.pronouns) {
+        console.log('Setting default pronouns based on gender:', userData.gender);
+        
+        // Create default pronouns if missing
+        const pronounSets = {
+            'boy': {
+                subject: 'he',
+                object: 'him',
+                possessive: 'his',
+                possessivePronoun: 'his',
+                reflexive: 'himself'
+            },
+            'girl': {
+                subject: 'she',
+                object: 'her',
+                possessive: 'her',
+                possessivePronoun: 'hers',
+                reflexive: 'herself'
+            },
+            'other': {
+                subject: 'they',
+                object: 'them',
+                possessive: 'their',
+                possessivePronoun: 'theirs',
+                reflexive: 'themself'
+            }
+        };
+        
+        // Set pronouns based on gender if available
+        if (userData.gender && pronounSets[userData.gender]) {
+            userData.pronouns = pronounSets[userData.gender];
+            userManager.saveUserData();
+        } else {
+            userData.pronouns = pronounSets['other'];
+            userManager.saveUserData();
+        }
+    }
     
     // Get pronouns based on user data
     let pronouns = {
         they: 'they',
         their: 'their',
-        them: 'them'
+        them: 'them',
+        theirs: 'theirs',
+        themself: 'themself'
     };
     
     // Use the pronouns from user data if available
     if (userData.pronouns) {
+        // Check if all required pronoun properties exist
+        const requiredProps = ['subject', 'object', 'possessive', 'possessivePronoun', 'reflexive'];
+        const missingProps = requiredProps.filter(prop => !userData.pronouns[prop]);
+        
+        if (missingProps.length > 0) {
+            console.log('Adding missing pronoun properties:', missingProps.join(', '));
+            
+            // Add missing properties with defaults
+            if (!userData.pronouns.subject) userData.pronouns.subject = 'they';
+            if (!userData.pronouns.object) userData.pronouns.object = 'them';
+            if (!userData.pronouns.possessive) userData.pronouns.possessive = 'their';
+            if (!userData.pronouns.possessivePronoun) userData.pronouns.possessivePronoun = 'theirs';
+            if (!userData.pronouns.reflexive) userData.pronouns.reflexive = 'themself';
+            
+            userManager.saveUserData();
+        }
+        
         pronouns = {
             they: userData.pronouns.subject || 'they',
             their: userData.pronouns.possessive || 'their',
-            them: userData.pronouns.object || 'them'
+            them: userData.pronouns.object || 'them',
+            theirs: userData.pronouns.possessivePronoun || 'theirs',
+            themself: userData.pronouns.reflexive || 'themself'
         };
     }
     
-    console.log('Using pronouns:', pronouns);
+    // Create capitalized versions of pronouns for sentence beginnings
+    const capitalizedPronouns = {};
+    Object.keys(pronouns).forEach(key => {
+        capitalizedPronouns[key] = UserManager.capitalizeFirstLetter(pronouns[key]);
+    });
     
     // Replace placeholders with actual values
     let personalizedText = text
-        .replace(/\[name\]/g, userData.characterName || 'Character')
+        // Replace name (both lowercase and capitalized versions)
+        .replace(/\[name\]/g, characterName)
+        .replace(/\[Name\]/g, characterName)
+        
+        // Replace standard pronouns
         .replace(/\[they\]/g, pronouns.they)
         .replace(/\[their\]/g, pronouns.their)
-        .replace(/\[them\]/g, pronouns.them);
+        .replace(/\[them\]/g, pronouns.them)
+        .replace(/\[theirs\]/g, pronouns.theirs)
+        .replace(/\[themself\]/g, pronouns.themself)
+        
+        // Replace capitalized pronouns (for sentence beginnings)
+        .replace(/\[They\]/g, capitalizedPronouns.they)
+        .replace(/\[Their\]/g, capitalizedPronouns.their)
+        .replace(/\[Them\]/g, capitalizedPronouns.them)
+        .replace(/\[Theirs\]/g, capitalizedPronouns.theirs)
+        .replace(/\[Themself\]/g, capitalizedPronouns.themself);
     
     return personalizedText;
 }
 
 // Initialize story page if we're on the story page
 document.addEventListener('DOMContentLoaded', async function() {
-    console.log('DOMContentLoaded event fired on story page');
-    
     if (document.querySelector('.story-page')) {
-        console.log('Story page detected');
+        console.log('Story page detected, initializing...');
         
-        // Check localStorage directly
+        // Check localStorage for user data
         const storedData = localStorage.getItem('user_data');
-        if (storedData) {
-            console.log('Found user_data in localStorage');
-            try {
-                const parsedData = JSON.parse(storedData);
-                console.log('Parsed user_data:', parsedData);
-                console.log('Stories in localStorage:', parsedData.stories);
-                
-                // Check if stories exist in localStorage
-                if (!parsedData.stories || Object.keys(parsedData.stories).length === 0) {
-                    console.error('No stories found in localStorage');
-                    
-                    // Add a default story to localStorage
-                    parsedData.stories = {
-                        story1: { 
-                            completed: false,
-                            pages: [
-                                {
-                                    text: "Welcome to your adventure! This is a placeholder story until we can load your real stories.",
-                                    image: "assets/images/default_placeholder.png"
-                                }
-                            ],
-                            title: "Your First Adventure"
-                        }
-                    };
-                    
-                    // Make sure current_story is set
-                    if (!parsedData.progress) {
-                        parsedData.progress = {};
-                    }
-                    parsedData.progress.current_story = 'story1';
-                    
-                    // Save the updated data
-                    localStorage.setItem('user_data', JSON.stringify(parsedData));
-                    console.log('Added default story to localStorage');
-                }
-            } catch (error) {
-                console.error('Error parsing user_data from localStorage:', error);
-            }
-        } else {
+        if (!storedData) {
             console.error('No user_data found in localStorage');
+            window.location.href = 'welcome.html';
+            return;
         }
         
         // Ensure userManager is initialized
         if (!userManager.userData) {
-            console.log('User data not loaded, initializing userManager');
             await userManager.initialize();
         }
         
-        console.log('User data after initialization:', userManager.userData);
-        
         // Check if we have story data
         if (userManager.userData && userManager.userData.stories) {
-            console.log('Stories available:', Object.keys(userManager.userData.stories));
             initStoryPage();
         } else {
             console.error('No stories available in user data');
-            // Redirect to login if no stories are available
             window.location.href = 'welcome.html';
         }
     }

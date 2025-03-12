@@ -439,6 +439,66 @@ class UserManager {
                 };
             }
             
+            // Ensure pronouns are set
+            if (!this.userData.pronouns && this.userData.gender) {
+                console.log('Setting pronouns based on gender:', this.userData.gender);
+                
+                // Define pronoun sets
+                const pronounSets = {
+                    'boy': {
+                        subject: 'he',
+                        object: 'him',
+                        possessive: 'his',
+                        possessivePronoun: 'his',
+                        reflexive: 'himself'
+                    },
+                    'girl': {
+                        subject: 'she',
+                        object: 'her',
+                        possessive: 'her',
+                        possessivePronoun: 'hers',
+                        reflexive: 'herself'
+                    },
+                    'other': {
+                        subject: 'they',
+                        object: 'them',
+                        possessive: 'their',
+                        possessivePronoun: 'theirs',
+                        reflexive: 'themself'
+                    }
+                };
+                
+                // Set pronouns based on gender
+                this.userData.pronouns = pronounSets[this.userData.gender] || pronounSets['other'];
+                console.log('Pronouns set successfully:', this.userData.pronouns);
+            } else if (this.userData.pronouns) {
+                // Ensure all required pronoun properties exist
+                const requiredProps = ['subject', 'object', 'possessive', 'possessivePronoun', 'reflexive'];
+                const missingProps = requiredProps.filter(prop => !this.userData.pronouns[prop]);
+                
+                if (missingProps.length > 0) {
+                    console.log('Adding missing pronoun properties:', missingProps.join(', '));
+                    
+                    // Add missing properties with defaults based on existing pronouns
+                    if (this.userData.pronouns.subject === 'he') {
+                        if (!this.userData.pronouns.object) this.userData.pronouns.object = 'him';
+                        if (!this.userData.pronouns.possessive) this.userData.pronouns.possessive = 'his';
+                        if (!this.userData.pronouns.possessivePronoun) this.userData.pronouns.possessivePronoun = 'his';
+                        if (!this.userData.pronouns.reflexive) this.userData.pronouns.reflexive = 'himself';
+                    } else if (this.userData.pronouns.subject === 'she') {
+                        if (!this.userData.pronouns.object) this.userData.pronouns.object = 'her';
+                        if (!this.userData.pronouns.possessive) this.userData.pronouns.possessive = 'her';
+                        if (!this.userData.pronouns.possessivePronoun) this.userData.pronouns.possessivePronoun = 'hers';
+                        if (!this.userData.pronouns.reflexive) this.userData.pronouns.reflexive = 'herself';
+                    } else {
+                        if (!this.userData.pronouns.object) this.userData.pronouns.object = 'them';
+                        if (!this.userData.pronouns.possessive) this.userData.pronouns.possessive = 'their';
+                        if (!this.userData.pronouns.possessivePronoun) this.userData.pronouns.possessivePronoun = 'theirs';
+                        if (!this.userData.pronouns.reflexive) this.userData.pronouns.reflexive = 'themself';
+                    }
+                }
+            }
+            
             // Log the completion status of all stories before saving
             console.log('Story completion status before saving:');
             Object.keys(this.userData.stories).forEach(storyId => {
@@ -592,7 +652,40 @@ class UserManager {
     }
 
     updateUserProfile(profileData) {
-        console.log('updateUserProfile called with:', profileData);
+        console.log('Updating user profile...');
+        
+        // Check if pronouns are missing but gender is available
+        if (!profileData.pronouns && profileData.gender) {
+            console.log('Setting pronouns based on gender:', profileData.gender);
+            
+            // Define pronoun sets
+            const pronounSets = {
+                'boy': {
+                    subject: 'he',
+                    object: 'him',
+                    possessive: 'his',
+                    possessivePronoun: 'his',
+                    reflexive: 'himself'
+                },
+                'girl': {
+                    subject: 'she',
+                    object: 'her',
+                    possessive: 'her',
+                    possessivePronoun: 'hers',
+                    reflexive: 'herself'
+                },
+                'other': {
+                    subject: 'they',
+                    object: 'them',
+                    possessive: 'their',
+                    possessivePronoun: 'theirs',
+                    reflexive: 'themself'
+                }
+            };
+            
+            // Set pronouns based on gender
+            profileData.pronouns = pronounSets[profileData.gender] || pronounSets['other'];
+        }
         
         if (!this.userData) {
             // Initialize userData if it doesn't exist
@@ -638,6 +731,40 @@ class UserManager {
                 };
             }
             
+            // Ensure pronouns are set
+            if (!this.userData.pronouns && this.userData.gender) {
+                console.log('Setting pronouns based on gender:', this.userData.gender);
+                
+                // Define pronoun sets
+                const pronounSets = {
+                    'boy': {
+                        subject: 'he',
+                        object: 'him',
+                        possessive: 'his',
+                        possessivePronoun: 'his',
+                        reflexive: 'himself'
+                    },
+                    'girl': {
+                        subject: 'she',
+                        object: 'her',
+                        possessive: 'her',
+                        possessivePronoun: 'hers',
+                        reflexive: 'herself'
+                    },
+                    'other': {
+                        subject: 'they',
+                        object: 'them',
+                        possessive: 'their',
+                        possessivePronoun: 'theirs',
+                        reflexive: 'themself'
+                    }
+                };
+                
+                // Set pronouns based on gender
+                this.userData.pronouns = pronounSets[this.userData.gender] || pronounSets['other'];
+                console.log('Pronouns set successfully:', this.userData.pronouns);
+            }
+            
             // Ensure stories object exists and is properly merged
             if (profileData.stories) {
                 this.userData.stories = {
@@ -650,7 +777,7 @@ class UserManager {
                 };
             }
             
-            console.log('Updated userData:', this.userData);
+            console.log('User profile updated successfully');
         }
         
         // Ensure we have a valid stories object with at least story1

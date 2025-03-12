@@ -145,27 +145,43 @@ function initializeUserData() {
 
 // Function to set pronouns based on gender
 function updatePronouns(gender) {
+    console.log('Setting pronouns for gender:', gender);
+    
     const pronounSets = {
         'boy': {
             subject: 'he',
             object: 'him',
-            possessive: 'his'
+            possessive: 'his',
+            possessivePronoun: 'his',
+            reflexive: 'himself'
         },
         'girl': {
             subject: 'she',
             object: 'her',
-            possessive: 'her'
+            possessive: 'her',
+            possessivePronoun: 'hers',
+            reflexive: 'herself'
         },
         'other': {
             subject: 'they',
             object: 'them',
-            possessive: 'their'
+            possessive: 'their',
+            possessivePronoun: 'theirs',
+            reflexive: 'themself'
         }
     };
 
     const userData = JSON.parse(localStorage.getItem('user_data'));
+    
     userData.pronouns = pronounSets[gender];
+    console.log('Pronouns set to:', userData.pronouns);
+    
     localStorage.setItem('user_data', JSON.stringify(userData));
+    
+    // Verify the data was saved correctly
+    const savedData = localStorage.getItem('user_data');
+    const parsedData = JSON.parse(savedData);
+    console.log('Verified pronouns saved in localStorage');
 
     // Update any pronoun placeholders in the UI
     updatePronounPlaceholders();
@@ -399,13 +415,47 @@ async function handleFormSubmit(e) {
     // Collect all form data
     const formData = new FormData(form);
     
+    // Get the gender and ensure pronouns are set
+    const gender = formData.get('gender');
+    console.log('Selected gender:', gender);
+    
+    // Define pronoun sets
+    const pronounSets = {
+        'boy': {
+            subject: 'he',
+            object: 'him',
+            possessive: 'his',
+            possessivePronoun: 'his',
+            reflexive: 'himself'
+        },
+        'girl': {
+            subject: 'she',
+            object: 'her',
+            possessive: 'her',
+            possessivePronoun: 'hers',
+            reflexive: 'herself'
+        },
+        'other': {
+            subject: 'they',
+            object: 'them',
+            possessive: 'their',
+            possessivePronoun: 'theirs',
+            reflexive: 'themself'
+        }
+    };
+    
+    // Get pronouns based on gender
+    const pronouns = pronounSets[gender] || pronounSets['other'];
+    console.log('Using pronouns:', pronouns);
+    
     const profileData = {
         name: formData.get('characterName'), // Using characterName as the user's name
-        gender: formData.get('gender'),
+        gender: gender,
         character: formData.get('character'),
         characterName: formData.get('characterName'),
         hobbies: Array.from(formData.getAll('hobbies')),
         mood: formData.get('mood'), // Adding mood from the form
+        pronouns: pronouns, // Add pronouns to the profile data
         progress: {
             selectedCharacter: formData.get('character'),
             selectedStoryline: formData.get('adventure'),
