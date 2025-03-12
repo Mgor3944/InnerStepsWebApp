@@ -195,7 +195,9 @@ function updatePronounPlaceholders() {
     // Update character name title
     const characterNameTitle = document.querySelector('#step4 h1');
     if (characterNameTitle) {
-        characterNameTitle.textContent = `What's ${userData.pronouns.possessive} Name?`;
+        // Get capitalized object pronoun
+        const capitalizedObject = userData.pronouns.object.charAt(0).toUpperCase() + userData.pronouns.object.slice(1);
+        characterNameTitle.textContent = `Let's Give ${capitalizedObject} A Name`;
     }
 
     // Update all pronoun spans in the document
