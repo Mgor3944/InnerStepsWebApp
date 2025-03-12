@@ -1,6 +1,6 @@
 /* === IMPORT GOOGLE FONTS === */
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&family=Patrick+Hand&display=swap');
 
 /* === COMMON STYLES === */
 body {
@@ -878,6 +878,8 @@ body.story-page {
     width: 60%;
     overflow: hidden;
     position: relative;
+
+    padding: 25px;
 }
 
 .story-image img {
@@ -885,10 +887,14 @@ body.story-page {
     height: 100%;
     object-fit: cover;
     transition: transform 0.6s ease;
+
+    border-radius: 12px;
+    /* border: 10px solid rgb(38, 75, 77); */
 }
 
 .story-text h1 {
-    font-family: 'Comic Neue', cursive, sans-serif;
+    font-family: "Mali", cursive;
+    /* text-transform: uppercase; */
     text-align: left;
     color: #FFEFE1;
     font-size: 40px;
@@ -899,7 +905,7 @@ body.story-page {
 }
 
 .story-text h4 {
-    font-family: 'Comic Neue', cursive, sans-serif;
+    font-family: "Mali", cursive;
     color: rgb(255, 239, 225, 0.8);
     text-align: left;;
     font-size: 18px;
@@ -918,9 +924,10 @@ body.story-page {
 }
 
 .story-paragraphs p {
-    font-family: 'Comic Neue', cursive, sans-serif;
+    font-family: "Mali", cursive;
     font-size: 1.4em;
     line-height: 1.8;
+    font-weight: 500;
     color: #FFEFE1;
 
     margin-bottom: 10px;
