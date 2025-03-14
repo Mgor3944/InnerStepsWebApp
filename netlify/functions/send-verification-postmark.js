@@ -32,18 +32,30 @@ exports.handler = async function(event, context) {
       data: {
         From: 'support@innersteps.org',
         To: email,
-        Subject: 'Your InnerSteps Verification Code',
+        Subject: 'Verify Your Email',
         HtmlBody: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;">
-            <h2 style="color: #42535F; text-align: center;">InnerSteps Verification</h2>
-            <p style="font-size: 16px; color: #42535F;">Thank you for signing up for InnerSteps progress insights!</p>
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; text-align: center;">
+
+            <h2 style="color: #42535F;">Email Verification</h2>
+            <p style="font-size: 16px; color: #42535F;">Thank you for signing up to recieve progress insights!</p>
+
             <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0;">
               <p style="font-size: 14px; margin-bottom: 5px;">Your verification code is:</p>
-              <h1 style="color: #8DBA36; letter-spacing: 5px; margin: 10px 0;">${code}</h1>
+              <h1 style="color: #8DBA36; letter-spacing: 5px; margin: 15px 0;">${code}</h1>
               <p style="font-size: 12px; color: #777;">This code will expire in 10 minutes</p>
             </div>
+
             <p style="font-size: 14px; color: #42535F;">Please enter this code on the verification page to complete your registration.</p>
-            <p style="font-size: 14px; color: #42535F;">Thank you for using InnerSteps!</p>
+            <div style="margin: 20px 0;">
+              <a href="javascript:window.history.back()" style="display: inline-block; padding: 12px 24px; background-color: #8DBA36; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Verify Email</a>
+            </div>
+
+            <p style="font-size: 14px; color: #42535F;">If you didn't request this code, please ignore this email.</p>
+            <p style="font-size: 14px; color: #42535F;">Need help? Contact <a href="mailto:support@innersteps.org" style="font-weight: 500;">support@innersteps.org</a>.</p>
+            
+            <p style="font-size: 12px; color: #42535F;">Thank you for using InnerSteps!</p>
+            <p style="font-size: 12px; color: #42535F;">Copyright© 2025 InnerSteps Pty Ltd. All rights reserved.</p>
+
           </div>
         `,
         TextBody: `Your verification code is: ${code}\n\nThis code will expire in 10 minutes.\n\nThank you for using InnerSteps!`,
