@@ -20,8 +20,6 @@ exports.handler = async function(event, context) {
       };
     }
 
-    console.log('Sending verification email via Postmark API to:', email);
-
     // Postmark API request
     const response = await axios({
       method: 'post',
@@ -53,19 +51,12 @@ exports.handler = async function(event, context) {
       }
     });
 
-    console.log('Postmark API response:', response.status, response.statusText);
-
     return {
       statusCode: 200,
       body: JSON.stringify({ message: 'Verification email sent successfully' })
     };
   } catch (error) {
     console.error('Error sending email:', error);
-    
-    // Log more details about the error
-    if (error.response) {
-      console.error('Postmark API error response:', error.response.status, error.response.data);
-    }
     
     return {
       statusCode: 500,
