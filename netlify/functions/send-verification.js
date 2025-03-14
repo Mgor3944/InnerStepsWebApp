@@ -36,11 +36,12 @@ exports.handler = async function(event, context) {
         To: email,
         Subject: 'Verify Your Email',
         HtmlBody: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border-radius: 10px;">
+          <div style="font-family: Quicksand, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eaeaea; border-radius: 10px; padding: 30px;">
+
             <div style="background-color: #f9f9f9; padding: 40px; border-radius: 10px; display: flex; flex-direction: column; align-items: flex-start; gap: 30px;">
-              <h2 style="color: #42535F; margin: 0; width: 100%; text-align: center;">Email Verification</h2>
-              
-              <p style="font-size: 16px; color: #42535F; margin: 0; width: 100%; text-align: center;">Thank you for signing up to recieve progress insights!</p>
+
+              <h2 style="color: #42535F; margin: 0; width: 100%; text-align: left;">Email Verification</h2>
+              <p style="font-size: 16px; color: #42535F; margin: 0; width: 100%; text-align: left;">Thank you for signing up to recieve progress insights!</p>
               
               <div style="background-color: #8DBA361A; padding: 25px 20px; border-radius: 8px; width: 100%; box-sizing: border-box;">
                 <p style="font-size: 14px; color: #42535F; margin: 0 0 15px 0; text-align: center;">Your verification code is:</p>
