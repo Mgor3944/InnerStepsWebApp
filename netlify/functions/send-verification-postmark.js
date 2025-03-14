@@ -30,7 +30,7 @@ exports.handler = async function(event, context) {
         'X-Postmark-Server-Token': process.env.POSTMARK_API_TOKEN
       },
       data: {
-        From: 'no-reply@innersteps.org',
+        From: 'support@innersteps.org',
         To: email,
         Subject: 'Your InnerSteps Verification Code',
         HtmlBody: `
