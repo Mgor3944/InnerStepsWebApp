@@ -39,8 +39,8 @@ exports.handler = async function(event, context) {
           <div style="font-family: Quicksand, Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eaeaea; border-radius: 10px; padding: 30px;">
             <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #f9f9f9; border-radius: 10px; padding: 40px;">
               <tr>
-                <td align="left" style="padding-bottom: 30px;">
-                  <h2 style="color: #42535F; margin: 0; font-family: Quicksand, Arial, sans-serif;">Email Verification</h2>
+                <td align="left" style="padding-bottom: 15px;">
+                  <h1 style="color: #42535F; margin: 0; font-family: Quicksand, Arial, sans-serif;">Email Verification</h1>
                 </td>
               </tr>
               <tr>
@@ -77,7 +77,7 @@ exports.handler = async function(event, context) {
                 </td>
               </tr>
               <tr>
-                <td align="center" style="padding-bottom: 30px;">
+                <td align="left" style="padding-bottom: 30px;">
                   <p style="font-size: 14px; color: #42535F; margin: 0; font-family: Quicksand, Arial, sans-serif;">Please enter this code on the email verification page to begin receiving progress insights.</p>
                 </td>
               </tr>
