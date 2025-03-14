@@ -62,7 +62,6 @@ exports.handler = async function(event, context) {
                           <tr>
                             <td style="background-color: #8DBA36; color: white; font-size: 24px; font-weight: bold; letter-spacing: 5px; padding: 10px 20px; border-radius: 5px; font-family: Quicksand, Arial, sans-serif;">
                               ${code}
-                              <img src="https://innersteps.org/assets/icons/copy-icon.png" alt="Copy" width="20" height="20" style="vertical-align: middle; margin-left: 15px;" />
                             </td>
                           </tr>
                         </table>
