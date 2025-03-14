@@ -49,7 +49,7 @@ exports.handler = async function(event, context) {
           </div>
         `,
         TextBody: `Your verification code is: ${code}\n\nThis code will expire in 10 minutes.\n\nThank you for using InnerSteps!`,
-        MessageStream: "InnerSteps Verification"
+        MessageStream: "outbound"
       }
     });
 
