@@ -16,22 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const emailStatusMessage = document.getElementById('emailStatusMessage');
     const verificationStatusMessage = document.getElementById('verificationStatusMessage');
     const pinInputs = document.querySelectorAll('.insights-pin-inputs input');
-    const testVerificationCode = document.getElementById('testVerificationCode');
-    const demoCodeDisplay = document.getElementById('demoCodeDisplay');
     const hiddenEmail = document.getElementById('hiddenEmail');
     const hiddenCode = document.getElementById('hiddenCode');
-    
-    // Check if we're in development mode
-    const isDevelopment = window.location.hostname === 'localhost' || 
-                         window.location.hostname === '127.0.0.1';
-    
-    // Always show the verification code during testing on Netlify
-    const isNetlifyPreview = window.location.hostname.includes('.netlify.app');
-    
-    if (isDevelopment || isNetlifyPreview) {
-        // Show the verification code in development mode for testing
-        demoCodeDisplay.style.display = 'block';
-    }
     
     // Function to show a specific step
     function showStep(step) {
@@ -79,11 +65,6 @@ document.addEventListener('DOMContentLoaded', function() {
         userData.verificationCode = verificationCode;
         localStorage.setItem('user_data', JSON.stringify(userData));
         
-        // Display the code for testing in development mode
-        if (isDevelopment || isNetlifyPreview) {
-            testVerificationCode.textContent = verificationCode;
-        }
-        
         try {
             // Set values in the hidden Netlify form
             hiddenEmail.value = email;
@@ -122,16 +103,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Error submitting form:', error);
-            
-            if (isDevelopment || isNetlifyPreview) {
-                // In development or Netlify preview, still proceed to verification step for testing
-                console.log('Development mode: Proceeding to verification step');
-                showStep(verificationStep);
-                pinInputs[0].focus();
-            } else {
-                showStep(emailStep);
-                showStatus(emailStatusMessage, 'Failed to send verification code. Please try again.', true);
-            }
+            showStep(emailStep);
+            showStatus(emailStatusMessage, 'Failed to send verification code. Please try again.', true);
         }
     });
     
