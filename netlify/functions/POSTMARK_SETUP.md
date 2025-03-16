@@ -1,6 +1,6 @@
 # Postmark Setup for InnerSteps
 
-## Quick Setup Steps
+## Quick Setup Steps --> *DONE ALREADY*
 
 1. **Create Postmark Account**: Sign up at [postmarkapp.com](https://postmarkapp.com/)
 

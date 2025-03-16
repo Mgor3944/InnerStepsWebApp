@@ -1,6 +1,6 @@
 # InnerSteps Data Structure and Management
 
-This document outlines how data is stored and managed in the InnerSteps application.
+This document outlines how data is stored and managed in the InnerSteps web app.
 
 ## Core Data Storage
 
