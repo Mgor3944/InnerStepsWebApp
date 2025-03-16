@@ -1,231 +1,120 @@
-# InnerSteps Data Structure and Tracking
+# InnerSteps Data Structure and Management
 
-This document explains how data is stored, tracked, and managed in the InnerSteps application.
+This document outlines how data is stored and managed in the InnerSteps application.
 
-## Overview
+## Core Data Storage
 
-InnerSteps maintains several key data structures to track user progress, story completion, and practice activity results. All data is stored in the browser's localStorage and loaded when needed.
+All application data is stored in the browser's localStorage under the key `user_data`. The data structure is organized as follows:
 
-## Main Data Structure
-
-The primary data structure is stored in localStorage under the key `user_data` and contains:
-
-```javascript
+```typescript
 {
-    // Basic user info
-    name: "...",                  // User's name (same as characterName)
+    // User Profile
+    name: string,                 // User's name
     gender: "boy" | "girl" | "other",
-    character: "pip" | "...",     // Selected character
-    characterName: "...",         // Name given to the character
-    hobbies: ["...", "..."],      // Array of selected hobbies/interests
-    mood: "happy" | "worried" | "...", // User's mood from onboarding
+    character: string,            // Selected character ID
+    characterName: string,        // Character's given name
+    hobbies: string[],           // Selected interests
+    mood: string,                // Current mood state
     
-    // Progress tracking
+    // Navigation & Progress
     progress: {
-        selectedCharacter: "pip", // Character selection
-        selectedStoryline: "umbrella_racing", // Storyline selection
-        current_story: "story1",  // Current story ID
-        chapter1_progress: 0      // Progress within the chapter (percentage)
+        selectedCharacter: string,
+        selectedStoryline: string,
+        current_story: string,    // Current story ID
+        chapter1_progress: number // Progress percentage
     },
     
-    // Story completion tracking
+    // Story Data
     stories: {
-        story1: { 
-            completed: false,     // Whether the story has been completed
-            practice_completed: false, // Whether the practice activity has been completed
-            // When loaded, also contains story content and practice data
-            title: "...",
-            description: "...",
-            pages: [...],         // Array of story pages
-            practice: {...}       // Practice activity data
-        },
-        story2: { completed: false },
-        // Additional stories
+        [storyId: string]: {
+            completed: boolean,
+            practice_completed: boolean,
+            title: string,
+            description: string,
+            pages: StoryPage[],
+            practice: PracticeActivity
+        }
     },
     
-    // Analytics and user activity
+    // User Activity Tracking
     analytics: {
-        worry_ratings: [          // Stores responses from practice activities
-            {
-                story: "story1",
-                scenario: "trying_new_things",
-                rating: 7,
-                timestamp: "2023-06-15T12:34:56.789Z"
-            }
-        ],
-        last_session: "2023-06-15T12:34:56.789Z" // Timestamp of last session
+        worry_ratings: Array<{
+            story: string,
+            scenario: string,
+            rating: number,
+            timestamp: string
+        }>,
+        last_session: string      // ISO timestamp
     }
 }
 ```
 
-## Story Structure Data
+## Story Content Structure
 
-Story structure is loaded from `data/stories/structure.json` and defines:
+Story content is defined in JSON files:
 
-- Chapters
-- Storylines within each chapter
-- Stories within each storyline
-- Practice activities for each story
+1. `data/stories/structure.json`: Defines the overall story structure
+2. `data/stories/[character]_[storyline].json`: Contains story content
 
-Example structure:
-
-```javascript
+### Structure Example:
+```typescript
 {
     "chapter_1": {
         "storylines": {
-            "umbrella_racing": {
-                "title": "The Flying Umbrella Racing League",
-                "description": "...",
-                "stories": {
-                    "story1": {
-                        "title": "Pip's Big Discovery",
-                        "description": "...",
-                        "cover_image": "...",
-                        "badge_image": "...",
-                        "key_message": "...",
-                        "practice": {
-                            "title": "Understanding Our Worries",
-                            "type": "worry_meter",
-                            "description": "...",
-                            "scenarios": [
-                                {
-                                    "text": "How worried do you feel about trying something new?",
-                                    "type": "worry_rating"
-                                },
-                                // More scenarios...
-                            ]
-                        }
-                    },
-                    // More stories...
+            [storylineId: string]: {
+                title: string,
+                description: string,
+                stories: {
+                    [storyId: string]: {
+                        title: string,
+                        description: string,
+                        cover_image: string,
+                        badge_image: string,
+                        key_message: string,
+                        practice: PracticeActivity
+                    }
                 }
-            },
-            // More storylines...
+            }
         }
     }
 }
 ```
 
-## Story Content Data
+## Key Operations
 
-The actual story content is loaded from character and storyline-specific JSON files:
-- `data/stories/[character]_[storyline].json` (e.g., `pip_umbrella_racing.json`)
+### Data Management
+- Data is loaded on application start
+- All changes are immediately persisted to localStorage
+- Story content is loaded dynamically based on user selections
 
-This contains the actual story text, pages, and any character-specific content.
+### Progress Tracking
+- Story completion is tracked per story
+- Practice activity completion is tracked separately
+- Chapter progress is calculated as percentage of completed stories
 
-## Data Flow and Management
+### Practice Activities
+- Activities are defined per story
+- Results are stored in analytics.worry_ratings
+- Each rating includes story context and timestamp
 
-### 1. Initial Data Collection
+## Common Data Operations
 
-During onboarding (`handleFormSubmit()` function):
-- User information is collected from the form
-- Initial data structure is created with default values
-- Data is saved to localStorage
+```typescript
+// Get current story data
+const story = getCurrentStory();
 
-### 2. Loading Story Structure and Content
+// Update story completion
+markStoryComplete(storyId);
 
-When a character and storyline are selected (`loadStoriesForSelection()` method):
-- Story structure is loaded from `structure.json`
-- Story content is loaded from `[character]_[storyline].json`
-- Structure data (with practice activities) is merged with content data
-- User's `stories` object is updated with the merged data
-- Completion status is preserved from existing localStorage data
-
-### 3. Tracking Current Story and Progress
-
-The `getCurrentStory()` method:
-- Gets the current story ID from `userData.progress.current_story`
-- Retrieves the story data from `userData.stories[currentStoryId]`
-- Merges in practice data from the structure data
-- Returns the complete story object with content and practice activities
-
-### 4. Saving User Progress
-
-The `saveUserData()` method ensures all user data is properly saved:
-- Ensures required objects exist (stories, progress, analytics)
-- Creates a deep copy to avoid reference issues
-- Ensures all stories have a `completed` property
-- Validates required fields and sets defaults if missing
-- Saves everything to localStorage
-
-### 5. Practice Activity Data
-
-Practice activities (worry meter ratings, reflection questions, etc.) are defined in the story structure.
-When a user completes these activities, their responses are stored in `userData.analytics.worry_ratings`.
-
-## Practice Activities Handling
-
-Practice activities are managed in `scripts/practice.js` and follow this flow:
-
-1. **Initialization**:
-   - The `initPracticePage()` function loads the current story and its practice data
-   - Practice data is retrieved from the current story using `userManager.getCurrentStory()`
-
-2. **User Interaction**:
-   - Users progress through scenarios defined in the story's practice data
-   - For worry meter activities, users set ratings on a scale of 1-10
-   - For reflection activities, users provide text responses
-
-3. **Saving Results**:
-   - When a practice activity is completed, the `completePractice()` function:
-     - Marks the story as completed (`completed: true`)
-     - Marks the practice as completed (`practice_completed: true`)
-     - Calculates overall chapter progress based on completed stories
-     - Updates `userData.progress.chapter1_progress` with the percentage
-     - Saves all ratings to `userData.analytics.worry_ratings`
-     - Calls `userManager.saveUserData()` to persist all changes
-
-4. **Progress Calculation**:
-   - Chapter progress is calculated as: `(completedStories / totalStories) * 100`
-   - This percentage is stored in `userData.progress.chapter1_progress`
-
-## How to Access and Update Data
-
-### Get the current story
-```javascript
-const currentStory = userManager.getCurrentStory();
-```
-
-### Update story completion status
-```javascript
-const currentStoryId = userManager.userData.progress.current_story;
-userManager.userData.stories[currentStoryId].completed = true;
-userManager.saveUserData();
-```
-
-### Move to the next story
-```javascript
-// Assuming you know the next story ID
-userManager.userData.progress.current_story = "story2";
-userManager.saveUserData();
-```
-
-### Save practice activity results
-```javascript
-userManager.userData.analytics.worry_ratings.push({
-  story: currentStoryId,
-  scenario: "trying_new_things",
-  rating: 7,
-  timestamp: new Date().toISOString()
+// Save practice results
+savePracticeRating({
+    story: storyId,
+    scenario: scenarioId,
+    rating: userRating
 });
-userManager.saveUserData();
+
+// Update progress
+updateProgress(chapterProgress);
 ```
 
-## Important Methods in UserManager
-
-- `initialize()`: Sets up the UserManager and loads initial data
-- `loadStoryStructure()`: Loads the story structure from JSON
-- `loadUserData()`: Loads user data from localStorage
-- `loadStoriesForSelection()`: Loads stories based on character and storyline
-- `setCharacterAndStoryline()`: Updates character and storyline selection
-- `getCurrentStory()`: Gets the current story with all its data
-- `updateUserProfile()`: Updates the user profile with new data
-- `saveUserData()`: Saves all user data to localStorage
-
-## Practice Activities
-
-Practice activities are defined in the story structure and can include:
-- Worry meter ratings (`worry_rating` type)
-- Reflection questions (`reflection` type)
-- Self-assessments (`self_assessment` type)
-
-The practice data is loaded from the structure and merged with the story content when `getCurrentStory()` is called. 
+For detailed implementation, refer to the source code in the app directory. 
