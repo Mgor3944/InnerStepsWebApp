@@ -194,23 +194,9 @@ function updatePronounPlaceholders() {
 
     // Update all pronoun spans in the document
     document.querySelectorAll('.character-pronoun').forEach(span => {
-        const type = span.dataset.pronounType || 'subject'; // default to subject pronoun
-        // Get the correct pronoun based on type
-        let pronoun;
-        if (type === 'possessive') {
-            pronoun = userData.pronouns.possessive; // 'his', 'her', 'their'
-        } else if (type === 'possessivePronoun') {
-            pronoun = userData.pronouns.possessivePronoun; // 'his', 'hers', 'theirs'
-        } else if (type === 'object') {
-            pronoun = userData.pronouns.object; // 'him', 'her', 'them'
-        } else {
-            pronoun = userData.pronouns.subject; // 'he', 'she', 'they'
-        }
-        
-        // Capitalize if the span has text-transform: capitalize
-        span.textContent = span.style.textTransform === 'capitalize' 
-            ? pronoun.charAt(0).toUpperCase() + pronoun.slice(1)
-            : pronoun;
+        // Get the possessive pronoun (his/her/their)
+        const pronoun = userData.pronouns.possessive;
+        span.textContent = pronoun;
     });
 }
 
@@ -351,10 +337,7 @@ function nextStep(current, next) {
     // Update character pronoun based on gender selection
     if (current === 2 && next === 3) {
         const gender = document.querySelector('input[name="gender"]:checked')?.value;
-        const pronoun = gender === 'girl' ? 'she' : 'he';
-        document.querySelectorAll('.character-pronoun').forEach(el => {
-            el.textContent = pronoun;
-        });
+        updatePronouns(gender);
     }
 }
 
