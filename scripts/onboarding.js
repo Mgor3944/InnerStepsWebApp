@@ -195,7 +195,18 @@ function updatePronounPlaceholders() {
     // Update all pronoun spans in the document
     document.querySelectorAll('.character-pronoun').forEach(span => {
         const type = span.dataset.pronounType || 'subject'; // default to subject pronoun
-        const pronoun = userData.pronouns[type];
+        // Get the correct pronoun based on type
+        let pronoun;
+        if (type === 'possessive') {
+            pronoun = userData.pronouns.possessive; // 'his', 'her', 'their'
+        } else if (type === 'possessivePronoun') {
+            pronoun = userData.pronouns.possessivePronoun; // 'his', 'hers', 'theirs'
+        } else if (type === 'object') {
+            pronoun = userData.pronouns.object; // 'him', 'her', 'them'
+        } else {
+            pronoun = userData.pronouns.subject; // 'he', 'she', 'they'
+        }
+        
         // Capitalize if the span has text-transform: capitalize
         span.textContent = span.style.textTransform === 'capitalize' 
             ? pronoun.charAt(0).toUpperCase() + pronoun.slice(1)
