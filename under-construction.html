@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InnerSteps - Coming Soon to Mobile</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body.under-construction-page {
+            background-color: #68BDE2;
+            margin: 0 auto;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Quicksand', cursive, sans-serif;
+        }
+        
+        .under-construction-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            overflow-y: scroll;
+
+            gap: 30px;
+
+            width: 90%;
+            max-width: 500px;
+            padding: 40px;
+            text-align: center;
+
+            /* border: 1px solid red; */
+        }
+        
+        .under-construction-container h1 {
+            color: #fff;
+            margin: 0;
+        }
+        
+        .under-construction-container p {
+            color: #fff;
+            font-size: 18px;
+            line-height: 1.8;
+            margin: 0;
+        }
+        
+        .under-construction-logo {
+            width: 60px;
+        }
+    </style>
+    <script>
+        // Function to check if screen width is 1000px or larger
+        function isDesktopDevice() {
+            return window.innerWidth >= 1000;
+        }
+        
+        // Function to redirect back to the appropriate page
+        function redirectToMainSite() {
+            // Get the referrer or default to index.html
+            const referrer = document.referrer;
+            
+            // If there's a referrer and it's from the same site, go back to it
+            if (referrer && referrer.includes(window.location.hostname)) {
+                window.location.href = referrer;
+            } else {
+                // Otherwise go to the home page
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // Check on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (isDesktopDevice()) {
+                redirectToMainSite();
+            }
+        });
+        
+        // Also check on resize (in case user rotates device or resizes browser)
+        window.addEventListener('resize', function() {
+            if (isDesktopDevice()) {
+                redirectToMainSite();
+            }
+        });
+    </script>
+</head>
+<body class="under-construction-page">
+    <div class="under-construction-container">
+        <svg class="under-construction-logo" viewBox="0 0 55 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_957_766)">
+                <path d="M26.5568 40.8597C27.5624 34.6485 26.2904 30.8524 18.6369 28.9193C7.80692 26.1898 0.567401 15.3057 0.0219937 4.93959C-0.200078 0.717923 1.38107 -0.319548 5.4885 0.0786906C16.9083 1.20162 24.5475 7.1017 31.565 21.0024C36.4701 16.7295 41.7589 13.3983 48.5259 12.6736C54.8203 12.0053 55.84 14.7776 54.1843 19.5821C51.3329 27.7981 45.4791 33.341 36.662 35.0331C32.5101 35.8295 32.1992 37.8054 32.5243 40.8443L32.3467 41.2699H26.7203L26.5426 40.8443L26.5568 40.8597Z" fill="#fff"/>
+                <path d="M16.5825 41.335H42.6341C42.6341 46.2625 36.7714 50.2893 29.6065 50.2893C22.4416 50.2893 16.5825 46.2625 16.5825 41.335Z" fill="#fff" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            <defs>
+                <clipPath id="clip0_957_766">
+                <rect width="54.8889" height="52" fill="white"/>
+                </clipPath>
+            </defs>
+        </svg>
+        <h1>Coming Soon to Mobile!</h1>
+        <p>InnerSteps works best on big screens like tablets and computers right now! We're working super hard to bring the full experience to your phone soon.</p>
+    </div>
+</body>
+</html> 

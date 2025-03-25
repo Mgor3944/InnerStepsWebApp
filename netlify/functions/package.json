@@ -1,0 +1,8 @@
+{
+  "name": "innersteps-netlify-functions",
+  "version": "1.0.0",
+  "description": "Netlify functions for InnerSteps web app",
+  "dependencies": {
+    "axios": "^1.6.7"
+  }
+} 
