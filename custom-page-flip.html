@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Page Flip Animation</title>
+    <style>
+        :root {
+            --page-width: 400px;
+            --page-height: 600px;
+            --page-padding: 20px;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #333;
+            font-family: Arial, sans-serif;
+        }
+
+        .book-container {
+            position: relative;
+            width: calc(var(--page-width) * 2);
+            height: var(--page-height);
+            perspective: 2000px;
+        }
+
+        .page {
+            position: absolute;
+            width: var(--page-width);
+            height: var(--page-height);
+            background: white;
+            transform-origin: left;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+            cursor: pointer;
+            padding: var(--page-padding);
+            box-sizing: border-box;
+        }
+
+        .page.right {
+            right: 0;
+        }
+
+        .page.left {
+            left: 0;
+        }
+
+        .page-front, .page-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            padding: var(--page-padding);
+            box-sizing: border-box;
+            backface-visibility: hidden;
+        }
+
+        .page-front {
+            background: white;
+            transform: rotateY(0deg);
+            box-shadow: inset 20px 0 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-back {
+            background: #f8f8f8;
+            transform: rotateY(180deg);
+            box-shadow: inset -20px 0 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .page.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        /* Shadow effect during flip */
+        .page::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.8s;
+            pointer-events: none;
+        }
+
+        .page.flipping::after {
+            opacity: 1;
+        }
+
+        /* Navigation buttons */
+        .nav-buttons {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            background: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="book-container">
+        <!-- Pages will be dynamically added here -->
+    </div>
+    <div class="nav-buttons">
+        <button id="prev-btn">Previous</button>
+        <button id="next-btn">Next</button>
+    </div>
+
+    <script>
+        class Book {
+            constructor(container, totalPages) {
+                this.container = container;
+                this.totalPages = totalPages;
+                this.currentPage = 0;
+                this.pages = [];
+                this.init();
+            }
+
+            init() {
+                // Create pages
+                for (let i = 0; i < this.totalPages; i++) {
+                    const page = document.createElement('div');
+                    page.className = 'page';
+                    page.style.zIndex = this.totalPages - i;
+
+                    // Create front and back of the page
+                    const front = document.createElement('div');
+                    front.className = 'page-front';
+                    front.textContent = `Page ${i + 1} Front`;
+
+                    const back = document.createElement('div');
+                    back.className = 'page-back';
+                    back.textContent = `Page ${i + 1} Back`;
+
+                    page.appendChild(front);
+                    page.appendChild(back);
+
+                    // Position pages
+                    if (i < this.totalPages / 2) {
+                        page.classList.add('left');
+                    } else {
+                        page.classList.add('right');
+                        page.classList.add('flipped');
+                    }
+
+                    this.pages.push(page);
+                    this.container.appendChild(page);
+
+                    // Add click event
+                    page.addEventListener('click', () => this.flipPage(i));
+                }
+
+                this.updateButtons();
+            }
+
+            flipPage(pageIndex) {
+                const page = this.pages[pageIndex];
+                if (!page) return;
+
+                // Prevent multiple flips at once
+                if (page.classList.contains('flipping')) return;
+
+                // Add flipping class for shadow effect
+                page.classList.add('flipping');
+
+                // Remove flipping class after animation
+                setTimeout(() => {
+                    page.classList.remove('flipping');
+                }, 800);
+
+                if (page.classList.contains('flipped')) {
+                    page.classList.remove('flipped');
+                    this.currentPage = Math.max(0, pageIndex);
+                } else {
+                    page.classList.add('flipped');
+                    this.currentPage = Math.min(this.totalPages - 1, pageIndex + 1);
+                }
+
+                this.updateButtons();
+            }
+
+            nextPage() {
+                if (this.currentPage < this.totalPages - 1) {
+                    this.flipPage(this.currentPage);
+                }
+            }
+
+            previousPage() {
+                if (this.currentPage > 0) {
+                    this.flipPage(this.currentPage - 1);
+                }
+            }
+
+            updateButtons() {
+                const prevBtn = document.getElementById('prev-btn');
+                const nextBtn = document.getElementById('next-btn');
+                
+                prevBtn.disabled = this.currentPage === 0;
+                nextBtn.disabled = this.currentPage === this.totalPages - 1;
+            }
+        }
+
+        // Initialize the book
+        const container = document.querySelector('.book-container');
+        const book = new Book(container, 6); // Create a book with 6 pages
+
+        // Add button event listeners
+        document.getElementById('prev-btn').addEventListener('click', () => book.previousPage());
+        document.getElementById('next-btn').addEventListener('click', () => book.nextPage());
+
+        // Add keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') book.previousPage();
+            if (e.key === 'ArrowRight') book.nextPage();
+        });
+    </script>
+</body>
+</html> 

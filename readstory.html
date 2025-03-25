@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story Adventures</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&family=Patrick+Hand&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+        
+        /* Reset box-sizing for all elements */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            overflow: hidden; /* Prevents scrolling */
+        }
+
+        .story-full-screen-container {
+            width: 100%;
+            height: 100vh;
+        }
+
+        .story-book-inside-wrap {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            padding: 50px 30px;
+            /* border: 1px solid red; */
+        }
+
+        /* === STORY NAVIGATION BUTTONS === */
+        .story-navigation-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background-color: #164E75;
+            opacity: 0.4;
+            padding: 25px 15px;
+
+            border-radius: 10px;
+        }
+
+        .nav-right {
+            opacity: 0.8;
+        }
+
+        /* === STORYBOOK CONTAINER === */
+        .story-book-container {
+            display: flex;
+            flex-direction: row;
+
+            width: 100%;
+            height: 100%;
+        }
+
+        .story-book-container .story-book-left {
+            position: relative;
+            overflow: hidden;
+
+            width: 50%;
+            height: 100%;
+
+            background-color: #EFDEAD;
+            background: url(./assets/images/test_images/test_img_1_left.png) lightgray 50% / cover no-repeat;
+            border-radius: 12px 50px 50px 12px;
+            box-shadow: -4px 4px 25px 5px rgba(0, 0, 0, 0.30);
+
+            border-top: 2px solid rgb(255, 255, 255, 0.5);
+            border-left: 2px solid rgb(255, 255, 255, 0.5);
+            border-bottom: 2px solid rgb(255, 255, 255, 0.5);
+        }
+        
+        .story-book-left-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            align-self: stretch;
+
+            text-align: center;
+
+            gap: 30px;
+
+            padding: 50px 70px;
+            width: 100%;
+        }
+
+        .story-book-left-content h1 {
+            font-family: 'Mali', cursive;
+            color: #43310C;
+            font-size: 50px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+
+            width: 100%;
+        }
+
+        .story-book-left-content p {
+            font-family: 'Mali', cursive;
+            color: #283608;
+            font-size: 1.3em;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 43px;
+        }
+
+        .emphasised-text {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 3.6em;
+            font-style: normal;
+            line-height: 80px;
+            color: #506819;
+        }
+
+        .story-book-left .story-book-left-gradient {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+
+            width: 40px;
+            height: 100%;
+
+            /* background-color: blue; */
+            opacity: 0.4;
+            background: linear-gradient(270deg, rgba(0, 0, 0, 0.70) 0%, rgba(0, 0, 0, 0.00) 100%);
+        }
+
+        .story-book-container .story-book-right {
+            position: relative;
+            overflow: hidden;
+
+            width: 50%;
+            height: 100%;
+
+            background-color: red;
+
+            border-radius: 50px 12px 12px 50px;
+            border-top: 2px solid rgb(255, 255, 255, 0.5);
+            border-right: 5px solid rgb(255, 255, 255, 0.5);
+            border-bottom: 2px solid rgb(255, 255, 255, 0.5);
+
+            background-color: #EFDEAD;
+            background: url(./assets/images/test_images/test_img_1_right.png.png) lightgray 50% / cover no-repeat;
+            box-shadow: 4px 4px 25px 5px rgba(0, 0, 0, 0.30);
+        }
+
+        .story-book-right .story-book-right-gradient {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+
+            width: 50px;
+            height: 100%;
+
+            /* background-color: blue; */
+            opacity: 0.8;
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0.70) 0%, rgba(0, 0, 0, 0.00) 100%);
+        }
+        
+    </style>
+</head>
+<body style="background-color: #DDEDE3;">
+    <div class="story-full-screen-container">
+        <div class="story-book-inside-wrap">
+
+            <div class="story-navigation-button nav-left">
+                <svg class="story-back-arrow" width="44" height="44" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g id="Iconly/Bold/Arrow---Left-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g id="Arrow---Left-2" transform="translate(7.000000, 6.000000)" fill="#fff" fill-rule="nonzero">
+                            <path d="M0.369215782,4.869 C0.425718461,4.811 0.639064783,4.563 0.837798344,4.359 C2.00292255,3.076 5.04237701,0.976 6.63321968,0.335 C6.87481734,0.232 7.48563078,0.014 7.81198246,0 C8.12469557,0 8.42279591,0.072 8.70725767,0.218 C9.06186069,0.422 9.34632245,0.743 9.50219191,1.122 C9.60253288,1.385 9.75840234,2.172 9.75840234,2.186 C9.9142718,3.047 10,4.446 10,5.992 C10,7.465 9.9142718,8.807 9.78665368,9.681 C9.77204092,9.695 9.61617146,10.673 9.44568924,11.008 C9.13297613,11.62 8.52216269,12 7.86848514,12 L7.81198246,12 C7.386264,11.985 6.4909888,11.605 6.4909888,11.591 C4.98587433,10.949 2.01656113,8.952 0.823185582,7.625 C0.823185582,7.625 0.48709206,7.284 0.340964442,7.071 C0.113005358,6.765 -8.8817842e-16,6.386 -8.8817842e-16,6.007 C-8.8817842e-16,5.584 0.12761812,5.19 0.369215782,4.869"></path>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+    
+            <!-- Storybook displayed here -->
+             <div class="story-book-container">
+                <div class="story-book-left">
+                    <div class="story-book-left-content">
+                        <!-- <h1>The Storybook Title</h1> -->
+                        <div class="story-book-left-content-divider"></div>
+                        <p>
+                            So you're looking at me hey?!
+                            <br>
+                            I see you staring at my awesome purple hoodie. 
+                            <br>
+                            What do you think of my tough-guy pose... been practicing all morning dude.
+                            <br>
+                            <br>
+                            <span class="emphasised-text">I Look Totally EPIC, Don't I?</span>
+                            <br>
+                            <br>
+                            I am just crushing this look
+                        </p>
+                    </div>
+                    <div class="story-book-left-gradient"></div>
+                </div>
+                <div class="story-book-right">
+                    <div class="story-book-right-gradient"></div>
+                </div>
+             </div>
+    
+            <div class="story-navigation-button nav-right">
+                <svg class="story-next-arrow" width="44" height="44" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g id="Iconly/Bold/Arrow---Right-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g id="Arrow---Right-2" transform="translate(7.000000, 6.000000)" fill="#fff" fill-rule="nonzero">
+                            <path d="M9.63078422,7.131 C9.57428154,7.189 9.36093522,7.437 9.16220166,7.641 C7.99707745,8.924 4.95762299,11.024 3.36678032,11.665 C3.12518266,11.768 2.51436922,11.986 2.18801754,12 C1.87530443,12 1.57720409,11.928 1.29274233,11.782 C0.938139308,11.578 0.653677545,11.257 0.497808086,10.878 C0.397467121,10.615 0.241597662,9.828 0.241597662,9.814 C0.0857282026,8.953 0,7.554 0,6.008 C0,4.535 0.0857282026,3.193 0.213346322,2.319 C0.227959084,2.305 0.383828544,1.327 0.554310765,0.992 C0.867023868,0.38 1.47783731,0 2.13151486,0 L2.18801754,0 C2.613736,0.015 3.5090112,0.395 3.5090112,0.409 C5.01412567,1.051 7.98343887,3.048 9.17681442,4.375 C9.17681442,4.375 9.51290794,4.716 9.65903556,4.929 C9.88699464,5.235 10,5.614 10,5.993 C10,6.416 9.87238188,6.81 9.63078422,7.131"></path>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
