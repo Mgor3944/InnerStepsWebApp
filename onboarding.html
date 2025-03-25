@@ -18,6 +18,7 @@
 
     <div class="onboarding-container">
         <form id="onboardingForm" action="https://formspree.io/f/meoebvnl" method="POST">
+            
             <!-- Step 1: Welcome Animation -->
             <div class="step active" id="step1">
                 <div class="step-content">
@@ -62,13 +63,13 @@
                     <div class="form-group">
                         <div class="gender-options">
                             <input type="radio" id="genderBoy" name="gender" value="boy" class="gender-option" required>
-                            <label for="genderBoy" class="gender-label">Boy</label>
+                            <label for="genderBoy" class="gender-label gb">Boy</label>
                             
                             <input type="radio" id="genderGirl" name="gender" value="girl" class="gender-option">
-                            <label for="genderGirl" class="gender-label">Girl</label>
+                            <label for="genderGirl" class="gender-label gg">Girl</label>
                             
                             <input type="radio" id="genderOther" name="gender" value="other" class="gender-option">
-                            <label for="genderOther" class="gender-label">Other</label>
+                            <label for="genderOther" class="gender-label go">Other</label>
                         </div>
                     </div>
 
@@ -83,8 +84,8 @@
             <div class="step" id="step3">
                 <div class="step-content">
                     <div class="step-container">
-                        <h1>Choose Your Character</h1>
-                        <p>Pick a special friend to go on this adventure with you! Who would you like to be your companion?</p>
+                        <h1>Meet Your Adventure Squad!</h1>
+                        <p>Time to pick a friend to join our amazing team! Which of these four awesome buddies catches your eye?</p>
                     </div>
                     
                     <div class="form-group">
@@ -115,12 +116,12 @@
             <div class="step" id="step4">
                 <div class="step-content">
                     <div class="step-container">
-                        <h1>Let's Give <span class="character-pronoun" data-pronoun-type="object" style="text-transform: capitalize;">them</span> A Name</h1>
-                        <p>Now that you've chosen your character, give <span class="character-pronoun" data-pronoun-type="subject">them</span> a name. Obviously you can always use your name - it's already awesome!</p>
+                        <h1>What's <span class="character-pronoun" data-pronoun-type="possessive" style="text-transform: capitalize;">their</span> Name?</h1>
+                        <p>Every hero needs a great name! What should we call your adventure buddy? You can always use your own name!</p>
                     </div>
                     
                     <div class="form-group">
-                        <input type="text" id="characterName" class="characterName" name="characterName" placeholder="Name here..." required>
+                        <input type="text" id="characterName" class="characterName" name="characterName" placeholder="Write their name here..." required>
                     </div>
 
                     <div class="onboarding-buttons">
@@ -134,47 +135,38 @@
             <div class="step" id="step5">
                 <div class="step-content">
                     <div class="step-container">
-                        <h1>What are your favourite things to do?</h1>
-                        <p>Whatever you choose, I'm sure <span class="character-name-placeholder">name</span> will love them just as much as you do!</p>
+                        <h1>What makes you smile?</h1>
+                        <p>The things we love doing make us special! What kinds of activities make you feel happy and excited?</p>
                     </div>
                     
                     <div class="form-group">
                         <div class="hobby-options">
                             <input type="checkbox" id="hobby1" name="hobbies" value="reading" class="hobby-option">
-                            <label for="hobby1" class="hobby-label">Reading</label>
+                            <label for="hobby1" class="hobby-label">Listening To Music</label>
                             
                             <input type="checkbox" id="hobby2" name="hobbies" value="drawing" class="hobby-option">
-                            <label for="hobby2" class="hobby-label">Drawing</label>
+                            <label for="hobby2" class="hobby-label">Playing Video Games</label>
                             
                             <input type="checkbox" id="hobby3" name="hobbies" value="sports" class="hobby-option">
-                            <label for="hobby3" class="hobby-label">Swimming</label>
+                            <label for="hobby3" class="hobby-label">Reading Books</label>
                             
                             <input type="checkbox" id="hobby4" name="hobbies" value="music" class="hobby-option">
-                            <label for="hobby4" class="hobby-label">Music</label>
+                            <label for="hobby4" class="hobby-label">Drawing</label>
                             
                             <input type="checkbox" id="hobby5" name="hobbies" value="dancing" class="hobby-option">
-                            <label for="hobby5" class="hobby-label">Dancing</label>
+                            <label for="hobby5" class="hobby-label">Painting</label>
                             
                             <input type="checkbox" id="hobby6" name="hobbies" value="gaming" class="hobby-option">
-                            <label for="hobby6" class="hobby-label">Video games</label>
+                            <label for="hobby6" class="hobby-label">Soccer</label>
                             
                             <input type="checkbox" id="hobby7" name="hobbies" value="cooking" class="hobby-option">
-                            <label for="hobby7" class="hobby-label">Cooking</label>
+                            <label for="hobby7" class="hobby-label">Basketball</label>
                             
                             <input type="checkbox" id="hobby8" name="hobbies" value="nature" class="hobby-option">
-                            <label for="hobby8" class="hobby-label">Nature</label>
+                            <label for="hobby8" class="hobby-label">Swimming</label>
                             
                             <input type="checkbox" id="hobby9" name="hobbies" value="puzzles" class="hobby-option">
-                            <label for="hobby9" class="hobby-label">Puzzles</label>
-                            
-                            <input type="checkbox" id="hobby10" name="hobbies" value="crafts" class="hobby-option">
-                            <label for="hobby10" class="hobby-label">Music</label>
-
-                            <input type="checkbox" id="hobby11" name="hobbies" value="soccer" class="hobby-option">
-                            <label for="hobby11" class="hobby-label">Soccer</label>
-
-                            <input type="checkbox" id="hobby12" name="hobbies" value="basketball" class="hobby-option">
-                            <label for="hobby12" class="hobby-label">Basketball</label>
+                            <label for="hobby9" class="hobby-label">Riding Bikes</label>
                         </div>
                     </div>
 
@@ -189,8 +181,8 @@
             <div class="step" id="step6">
                 <div class="step-content">
                     <div class="step-container">
-                        <h1>What Adventure Should <span class="character-name-placeholder">name</span> Go On First?</h1>
-                        <p>Let's pick a special story for <span class="character-name-placeholder">your character</span>!</p>
+                        <h1>Your First Quest Awaits!</h1>
+                        <p>Adventure time! Where do you think <span class="character-name-placeholder">name</span> should explore on your first quest together? Pick your favourite!</p>
                     </div>
                     
                     <div class="form-group">
@@ -214,8 +206,8 @@
             <div class="step" id="step7">
                 <div class="step-content">
                     <div class="step-container">
-                        <h1>How are you feeling today?</h1>
-                        <p>You can be honest, it's very likely that <span class="character-name-placeholder">name</span> feels the exact same way!</p>
+                        <h1>Today's Feeling Forecast!</h1>
+                        <p>Quick check before our adventure begins - how's your day going so far? Remember, all feelings are welcome here!</p>
                     </div>
                     
                     <div class="form-group">

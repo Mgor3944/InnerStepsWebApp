@@ -192,18 +192,14 @@ function updatePronounPlaceholders() {
     const userData = JSON.parse(localStorage.getItem('user_data'));
     if (!userData || !userData.pronouns) return;
 
-    // Update character name title
-    const characterNameTitle = document.querySelector('#step4 h1');
-    if (characterNameTitle) {
-        // Get capitalized object pronoun
-        const capitalizedObject = userData.pronouns.object.charAt(0).toUpperCase() + userData.pronouns.object.slice(1);
-        characterNameTitle.textContent = `Let's Give ${capitalizedObject} A Name`;
-    }
-
     // Update all pronoun spans in the document
     document.querySelectorAll('.character-pronoun').forEach(span => {
         const type = span.dataset.pronounType || 'subject'; // default to subject pronoun
-        span.textContent = userData.pronouns[type];
+        const pronoun = userData.pronouns[type];
+        // Capitalize if the span has text-transform: capitalize
+        span.textContent = span.style.textTransform === 'capitalize' 
+            ? pronoun.charAt(0).toUpperCase() + pronoun.slice(1)
+            : pronoun;
     });
 }
 
@@ -237,7 +233,7 @@ function updateNamePlaceholders() {
     document.querySelectorAll('.character-name-placeholder').forEach(element => {
         // Check if we need to add possessive 's
         if (element.dataset.possessive === 'true') {
-            element.textContent = `${characterName}`;
+            element.textContent = `${characterName}'s`;
         } else {
             element.textContent = characterName;
         }

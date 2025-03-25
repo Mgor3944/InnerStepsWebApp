@@ -54,7 +54,7 @@ button {
     border-radius: 12px;
     padding: 18px 25px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
     position: 0;
     transition: all 0.15s ease-in-out;
@@ -308,15 +308,11 @@ body.journey-page {
 
 /* === ONBOARDING CONTAINER STYLES === */
 .onboarding-container {
-    display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    width: 90%;
-    max-width: 550px;
-    padding: 40px;
-    gap: 30px;
+    width: 100%;
+    margin: 0 5%;
     margin-bottom: 80px;
 }
 
@@ -324,8 +320,10 @@ body.journey-page {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px;
+    gap: 40px;
     width: 100%;
+
+    /* border: 1px solid red; */
 }
 
 .step {
@@ -404,7 +402,7 @@ input[type="text"].error {
     border-bottom: 6px solid rgba(66, 83, 95, 0.3);
     /* padding: 16px 25px; */
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
     color: #5d6e6f;
     border-radius: 12px;
     width: 140px;
@@ -443,8 +441,12 @@ input[type="text"].error {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 30px;
+    justify-content: center;
+
+    gap: 20px;
+    width: max-content;
+
+    /* border: 1px solid red; */
 }
 
 .step-container h1 {
@@ -455,7 +457,7 @@ input[type="text"].error {
     font-size: 18px;
     color: #42535F;
     text-align: center;
-    max-width: 450px;
+    max-width: 600px;
     margin: 0;
 }
 
@@ -568,7 +570,7 @@ input[type="text"].error {
     justify-content: center;
     align-items: center;
     /* width: 100%; */
-    margin-top: 20px;
+    /* margin-top: 20px; */
 
     /* border: 1px solid red; */
 }
@@ -1465,24 +1467,29 @@ body.story-page {
 .gender-options {
     display: flex;
     justify-content: center;
-    align-items: center;
     gap: 5px;
+    max-width: 600px;
+    margin: 0 auto;
     width: 100%;
 }
 
 .gender-label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     width: 100%;
     height: 80px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
     background-color: rgba(66, 83, 95, 0.05);
     border: 2px solid rgba(66, 83, 95, 0.3);
     border-bottom: 6px solid rgba(66, 83, 95, 0.3);
     border-radius: 12px;
-    font-size: 20px;
+    
+    font-size: 25px;
     color: #42535F;
     cursor: pointer;
+
     transition: all 0.2s ease-in-out;
 }
 
@@ -1496,6 +1503,32 @@ body.story-page {
     color: white;
     transform: translateY(2px);
     border-bottom: 3px solid #658624;
+}
+
+/* Assigning different colours for different genders */
+
+.gender-option:checked + .gb {
+    background-color: #8DBA36;
+    border-color: #658624;
+    color: white;
+    transform: translateY(2px);
+    border-bottom: 3px solid #658624;
+}
+
+.gender-option:checked + .gg {
+    background-color: #B78EFF;
+    border-color: #8A65CB;
+    color: white;
+    transform: translateY(2px);
+    border-bottom: 3px solid #8A65CB;
+}
+
+.gender-option:checked + .go {
+    background-color: #FFB410;
+    border-color: #C28F1D;
+    color: white;
+    transform: translateY(2px);
+    border-bottom: 3px solid #C28F1D;
 }
 
 /* ================================================== */
@@ -1588,14 +1621,14 @@ body.story-page {
 /* ================================================== */
 
 .hobby-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, calc(25% - 15px)));
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
-    gap: 20px;
-    width: 100%;
-    max-width: 700px;
+    gap: 10px;
+    max-width: 850px;
     margin: 0 auto;
+
+    /* border: 1px solid red; */
 }
 
 .hobby-option {
@@ -1612,17 +1645,20 @@ body.story-page {
 }
 
 .hobby-label {
-    display: flex;
+    padding: 20px 30px;
+    min-width: max-content;
+
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 60px;
+    
     background-color: rgba(66, 83, 95, 0.05);
     border: 2px solid rgba(66, 83, 95, 0.3);
     border-bottom: 6px solid rgba(66, 83, 95, 0.3);
-    border-radius: 12px;
+    border-radius: 20px;
+
     font-size: 18px;
     color: #42535F;
+
     cursor: pointer;
     transition: all 0.2s ease-in-out;
 }
@@ -1636,6 +1672,11 @@ body.story-page {
 }
 
 /* === CHARACTER NAME STYLES === */
+
+.characterName {
+    width: 100%;
+    max-width: 650px;
+}
 
 /* ================================================== */
 /* === ADVENTURE BOOKS STYLES === */

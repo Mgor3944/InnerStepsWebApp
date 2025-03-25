@@ -23,7 +23,7 @@ node server.js
 ### 3. Project Structure
 ```
 InnerStepsWebApp/
-├── assets/        # Images and media files
+├── assets/       # Images and media files
 ├── data/         # Local data storage
 ├── scripts/      # JavaScript files
 ├── styles.css    # Main stylesheet
