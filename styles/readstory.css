@@ -46,18 +46,11 @@
 .story-book-container .story-book-left {
     position: relative;
     overflow: hidden;
-
     width: 50%;
     height: 100%;
-
     background-color: #EFDEAD;
-    background: url(../assets/images/test_images/test_img_1_left.png) lightgray 50% / cover no-repeat;
     border-radius: 12px 50px 50px 12px;
     box-shadow: -4px 4px 25px 5px rgba(0, 0, 0, 0.30);
-
-    border-top: 2px solid rgb(255, 255, 255, 0.5);
-    border-left: 2px solid rgb(255, 255, 255, 0.5);
-    border-bottom: 2px solid rgb(255, 255, 255, 0.5);
 }
 
 .story-book-left-content {
@@ -119,19 +112,11 @@
 .story-book-container .story-book-right {
     position: relative;
     overflow: hidden;
-
     width: 50%;
     height: 100%;
-
-    background-color: red;
-
     border-radius: 50px 12px 12px 50px;
-    border-top: 2px solid rgb(255, 255, 255, 0.5);
     border-right: 5px solid rgb(255, 255, 255, 0.5);
-    border-bottom: 2px solid rgb(255, 255, 255, 0.5);
-
     background-color: #EFDEAD;
-    background: url(./assets/images/test_images/test_img_1_right.png.png) lightgray 50% / cover no-repeat;
     box-shadow: 4px 4px 25px 5px rgba(0, 0, 0, 0.30);
 }
 

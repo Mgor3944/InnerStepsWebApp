@@ -11,7 +11,8 @@
                         "With a sigh, [name] grabbed the plain black umbrella from beside the window.",
                         "Just another ordinary rainy day in Greenleaf — or so [name] thought..."
                     ],
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_1.jpg"
+                    "left_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_1_left.png",
+                    "right_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_1_right.png"
                 },
                 {
                     "text": [
@@ -19,7 +20,8 @@
                         "High above the rooftops, colorful shapes darted through the rain clouds.",
                         "[name] squinted through the downpour. Those weren't birds—they were children! Children riding umbrellas through the sky!"
                     ],
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_2.jpg"
+                    "left_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_2_left.jpg",
+                    "right_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_2_right.jpg"
                 },
                 {
                     "text": [
@@ -28,7 +30,8 @@
                         "[name] watched in amazement as the flying children swooped and soared, their umbrellas gliding on air currents.",
                         "One boy with a red-striped umbrella performed a perfect loop-de-loop before zooming toward the school."
                     ],
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_3.jpg"
+                    "left_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_3_left.jpg",
+                    "right_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_3_right.jpg"
                 },
                 {
                     "text": [
@@ -37,7 +40,8 @@
                         "Behind an old wardrobe, [name] spotted something unusual—a faded umbrella with racing stripes.",
                         "The handle was worn smooth, and one of the spokes was slightly bent, but [name] felt drawn to it immediately."
                     ],
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_4.jpg"
+                    "left_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_4_left.jpg",
+                    "right_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_4_right.jpg"
                 },
                 {
                     "text": [
@@ -48,7 +52,8 @@
                         "'I'm Blu, and you've found quite the treasure! That's a racing umbrella - your grandparent's, I'd guess...'",
                         "'Racing umbrella?' [name] examined the worn fabric. 'You mean like those children I saw flying?'"
                     ],
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_5.jpg"
+                    "left_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_5_left.jpg",
+                    "right_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_5_right.jpg"
                 },
                 {
                     "text": [
@@ -56,7 +61,8 @@
                         "'Precisely! You've discovered the Flying Umbrella Racing League—the secret sport that only children can see.'",
                         "'Of course! The Annual Golden Droplet Race is happening next week. It's the biggest race of the year!'"
                     ],
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_6.jpg"
+                    "left_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_6_left.jpg",
+                    "right_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_6_right.jpg"
                 },
                 {
                     "text": [
@@ -67,7 +73,8 @@
                         "Blu tapped the umbrella handle, and a small dial appeared with numbers from one to ten.",
                         "'This is your worry meter. When you're feeling a little nervous, it might show a three. When you're really scared, it might go up to nine. Right now, you're at about a five.'"
                     ],
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_7.jpg"
+                    "left_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_7_left.jpg",
+                    "right_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_7_right.jpg"
                 },
                 {
                     "text": [
@@ -77,7 +84,8 @@
                         "'That's Maya', Blu whispered about a tall girl with curly hair. 'Last year she was terrified about starting at Raindrop Academy. Now she's won three races!'",
                         "Nearby, a freckled boy was inspecting his umbrella. 'That's Theo. He was so worried about performing in the school concert that he nearly didn't participate. Now he does amazing stunts!'"
                     ],
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_8.jpg"
+                    "left_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_8_left.jpg",
+                    "right_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_8_right.jpg"
                 },
                 {
                     "text": [
@@ -86,9 +94,9 @@
                         "'The Golden Droplet Race isn't about being the fastest. It's about finding your own special way of flying.'",
                         "As evening fell, [name] clutched the racing umbrella tightly with excitement. Tomorrow [they]'d begin training at the famous Raindrop Academy! But what would happen when it was time to actually leave the ground? [name]'s hands began to sweat just thinking about it. Would [they] be able to fly at all, or would [their] worries keep [their] feet firmly planted when the moment of truth arrived?"
                     ],
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_9.jpg"
+                    "left_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_9_left.jpg",
+                    "right_image": "/assets/images/pip/chapter_1/umbrella_racing/story1/page_9_right.jpg"
                 }
-                
             ]
         },
         "story2": {
@@ -99,7 +107,8 @@
                         "Write here",
                         "Write here"
                     ],
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story2/page_1.jpg"
+                    "left_image": "/assets/images/pip/chapter_1/umbrella_racing/story2/page_1_left.jpg",
+                    "right_image": "/assets/images/pip/chapter_1/umbrella_racing/story2/page_1_right.jpg"
                 },
                 {
                     "text": [
@@ -107,7 +116,8 @@
                         "Write here",
                         "Write here"
                     ],
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story2/page_2.jpg"
+                    "left_image": "/assets/images/pip/chapter_1/umbrella_racing/story2/page_2_left.jpg",
+                    "right_image": "/assets/images/pip/chapter_1/umbrella_racing/story2/page_2_right.jpg"
                 }
             ]
         },
@@ -119,7 +129,8 @@
                         "Write here",
                         "Write here"
                     ],
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story3/page_1.jpg"
+                    "left_image": "/assets/images/pip/chapter_1/umbrella_racing/story3/page_1_left.jpg",
+                    "right_image": "/assets/images/pip/chapter_1/umbrella_racing/story3/page_1_right.jpg"
                 },
                 {
                     "text": [
@@ -127,7 +138,8 @@
                         "Write here",
                         "Write here"
                     ],
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story3/page_2.jpg"
+                    "left_image": "/assets/images/pip/chapter_1/umbrella_racing/story3/page_2_left.jpg",
+                    "right_image": "/assets/images/pip/chapter_1/umbrella_racing/story3/page_2_right.jpg"
                 }
             ]
         },
@@ -139,7 +151,8 @@
                         "Write here",
                         "Write here"
                     ],
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story4/page_1.jpg"
+                    "left_image": "/assets/images/pip/chapter_1/umbrella_racing/story4/page_1_left.jpg",
+                    "right_image": "/assets/images/pip/chapter_1/umbrella_racing/story4/page_1_right.jpg"
                 },
                 {
                     "text": [
@@ -147,7 +160,8 @@
                         "Write here",
                         "Write here"
                     ],
-                    "image": "/assets/images/pip/chapter_1/umbrella_racing/story4/page_2.jpg"
+                    "left_image": "/assets/images/pip/chapter_1/umbrella_racing/story4/page_2_left.jpg",
+                    "right_image": "/assets/images/pip/chapter_1/umbrella_racing/story4/page_2_right.jpg"
                 }
             ]
         }

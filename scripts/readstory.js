@@ -124,9 +124,10 @@ function loadStoryContent(story) {
     
     const storyTitle = document.getElementById('readStoryTitle');
     const storyText = document.getElementById('readStoryText');
-    const storyImage = document.getElementById('readStoryImage');
+    const leftPage = document.querySelector('.story-book-left');
+    const rightPage = document.querySelector('.story-book-right');
     
-    if (!storyTitle || !storyText || !storyImage) {
+    if (!storyTitle || !storyText || !leftPage || !rightPage) {
         console.error('Story content containers not found!');
         return;
     }
@@ -174,22 +175,30 @@ function loadStoryContent(story) {
         }
     }
     
-    // Load story image
-    const character = userManager.userData.progress.selectedCharacter;
-    const storyline = userManager.userData.progress.selectedStoryline;
-    const storyNumber = userManager.userData.progress.current_story.replace('story', '');
+    // Load story images
+    if (pageContent.left_image) {
+        console.log('Loading left image:', pageContent.left_image);
+        leftPage.style.backgroundImage = `url(${pageContent.left_image})`;
+        leftPage.style.backgroundSize = 'cover';
+        leftPage.style.backgroundPosition = 'center';
+        leftPage.onerror = function() {
+            console.error(`Failed to load left story image, using fallback color`);
+            leftPage.style.backgroundImage = 'none';
+            leftPage.style.backgroundColor = '#EFDEAD';
+        };
+    }
     
-    // Construct image path
-    const imagePath = `assets/images/${character}/chapter_1/${storyline}/story${storyNumber}/page_${window.currentPage}.jpg`;
-    console.log('Loading image from path:', imagePath);
-    
-    // Update right page background
-    const rightPage = document.querySelector('.story-book-right');
-    rightPage.style.backgroundImage = `url(${imagePath})`;
-    rightPage.onerror = function() {
-        console.error(`Failed to load story image, using default placeholder`);
-        rightPage.style.backgroundImage = 'url(assets/images/default_placeholder.png)';
-    };
+    if (pageContent.right_image) {
+        console.log('Loading right image:', pageContent.right_image);
+        rightPage.style.backgroundImage = `url(${pageContent.right_image})`;
+        rightPage.style.backgroundSize = 'cover';
+        rightPage.style.backgroundPosition = 'center';
+        rightPage.onerror = function() {
+            console.error(`Failed to load right story image, using fallback color`);
+            rightPage.style.backgroundImage = 'none';
+            rightPage.style.backgroundColor = '#EFDEAD';
+        };
+    }
     
     // Update navigation buttons
     updateNavigationButtons();
