@@ -3,179 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Story Adventures</title>
+    <title>InnerSteps - Story Adventure</title>
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&family=Patrick+Hand&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
-        
-        /* Reset box-sizing for all elements */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <!-- Add mobile redirect script -->
+    <script src="scripts/mobile-redirect.js"></script>
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            overflow: hidden; /* Prevents scrolling */
-        }
-
-        .story-full-screen-container {
-            width: 100%;
-            height: 100vh;
-        }
-
-        .story-book-inside-wrap {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            padding: 50px 30px;
-            /* border: 1px solid red; */
-        }
-
-        /* === STORY NAVIGATION BUTTONS === */
-        .story-navigation-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background-color: #164E75;
-            opacity: 0.4;
-            padding: 25px 15px;
-
-            border-radius: 10px;
-        }
-
-        .nav-right {
-            opacity: 0.8;
-        }
-
-        /* === STORYBOOK CONTAINER === */
-        .story-book-container {
-            display: flex;
-            flex-direction: row;
-
-            width: 100%;
-            height: 100%;
-        }
-
-        .story-book-container .story-book-left {
-            position: relative;
-            overflow: hidden;
-
-            width: 50%;
-            height: 100%;
-
-            background-color: #EFDEAD;
-            background: url(./assets/images/test_images/test_img_1_left.png) lightgray 50% / cover no-repeat;
-            border-radius: 12px 50px 50px 12px;
-            box-shadow: -4px 4px 25px 5px rgba(0, 0, 0, 0.30);
-
-            border-top: 2px solid rgb(255, 255, 255, 0.5);
-            border-left: 2px solid rgb(255, 255, 255, 0.5);
-            border-bottom: 2px solid rgb(255, 255, 255, 0.5);
-        }
-        
-        .story-book-left-content {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            align-self: stretch;
-
-            text-align: center;
-
-            gap: 30px;
-
-            padding: 50px 70px;
-            width: 100%;
-        }
-
-        .story-book-left-content h1 {
-            font-family: 'Mali', cursive;
-            color: #43310C;
-            font-size: 50px;
-            font-style: normal;
-            font-weight: 700;
-            line-height: normal;
-
-            width: 100%;
-        }
-
-        .story-book-left-content p {
-            font-family: 'Mali', cursive;
-            color: #283608;
-            font-size: 1.3em;
-            font-style: normal;
-            font-weight: 500;
-            line-height: 43px;
-        }
-
-        .emphasised-text {
-            font-family: 'Luckiest Guy', cursive;
-            font-size: 3.6em;
-            font-style: normal;
-            line-height: 80px;
-            color: #506819;
-        }
-
-        .story-book-left .story-book-left-gradient {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-
-            width: 40px;
-            height: 100%;
-
-            /* background-color: blue; */
-            opacity: 0.4;
-            background: linear-gradient(270deg, rgba(0, 0, 0, 0.70) 0%, rgba(0, 0, 0, 0.00) 100%);
-        }
-
-        .story-book-container .story-book-right {
-            position: relative;
-            overflow: hidden;
-
-            width: 50%;
-            height: 100%;
-
-            background-color: red;
-
-            border-radius: 50px 12px 12px 50px;
-            border-top: 2px solid rgb(255, 255, 255, 0.5);
-            border-right: 5px solid rgb(255, 255, 255, 0.5);
-            border-bottom: 2px solid rgb(255, 255, 255, 0.5);
-
-            background-color: #EFDEAD;
-            background: url(./assets/images/test_images/test_img_1_right.png.png) lightgray 50% / cover no-repeat;
-            box-shadow: 4px 4px 25px 5px rgba(0, 0, 0, 0.30);
-        }
-
-        .story-book-right .story-book-right-gradient {
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-
-            width: 50px;
-            height: 100%;
-
-            /* background-color: blue; */
-            opacity: 0.8;
-            background: linear-gradient(90deg, rgba(0, 0, 0, 0.70) 0%, rgba(0, 0, 0, 0.00) 100%);
-        }
-        
-    </style>
+    <!-- Add stylesheets -->
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/readstory.css">
+    
 </head>
-<body style="background-color: #DDEDE3;">
+<body class="read-story-page">
     <div class="story-full-screen-container">
         <div class="story-book-inside-wrap">
-
             <div class="story-navigation-button nav-left">
                 <svg class="story-back-arrow" width="44" height="44" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <g id="Iconly/Bold/Arrow---Left-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -187,31 +27,22 @@
             </div>
     
             <!-- Storybook displayed here -->
-             <div class="story-book-container">
+            <div class="story-book-container">
                 <div class="story-book-left">
                     <div class="story-book-left-content">
-                        <!-- <h1>The Storybook Title</h1> -->
                         <div class="story-book-left-content-divider"></div>
-                        <p>
-                            So you're looking at me hey?!
-                            <br>
-                            I see you staring at my awesome purple hoodie. 
-                            <br>
-                            What do you think of my tough-guy pose... been practicing all morning dude.
-                            <br>
-                            <br>
-                            <span class="emphasised-text">I Look Totally EPIC, Don't I?</span>
-                            <br>
-                            <br>
-                            I am just crushing this look
-                        </p>
+                        
+                        <div id="readStoryTitle"></div>
+                        <div id="readStoryText"></div>
                     </div>
                     <div class="story-book-left-gradient"></div>
                 </div>
                 <div class="story-book-right">
+                    <!-- Story image will be dynamically inserted here -->
+                    <div id="readStoryImage"></div>
                     <div class="story-book-right-gradient"></div>
                 </div>
-             </div>
+            </div>
     
             <div class="story-navigation-button nav-right">
                 <svg class="story-next-arrow" width="44" height="44" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -224,5 +55,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Add necessary scripts -->
+    <script src="scripts/script.js"></script>
+    <script src="scripts/readstory.js"></script>
 </body>
 </html>

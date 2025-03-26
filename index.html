@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Adventures</title>
-    <link rel="stylesheet" href="style.css">
+
+    <!-- Redirect to mobile version if screen is too small -->
     <script src="scripts/mobile-redirect.js"></script>
+
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/journeymap.css">
+    
 </head>
 <body class="journey-page">
 
@@ -29,26 +34,69 @@
         <!-- Journey stage nodes will be dynamically generated here -->
          
         <!-- example story node -->
-        <!-- <div class="journey-stage-node">
+        <div class="journey-stage-node">
             <div class="node-container" id="STAGE-1-1">
-                <div class="completion-status-icon"> 
-                    <svg class="locked-lock-icon" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"></svg>
-                    <svg class="unlocked-lock-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"></svg>
-                    <svg class="completed-tick-icon" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg"></svg>
-                </div>
-                
-                <h1 class="stage-title">Billy's Huge Discovery</h1>
-                <div class="stage-number-container">STAGE <span class="stage-number">1</span> - <span class="story-number">1</span></div>
-
-                <div class="story-book-container">
-                    <div class="book-aesthetic-line"></div>
-                    <img class="story-book-cover-image" src="/assets/images/default_placeholder.png" alt="Story Book Cover">
+                <div class="node-inner-container">
+                    <div class="node-content">
+                        <div class="book-aesthetic-line"></div>
+                        <div class="book-title-container">
+                            <h3 class="stage-chapter">Chapter One</h3>
+                            <h1 class="stage-title">Billy's Huge Discovery</h1>
+                        </div>
+                        <div class="completion-status-container">Completed</div>
+                    </div>
                 </div>
             </div>
-
             <div class="node-shadow"></div>
+        </div>
 
-        </div> -->
+        <div class="journey-stage-node">
+            <div class="node-container" id="STAGE-1-2">
+                <div class="node-inner-container">
+                    <div class="node-content">
+                        <div class="book-aesthetic-line"></div>
+                        <div class="book-title-container">
+                            <h3 class="stage-chapter">Chapter Two</h3>
+                            <h1 class="stage-title">How Billy Learnt to Fly</h1>
+                        </div>
+                        <div class="completion-status-container">Next To Read</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-shadow"></div>
+        </div>
+
+        <div class="journey-stage-node">
+            <div class="node-container" id="STAGE-1-3">
+                <div class="node-inner-container">
+                    <div class="node-content">
+                        <div class="book-aesthetic-line"></div>
+                        <div class="book-title-container">
+                            <h3 class="stage-chapter">Chapter Three</h3>
+                            <h1 class="stage-title">Meeting Our Warrior</h1>
+                        </div>
+                        <div class="completion-status-container">Haven't Unlocked Yet</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-shadow"></div>
+        </div>
+
+        <div class="journey-stage-node">
+            <div class="node-container" id="STAGE-1-4">
+                <div class="node-inner-container">
+                    <div class="node-content">
+                        <div class="book-aesthetic-line"></div>
+                        <div class="book-title-container">
+                            <h3 class="stage-chapter">Chapter Four</h3>
+                            <h1 class="stage-title">Putting YOU In Charge</h1>
+                        </div>
+                        <div class="completion-status-container">Haven't Unlocked Yet</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-shadow"></div>
+        </div>
     </div>
 
     <script>
@@ -76,5 +124,6 @@
         });
     </script>
     <script src="scripts/script.js"></script>
+    <script src="scripts/journey-map.js"></script>
 </body>
 </html>

@@ -1,0 +1,150 @@
+.read-story-page {
+    overflow: hidden; /* Prevents scrolling */
+    background-color: #DDEDE3;
+}
+
+.story-full-screen-container {
+    width: 100%;
+    height: 100vh;
+}
+
+.story-book-inside-wrap {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding: 50px 30px;
+    /* border: 1px solid red; */
+}
+
+/* === STORY NAVIGATION BUTTONS === */
+
+.story-navigation-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #164E75;
+    opacity: 0.8;
+    padding: 25px 15px;
+
+    border-radius: 10px;
+}
+
+/* === STORYBOOK CONTAINER === */
+
+.story-book-container {
+    display: flex;
+    flex-direction: row;
+
+    width: 100%;
+    height: 100%;
+}
+
+.story-book-container .story-book-left {
+    position: relative;
+    overflow: hidden;
+
+    width: 50%;
+    height: 100%;
+
+    background-color: #EFDEAD;
+    background: url(../assets/images/test_images/test_img_1_left.png) lightgray 50% / cover no-repeat;
+    border-radius: 12px 50px 50px 12px;
+    box-shadow: -4px 4px 25px 5px rgba(0, 0, 0, 0.30);
+
+    border-top: 2px solid rgb(255, 255, 255, 0.5);
+    border-left: 2px solid rgb(255, 255, 255, 0.5);
+    border-bottom: 2px solid rgb(255, 255, 255, 0.5);
+}
+
+.story-book-left-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+
+    text-align: center;
+
+    gap: 30px;
+
+    padding: 50px 70px;
+    width: 100%;
+}
+
+.story-book-left-content h1 {
+    font-family: 'Mali', cursive;
+    color: #43310C;
+    font-size: 50px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+
+    width: 100%;
+}
+
+.story-book-left-content p {
+    font-family: 'Mali', cursive;
+    color: #283608;
+    font-size: 1.3em;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 43px;
+}
+
+.emphasised-text {
+    font-family: 'Luckiest Guy', cursive;
+    font-size: 3.6em;
+    font-style: normal;
+    line-height: 80px;
+    color: #506819;
+}
+
+.story-book-left .story-book-left-gradient {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 40px;
+    height: 100%;
+
+    /* background-color: blue; */
+    opacity: 0.4;
+    background: linear-gradient(270deg, rgba(0, 0, 0, 0.70) 0%, rgba(0, 0, 0, 0.00) 100%);
+}
+
+.story-book-container .story-book-right {
+    position: relative;
+    overflow: hidden;
+
+    width: 50%;
+    height: 100%;
+
+    background-color: red;
+
+    border-radius: 50px 12px 12px 50px;
+    border-top: 2px solid rgb(255, 255, 255, 0.5);
+    border-right: 5px solid rgb(255, 255, 255, 0.5);
+    border-bottom: 2px solid rgb(255, 255, 255, 0.5);
+
+    background-color: #EFDEAD;
+    background: url(./assets/images/test_images/test_img_1_right.png.png) lightgray 50% / cover no-repeat;
+    box-shadow: 4px 4px 25px 5px rgba(0, 0, 0, 0.30);
+}
+
+.story-book-right .story-book-right-gradient {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 50px;
+    height: 100%;
+
+    /* background-color: blue; */
+    opacity: 0.8;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.70) 0%, rgba(0, 0, 0, 0.00) 100%);
+}

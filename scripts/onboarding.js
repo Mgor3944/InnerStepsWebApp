@@ -613,7 +613,7 @@ async function handleFormSubmit(e) {
             
             // Redirect to story page
             console.log('Step 4: Redirecting to story page');
-            window.location.href = 'story.html';
+            window.location.href = 'readstory.html';
         } catch (error) {
             console.error('Detailed error information:', error);
             console.error('Error stack:', error.stack);
