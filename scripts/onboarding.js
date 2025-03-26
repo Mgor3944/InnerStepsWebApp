@@ -390,6 +390,35 @@ function showLoadingOverlay() {
     document.body.appendChild(overlay);
 }
 
+// Function to preload images
+function preloadImages(storyData) {
+    const imagePromises = [];
+    
+    // Get all story pages
+    Object.values(storyData).forEach(story => {
+        if (story.pages) {
+            story.pages.forEach(page => {
+                if (page.image) {
+                    const promise = new Promise((resolve, reject) => {
+                        const img = new Image();
+                        img.onload = () => resolve();
+                        img.onerror = () => reject(new Error(`Failed to load image: ${page.image}`));
+                        img.src = page.image;
+                    });
+                    imagePromises.push(promise);
+                }
+            });
+        }
+    });
+    
+    return Promise.all(imagePromises);
+}
+
+// Function to delay execution
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function handleFormSubmit(e) {
     e.preventDefault();
     
@@ -404,242 +433,162 @@ async function handleFormSubmit(e) {
         submitButton.disabled = true;
     }
     
-    // Collect all form data
-    const formData = new FormData(form);
-    
-    // Get the gender and ensure pronouns are set
-    const gender = formData.get('gender');
-    console.log('Selected gender:', gender);
-    
-    // Define pronoun sets
-    const pronounSets = {
-        'boy': {
-            subject: 'he',
-            object: 'him',
-            possessive: 'his',
-            possessivePronoun: 'his',
-            reflexive: 'himself'
-        },
-        'girl': {
-            subject: 'she',
-            object: 'her',
-            possessive: 'her',
-            possessivePronoun: 'hers',
-            reflexive: 'herself'
-        },
-        'other': {
-            subject: 'they',
-            object: 'them',
-            possessive: 'their',
-            possessivePronoun: 'theirs',
-            reflexive: 'themself'
-        }
-    };
-    
-    // Get pronouns based on gender
-    const pronouns = pronounSets[gender] || pronounSets['other'];
-    console.log('Using pronouns:', pronouns);
-    
-    const profileData = {
-        name: formData.get('characterName'), // Using characterName as the user's name
-        gender: gender,
-        character: formData.get('character'),
-        characterName: formData.get('characterName'),
-        hobbies: Array.from(formData.getAll('hobbies')),
-        mood: formData.get('mood'), // Adding mood from the form
-        pronouns: pronouns, // Add pronouns to the profile data
-        progress: {
-            selectedCharacter: formData.get('character'),
-            selectedStoryline: formData.get('adventure'),
-            current_story: 'story1',
-            chapter1_progress: 0
-        },
-        stories: {
-            story1: { completed: false }
-        },
-        analytics: {
-            worry_ratings: [],
-            last_session: new Date().toISOString()
-        }
-    };
+    try {
+        // Start the minimum loading time promise
+        const minimumLoadingPromise = delay(3000); // 3 seconds minimum
+        
+        // Collect all form data
+        const formData = new FormData(form);
+        
+        // Get the gender and ensure pronouns are set
+        const gender = formData.get('gender');
+        console.log('Selected gender:', gender);
+        
+        // Define pronoun sets
+        const pronounSets = {
+            'boy': {
+                subject: 'he',
+                object: 'him',
+                possessive: 'his',
+                possessivePronoun: 'his',
+                reflexive: 'himself'
+            },
+            'girl': {
+                subject: 'she',
+                object: 'her',
+                possessive: 'her',
+                possessivePronoun: 'hers',
+                reflexive: 'herself'
+            },
+            'other': {
+                subject: 'they',
+                object: 'them',
+                possessive: 'their',
+                possessivePronoun: 'theirs',
+                reflexive: 'themself'
+            }
+        };
+        
+        // Get pronouns based on gender
+        const pronouns = pronounSets[gender] || pronounSets['other'];
+        console.log('Using pronouns:', pronouns);
+        
+        const profileData = {
+            name: formData.get('characterName'),
+            gender: gender,
+            character: formData.get('character'),
+            characterName: formData.get('characterName'),
+            hobbies: Array.from(formData.getAll('hobbies')),
+            mood: formData.get('mood'),
+            pronouns: pronouns,
+            progress: {
+                selectedCharacter: formData.get('character'),
+                selectedStoryline: formData.get('adventure'),
+                current_story: 'story1',
+                chapter1_progress: 0
+            },
+            stories: {
+                story1: { completed: false }
+            },
+            analytics: {
+                worry_ratings: [],
+                last_session: new Date().toISOString()
+            }
+        };
 
-    console.log('Saving user profile data:', profileData);
+        console.log('Saving user profile data:', profileData);
 
-    // Add a delay to show the loading animation
-    setTimeout(async () => {
+        // Update UserManager with the new profile data
+        await userManager.updateUserProfile(profileData);
+        
+        console.log('Step 2: Setting character and storyline');
+        console.log('Selected character:', profileData.progress.selectedCharacter);
+        console.log('Selected storyline:', profileData.progress.selectedStoryline);
+        
+        // Load the selected character's story content
+        const result = await userManager.setCharacterAndStoryline(
+            profileData.progress.selectedCharacter,
+            profileData.progress.selectedStoryline
+        );
+        
+        if (result && result.error) {
+            throw new Error(result.error);
+        }
+        
+        console.log('Story content loaded successfully');
+        
+        // Preload all story images
+        console.log('Preloading story images...');
+        let imageLoadingPromise;
         try {
-            console.log('Step 1: Updating user profile');
-            // Update UserManager with the new profile data
-            await userManager.updateUserProfile(profileData);
-            
-            console.log('Step 2: Setting character and storyline');
-            console.log('Selected character:', profileData.progress.selectedCharacter);
-            console.log('Selected storyline:', profileData.progress.selectedStoryline);
-            
-            // Try to load the selected character's story content
-            console.log('About to call setCharacterAndStoryline with:', {
-                character: profileData.progress.selectedCharacter,
-                storyline: profileData.progress.selectedStoryline
-            });
-            
-            const result = await userManager.setCharacterAndStoryline(
-                profileData.progress.selectedCharacter,
-                profileData.progress.selectedStoryline
-            );
-            
-            console.log('Result from setCharacterAndStoryline:', result);
-            
-            // Check if there was an error loading the stories
-            if (result && result.error) {
-                console.error('Error loading stories:', result.error);
-                // Remove loading overlay
-                const overlay = document.querySelector('.loading-overlay');
-                if (overlay) {
-                    overlay.remove();
-                }
-                
-                // Show error message
-                alert(result.error);
-                
-                // Re-enable submit button
-                if (submitButton) {
-                    submitButton.disabled = false;
-                }
-                
-                return;
-            }
-            
-            console.log('Story content loaded successfully');
-            
-            // Save to localStorage directly as well to ensure it's saved
-            console.log('Step 3: Saving to localStorage directly');
-            
-            // Make sure we have the latest user data with stories
-            const userData = {
-                ...profileData,
-                stories: userManager.userData.stories || {}
-            };
-            
-            console.log('User data to save to localStorage:', userData);
-            localStorage.setItem('user_data', JSON.stringify(userData));
-            
-            // Verify the data was saved correctly
-            const savedData = localStorage.getItem('user_data');
-            const parsedData = JSON.parse(savedData);
-            console.log('Data retrieved from localStorage:', parsedData);
-            console.log('Stories in localStorage:', parsedData.stories);
-            
-            // Check if stories were loaded properly
-            console.log('Checking user data before redirect:', userManager.userData);
-            console.log('Stories in user data:', userManager.userData.stories);
-            
-            // Make sure we have story data before redirecting
-            if (!userManager.userData.stories || Object.keys(userManager.userData.stories).length === 0) {
-                console.error('No stories loaded, cannot redirect to story page');
-                
-                // Try to load stories one more time
-                console.log('Attempting to load stories one more time');
-                const retryResult = await userManager.loadStoriesForSelection();
-                console.log('Retry result:', retryResult);
-                
-                if (retryResult && retryResult.error) {
-                    console.error('Error loading stories on retry:', retryResult.error);
-                    alert('There was a problem loading your stories: ' + retryResult.error + '. Please try again.');
-                    
-                    // Remove loading overlay
-                    const overlay = document.querySelector('.loading-overlay');
-                    if (overlay) {
-                        overlay.remove();
-                    }
-                    
-                    // Re-enable submit button
-                    if (submitButton) {
-                        submitButton.disabled = false;
-                    }
-                    
-                    return;
-                }
-                
-                // Check if we have stories now
-                if (!userManager.userData.stories || Object.keys(userManager.userData.stories).length === 0) {
-                    console.error('Still no stories after retry');
-                    alert('There was a problem loading your stories. Please try again.');
-                    
-                    // Remove loading overlay
-                    const overlay = document.querySelector('.loading-overlay');
-                    if (overlay) {
-                        overlay.remove();
-                    }
-                    
-                    // Re-enable submit button
-                    if (submitButton) {
-                        submitButton.disabled = false;
-                    }
-                    
-                    return;
-                }
-                
-                console.log('Stories loaded successfully on retry');
-            }
-            
-            // Make sure current_story is set
-            if (!userManager.userData.progress.current_story) {
-                console.log('Setting current_story to story1');
-                userManager.userData.progress.current_story = 'story1';
-                userManager.saveUserData();
-            }
-            
-            // Make sure we have at least one story
-            if (!userManager.userData.stories || Object.keys(userManager.userData.stories).length === 0) {
-                console.log('Adding default story1');
-                userManager.userData.stories = {
-                    story1: { 
-                        completed: false,
-                        pages: [
-                            {
-                                text: "Welcome to your adventure! This is a placeholder story until we can load your real stories.",
-                                image: "assets/images/default_placeholder.png"
-                            }
-                        ],
-                        title: "Your First Adventure"
-                    }
-                };
-                userManager.saveUserData();
-            }
-            
-            // Final check of user data before redirect
-            console.log('Final user data before redirect:', userManager.userData);
-            console.log('Stories before redirect:', userManager.userData.stories);
-            
-            // Redirect to story page
-            console.log('Step 4: Redirecting to story page');
-            window.location.href = 'readstory.html';
+            imageLoadingPromise = preloadImages(userManager.userData.stories);
+            console.log('All images preloaded successfully');
         } catch (error) {
-            console.error('Detailed error information:', error);
-            console.error('Error stack:', error.stack);
-            
-            // Try to save basic user data even if there's an error
-            try {
-                localStorage.setItem('user_data', JSON.stringify(profileData));
-                console.log('Basic user data saved despite error');
-            } catch (saveError) {
-                console.error('Failed to save even basic user data:', saveError);
-            }
-            
-            alert('There was a problem saving your information. Please try again.');
-            
-            // Remove loading overlay
-            const overlay = document.querySelector('.loading-overlay');
-            if (overlay) {
-                overlay.remove();
-            }
-            
-            // Re-enable submit button
-            if (submitButton) {
-                submitButton.disabled = false;
-            }
+            console.error('Error preloading images:', error);
+            // Continue even if some images fail to load
         }
-    }, 3000);
+        
+        // Save to localStorage
+        const userData = {
+            ...profileData,
+            stories: userManager.userData.stories || {}
+        };
+        
+        localStorage.setItem('user_data', JSON.stringify(userData));
+        
+        // Verify the data was saved correctly
+        const savedData = localStorage.getItem('user_data');
+        const parsedData = JSON.parse(savedData);
+        console.log('Data retrieved from localStorage:', parsedData);
+        
+        // Make sure we have story data before redirecting
+        if (!userManager.userData.stories || Object.keys(userManager.userData.stories).length === 0) {
+            throw new Error('No stories loaded');
+        }
+        
+        // Make sure current_story is set
+        if (!userManager.userData.progress.current_story) {
+            userManager.userData.progress.current_story = 'story1';
+            userManager.saveUserData();
+        }
+        
+        // Final check of user data before redirect
+        console.log('Final user data before redirect:', userManager.userData);
+        
+        // Wait for both the minimum loading time AND image loading to complete
+        await Promise.all([
+            minimumLoadingPromise,
+            imageLoadingPromise || Promise.resolve() // Use resolved promise if image loading failed
+        ]);
+        
+        // Redirect to story page
+        console.log('Step 4: Redirecting to story page');
+        window.location.href = 'readstory.html';
+        
+    } catch (error) {
+        console.error('Error during form submission:', error);
+        
+        // Try to save basic user data even if there's an error
+        try {
+            localStorage.setItem('user_data', JSON.stringify(profileData));
+            console.log('Basic user data saved despite error');
+        } catch (saveError) {
+            console.error('Failed to save even basic user data:', saveError);
+        }
+        
+        alert('There was a problem loading your story. Please try again.');
+        
+        // Remove loading overlay
+        const overlay = document.querySelector('.loading-overlay');
+        if (overlay) {
+            overlay.remove();
+        }
+        
+        // Re-enable submit button
+        if (submitButton) {
+            submitButton.disabled = false;
+        }
+    }
 }
 
 // === EVENT LISTENERS ===
