@@ -152,12 +152,9 @@ async function initPracticePage() {
             try {
                 console.log('Completing practice and unlocking next story...');
                 const currentStoryId = userManager.userData.progress.current_story;
-                console.log('Current story ID:', currentStoryId);
                 
                 // Mark current story as completed in user data
                 if (userManager.userData.stories[currentStoryId]) {
-                    console.log('Before update - Story completion status:', userManager.userData.stories[currentStoryId].completed);
-                    
                     userManager.userData.stories[currentStoryId].completed = true;
                     userManager.userData.stories[currentStoryId].practice_completed = true;
                     
@@ -174,9 +171,17 @@ async function initPracticePage() {
                     // Update progress in user data
                     userManager.userData.progress.chapter1_progress = progressPercentage;
                     
-                    // Store the current story ID for animation
-                    console.log('Setting story_to_animate in localStorage:', currentStoryId);
-                    localStorage.setItem('story_to_animate', currentStoryId);
+                    // Find the next story to be unlocked
+                    const storyNumber = parseInt(currentStoryId.replace('story', ''));
+                    const nextStoryId = `story${storyNumber + 1}`;
+                    
+                    // Store the next story ID for animation when returning to journey map
+                    // Only store if both story and practice are completed
+                    if (userManager.userData.stories[currentStoryId].completed && 
+                        userManager.userData.stories[currentStoryId].practice_completed) {
+                        console.log('Setting story_to_animate in localStorage:', nextStoryId);
+                        localStorage.setItem('story_to_animate', nextStoryId);
+                    }
                     
                     // Save user data
                     console.log('About to save user data...');
@@ -514,9 +519,13 @@ if (typeof window !== 'undefined') {
             console.log('Story and practice marked as completed:', currentStoryId);
             console.log('Updated user data:', userManager.userData);
             
-            // Store the current story ID for animation
-            console.log('Setting story_to_animate in localStorage:', currentStoryId);
-            localStorage.setItem('story_to_animate', currentStoryId);
+            // Find the next story to be unlocked
+            const storyNumber = parseInt(currentStoryId.replace('story', ''));
+            const nextStoryId = `story${storyNumber + 1}`;
+            
+            // Store the next story ID for animation
+            console.log('Setting story_to_animate in localStorage:', nextStoryId);
+            localStorage.setItem('story_to_animate', nextStoryId);
             
             // Navigate to journey map
             console.log('Navigating to journey map...');

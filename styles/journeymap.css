@@ -322,6 +322,7 @@
 /* Locked story nodes */
 .node-container[data-status="locked"] {
     filter: grayscale(100%);
+    cursor: not-allowed;
 }
 
 /* Animation for Unlocking Stories */

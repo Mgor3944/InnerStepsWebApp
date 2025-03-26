@@ -137,9 +137,9 @@ function createJourneyStageNode(storyId, storyData, userStoryData, storyIndex) {
         nodeContainer.addEventListener('click', () => startStory(storyId));
     }
 
-    // Check if this node should have the unlocking animation
+    // Add unlocking animation if this is the next story to be unlocked
     const storyToAnimate = localStorage.getItem('story_to_animate');
-    if (storyToAnimate === storyId) {
+    if (storyToAnimate === storyId && completionStatus === 'unlocked') {
         const nodeContainer = node.querySelector('.node-container');
         nodeContainer.setAttribute('data-animation', 'unlocking');
         localStorage.removeItem('story_to_animate');
@@ -150,33 +150,18 @@ function createJourneyStageNode(storyId, storyData, userStoryData, storyIndex) {
 
 // Helper function to check if a story is unlocked
 function isStoryUnlocked(storyId) {
-    // Story 1 is always unlocked
-    if (storyId === 'story1') {
-        return true;
-    }
+    if (storyId === 'story1') return true;
     
-    // Get the story number from the ID
     const storyNumber = parseInt(storyId.replace('story', ''));
-    
-    // Previous story must be completed to unlock the next one
     const previousStoryId = `story${storyNumber - 1}`;
-    return userManager.userData.stories[previousStoryId]?.completed === true;
+    return userManager.userData.stories[previousStoryId]?.completed === true && 
+           userManager.userData.stories[previousStoryId]?.practice_completed === true;
 }
 
 // Function to start a story
 function startStory(storyId) {
-    // Set the current story in user data
     userManager.userData.progress.current_story = storyId;
     userManager.saveUserData();
-    
-    // Find the next story to be unlocked
-    const storyNumber = parseInt(storyId.replace('story', ''));
-    const nextStoryId = `story${storyNumber + 1}`;
-    
-    // Store the next story ID for animation when returning to journey map
-    localStorage.setItem('story_to_animate', nextStoryId);
-    
-    // Navigate to the story page
     window.location.href = 'readstory.html';
 }
 
