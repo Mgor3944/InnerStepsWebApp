@@ -169,6 +169,13 @@ function startStory(storyId) {
     userManager.userData.progress.current_story = storyId;
     userManager.saveUserData();
     
+    // Find the next story to be unlocked
+    const storyNumber = parseInt(storyId.replace('story', ''));
+    const nextStoryId = `story${storyNumber + 1}`;
+    
+    // Store the next story ID for animation when returning to journey map
+    localStorage.setItem('story_to_animate', nextStoryId);
+    
     // Navigate to the story page
     window.location.href = 'readstory.html';
 }
