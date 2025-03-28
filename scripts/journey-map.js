@@ -142,6 +142,7 @@ function createJourneyStageNode(storyId, storyData, userStoryData, storyIndex) {
     if (storyToAnimate === storyId && completionStatus === 'unlocked') {
         const nodeContainer = node.querySelector('.node-container');
         nodeContainer.setAttribute('data-animation', 'unlocking');
+        // Remove the story_to_animate from localStorage after setting the animation
         localStorage.removeItem('story_to_animate');
     }
 
@@ -160,8 +161,22 @@ function isStoryUnlocked(storyId) {
 
 // Function to start a story
 function startStory(storyId) {
+    // Set the current story in user data
     userManager.userData.progress.current_story = storyId;
     userManager.saveUserData();
+    
+    // Only store the next story for animation if current story is fully completed
+    const currentStory = userManager.userData.stories[storyId];
+    if (currentStory?.completed && currentStory?.practice_completed) {
+        // Find the next story to be unlocked
+        const storyNumber = parseInt(storyId.replace('story', ''));
+        const nextStoryId = `story${storyNumber + 1}`;
+        
+        // Store the next story ID for animation when returning to journey map
+        localStorage.setItem('story_to_animate', nextStoryId);
+    }
+    
+    // Navigate to the story page
     window.location.href = 'readstory.html';
 }
 

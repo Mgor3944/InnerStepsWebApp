@@ -326,7 +326,7 @@
 }
 
 /* Animation for Unlocking Stories */
-.node-container[data-animation="unlocking"] {
+.node-container[data-animation="unlocking"] .node-inner-container {
     animation: unlock 1.2s ease-out forwards;
     z-index: 10;
 }
