@@ -1,6 +1,5 @@
 .read-story-page {
     overflow: hidden; /* Prevents scrolling */
-    background-color: #DDEDE3;
 }
 
 .story-full-screen-container {
@@ -26,11 +25,13 @@
     align-items: center;
     justify-content: center;
 
-    background-color: #164E75;
-    opacity: 0.8;
+    background-color: #68BDE2;
+    opacity: 0.9;
     padding: 25px 15px;
 
     border-radius: 10px;
+
+    cursor: pointer;
 }
 
 /* === STORYBOOK CONTAINER === */
@@ -59,7 +60,7 @@
     align-items: flex-start;
     align-self: stretch;
 
-    text-align: center;
+    text-align: left;
 
     gap: 30px;
 
@@ -67,13 +68,39 @@
     width: 100%;
 }
 
+#readStoryTitle {
+    width: 100%;
+}
+
+#readStoryText {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
 .story-book-left-content h1 {
+    text-align: left;
+
     font-family: 'Mali', cursive;
-    color: #43310C;
-    font-size: 50px;
-    font-style: normal;
+    color: #283608;
+    font-size: 3em;
     font-weight: 700;
     line-height: normal;
+
+    width: 100%;
+}
+
+.story-book-left-content h4 {
+    text-align: left;
+
+    font-family: 'Mali', cursive;
+    color: #283608;
+    font-size: 1.2em;
+    font-weight: 400;
+    padding-bottom: 20px;
+    border-bottom: 0.5px solid rgb(40, 54, 8, 0.3);
 
     width: 100%;
 }
@@ -81,7 +108,7 @@
 .story-book-left-content p {
     font-family: 'Mali', cursive;
     color: #283608;
-    font-size: 1.3em;
+    font-size: 1.4em;
     font-style: normal;
     font-weight: 500;
     line-height: 43px;

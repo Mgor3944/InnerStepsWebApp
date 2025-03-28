@@ -280,7 +280,7 @@
 /* STAGE 1-2 */
 
 #STAGE-1-2 .node-content {
-    background-color: #f3bc17;
+    background-color: #FFCA2C;
 }
 
 #STAGE-1-2 .book-title-container {
@@ -326,7 +326,7 @@
 }
 
 /* Animation for Unlocking Stories */
-.node-container[data-animation="unlocking"] .node-inner-container {
+.node-container[data-animation="unlocking"] {
     animation: unlock 1.2s ease-out forwards;
     z-index: 10;
 }

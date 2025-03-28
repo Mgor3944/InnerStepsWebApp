@@ -30,7 +30,6 @@ h2 {
     text-align: center;
 }
 
-
 h4 {
     text-align: center;
 }
@@ -129,7 +128,7 @@ body.journey-page {
 }
 
 body.read-story-page {
-    background-color: #DDEDE3;
+    background-color: #203245;
 }
 
 /* === UTILITY CLASSES === */

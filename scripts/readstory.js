@@ -55,9 +55,7 @@ async function initReadStoryPage() {
     // Set up navigation buttons
     backBtn.addEventListener('click', () => handleBackNavigation(currentStory));
     nextBtn.addEventListener('click', () => handleNextNavigation(currentStory));
-    
-    // Update button states
-    updateNavigationButtons();
+
 }
 
 // Function to personalize story text
@@ -199,9 +197,7 @@ function loadStoryContent(story) {
             rightPage.style.backgroundColor = '#EFDEAD';
         };
     }
-    
-    // Update navigation buttons
-    updateNavigationButtons();
+
 }
 
 // Function to handle back navigation
@@ -222,19 +218,6 @@ function handleNextNavigation(story) {
     } else {
         window.location.href = 'practice.html';
     }
-}
-
-// Function to update navigation buttons
-function updateNavigationButtons() {
-    const backBtn = document.querySelector('.nav-left');
-    const nextBtn = document.querySelector('.nav-right');
-    
-    // Both buttons should always have the same opacity and cursor
-    backBtn.style.opacity = '0.8';
-    backBtn.style.cursor = 'pointer';
-    
-    nextBtn.style.opacity = '0.8';
-    nextBtn.style.cursor = 'pointer';
 }
 
 // Initialize when DOM is loaded
