@@ -7,7 +7,7 @@ Our AI-powered, anxiety support program provides families with a series of inter
 
 **PURPOSE OF THE BUILD**
 
-This MVP is designed to test how much personalisation is required to make the child feel like the story is for them. The most simplist way to test this is to procedurally generate the text of the story and then manually customise the images to match the child's profile description.
+This MVP is designed to test how much personalisation is required to make the child feel like the story is for them. The most simplist way to test this is to procedurally generate the text of the story and the images.
 
 **NICE TO HAVE'S --> Matt**
 
